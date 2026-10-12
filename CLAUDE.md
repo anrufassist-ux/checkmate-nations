@@ -15,7 +15,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 - No build step. Vercel serves the file statically.
 
 ## Product decisions
-- International audience: English is the primary language, German secondary (language menu planned).
+- International audience: English is the default language; German when the browser is German or the player picks it (button in the header, stored in localStorage `wms-lang`). Translations live in the small script before the main game script: exact phrases in `D`, composed sentences as regex patterns in `P`. Any new German UI text needs an English entry there.
 - USA vs Russia is free. Every other nation is paid (purchase is simulated for now, unlocks in
   localStorage `wms-unlocked`). Planned pricing: bundle of 3 nations 2.99 EUR, all nations 4.99 EUR.
 - Caricature mode is on by default.

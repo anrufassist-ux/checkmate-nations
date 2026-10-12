@@ -167,6 +167,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     <button class="btn" id="music" type="button" aria-pressed="true">Musik an</button>
     <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
     <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
+    <button class="btn" id="langBtn" type="button" aria-label="Language / Sprache" onclick="setLang(LANG==='en'?'de':'en')">EN · DE</button>
     <button class="btn primary" id="reset" type="button">Neues Spiel</button>
   </div>
 </header>
@@ -272,6 +273,107 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+/* ---------- Language: English for everyone, German when the browser is German or the player chose it ---------- */
+(function(){
+  let lang=null; try{ lang=localStorage.getItem('wms-lang'); }catch(e){}
+  if(lang!=='de'&&lang!=='en') lang=String(navigator.language||'en').toLowerCase().startsWith('de')?'de':'en';
+  window.LANG=lang; document.documentElement.lang=lang;
+  window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
+  const D={
+    'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
+    'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
+    'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
+    'Ton an':'Sound on','Ton aus':'Sound off','Musik an':'Music on','Musik aus':'Music off',
+    'Karikaturen an':'Caricatures on','Karikaturen aus':'Caricatures off','Flaggen an':'Flags on','Flaggen aus':'Flags off',
+    'Neues Spiel':'New game','Spiel erstellen':'Create game','oder':'or','Beitreten':'Join','Spielcode':'Game code',
+    'Kopieren':'Copy','Verlassen':'Leave','Erstelle ein Spiel und schick den Code deinem Gegner.':'Create a game and send the code to your opponent.',
+    'Aufstellung':'Line-up','Bauer':'Pawn','· Infanterie':'· Infantry','Turm':'Rook','· Kampfpanzer':'· Battle tank',
+    'Springer':'Knight','· Drohne':'· Drone','Läufer':'Bishop','· Kampfjet':'· Fighter jet','Dame':'Queen',
+    '· Bobblehead-Slot':'· Bobblehead','König':'King','Test-Käufe zurücksetzen':'Reset test purchases','Zurückgesetzt':'Reset',
+    'Tipp: Auf die Statuszeile tippen klappt dieses Feld ein und aus. Rochade: König antippen, dann den blau markierten Panzer oder das blaue Zielfeld. Modus „Zwei Spieler“: Ihr wechselt euch am selben Gerät ab, die Kamera dreht sich nach jedem Zug zur Seite, die dran ist. Die Köpfe von König und Dame sind Platzhalter. Dort kommen später die Karikaturen hinein. Schlagen: Figur antippen, dann Ziel. Ziehen mit einem Finger dreht die Kamera.':
+      'Tip: tap the status bar to fold this panel in and out. Capture: tap a piece, then its target. Castling: tap the king, then the tank marked in blue or the blue target square. Two players: you take turns on the same device, the camera turns to whoever moves next. Drag with one finger to rotate the camera.',
+    'Wie willst du spielen?':'How do you want to play?','Du gegen den Computer':'You against the computer',
+    'Abwechselnd am selben Gerät':'Take turns on the same device','Jeder an seinem Gerät, mit Spielcode':'Each on their own device, with a game code',
+    'Revanche':'Rematch','Gleicher Online-Gegner, gleiche Länder':'Same online opponent, same countries','Weiterspielen':'Continue',
+    'Spieler 1':'Player 1','Spieler 2':'Player 2','Wähle dein Land':'Choose your country','Wähle dein Land.':'Choose your country.',
+    'Die KI übernimmt das andere Land.':'The AI takes the other country.','Zurück':'Back',
+    'Online-Partie läuft':'Online game in progress','Partie wirklich aufgeben?':'Really resign this game?',
+    'Wenn du jetzt ein neues Spiel startest, verlierst du diese Partie. Dein Gegner gewinnt und du bekommst keine Punkte.':'If you start a new game now, you lose this game. Your opponent wins and you get no points.',
+    'Aufgeben':'Resign','Neues Land':'New country','Kaufen':'Buy','Abbrechen':'Cancel',
+    'Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen.':'Its own pieces, its own queen, its own flag pattern. Buy once, play forever.',
+    'Testversion: Hier öffnet die fertige App den Kauf im App Store oder bei Google Play. Jetzt wird nichts berechnet, das Land wird nur auf diesem Gerät freigeschaltet.':'Test version: the finished game opens the real checkout here. Nothing is charged now; the country is only unlocked on this device.',
+    'Ab ins Gefängnis!':'Off to jail!','Spielmodus':'Game mode','Spielstärke':'Difficulty','Der besiegte König':'The defeated king',
+    'BUMM!':'BOOM!','KRACH!':'CRASH!','ZACK!':'ZAP!','WUMMS!':'WHAM!','PENG!':'BANG!',
+    'Rochade!':'Castling!','Kurze Rochade: König in Sicherheit.':'Short castling: king in safety.','Lange Rochade: König in Sicherheit.':'Long castling: king in safety.',
+    'Remis':'Draw','Gipfel ohne Ergebnis. Beide Seiten erklären sich zum Sieger.':'Summit without result. Both sides declare victory.',
+    'Remis. Neues Spiel starten?':'Draw. Start a new game?','Schach!':'Check!','Schachmatt!':'Checkmate!',
+    'Schach! Rette deinen König.':'Check! Save your king.','Ziel antippen.':'Tap a target.',
+    'Diese Figur kann gerade nicht ziehen.':'This piece cannot move right now.','Neues Online-Spiel':'New online game','Du ziehst zuerst.':'You move first.',
+    'Gegen wen spielst du?':'Who do you play against?','Land für Spieler 2':'Country for player 2','Land für deinen Gegner':'Country for your opponent',
+    'Dieses Land spielt die KI.':'The AI plays this country.','Spieler 2 zieht als Zweites.':'Player 2 moves second.','Dein Gegner bekommt dieses Land.':'Your opponent gets this country.',
+    'schon gewählt':'already taken','spielbereit':'ready to play','freischalten':'unlock','Verbinde …':'Connecting …',
+    'Online-Spiel ist hier nicht verfügbar. Du musst angemeldet sein und das Spiel muss mit dir mit Mitwirkenden-Rechten geteilt sein.':'Online play is not available here.',
+    'Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.':'Create a game and send the code to your opponent, or enter their code.',
+    'Online: Spiel erstellen oder beitreten.':'Online: create or join a game.','Spiel konnte nicht erstellt werden. Hast du Mitwirkenden-Rechte?':'Could not create the game.',
+    'Der Code hat 4 Zeichen.':'The code has 4 characters.','Verbindung fehlgeschlagen. Versuch es nochmal.':'Connection failed. Please try again.',
+    'Kein Spiel mit diesem Code gefunden.':'No game found with this code.','Dieses Spiel ist schon voll.':'This game is already full.',
+    'Jemand anderes tritt gerade bei. Versuch es gleich nochmal.':'Someone else is joining right now. Try again in a moment.',
+    'Beitreten fehlgeschlagen. Hast du Mitwirkenden-Rechte?':'Could not join the game.','Verbindung zum Spiel verloren. Lade die Seite neu.':'Connection to the game lost. Please reload the page.',
+    'Das Spiel existiert nicht mehr.':'This game no longer exists.','Zug konnte nicht gesendet werden. Lade die Seite neu.':'Move could not be sent. Please reload the page.',
+    'Gegner ist online.':'Opponent is online.','Gegner ist gerade nicht auf der Seite. Seine Züge kommen an, sobald er zurück ist.':'Your opponent is away right now. Their moves arrive as soon as they are back.',
+    'Partie vorbei. „Neues Spiel“ startet eine Revanche.':'Game over. "New game" starts a rematch.','Gegner ist am Zug …':"Opponent's turn …",
+    'Aufgabe konnte nicht gesendet werden.':'Resignation could not be sent.','Aufgegeben':'Resigned','Gegner gibt auf':'Opponent resigns',
+    'Revanche konnte nicht gestartet werden.':'Rematch could not be started.','Code kopiert.':'Code copied.','Wähle einen Spielmodus.':'Choose a game mode.',
+    'Russland':'Russia','Europa':'Europe','Deutschland':'Germany','0,99 €':'€0.99'
+  };
+  // nation and king names inside composed sentences (longest first)
+  const NM=[['Der israelische König','The Israeli king'],['Der iranische König','The Iranian king'],['Der deutsche König','The German king'],
+    ['Der US-König','The US king'],['Russlands König',"Russia's king"],['Europas König',"Europe's king"],['Chinas König',"China's king"],
+    ['Deutschland','Germany'],['Russland','Russia'],['Europa','Europe'],['die USA','the USA'],['den Iran','Iran'],['Spieler ','Player ']];
+  const N=s=>NM.reduce((a,[k,v])=>a.split(k).join(v),s);
+  const P=[
+    [/^(.+) erbeutet$/,m=>N(m[1])+' captured'],
+    [/^(.+) freischalten$/,m=>'Unlock '+N(m[1])],
+    [/^Sieg für (.+)([!.])$/,m=>'Victory for '+N(m[1])+m[2]],
+    [/^(.+) ist bedroht\.$/,m=>N(m[1])+' is in check.'],
+    [/^(.+) wird abgeführt\.$/,m=>N(m[1])+' is being arrested.'],
+    [/^Du spielst (.+)\. Tippe eine Figur an\.$/,m=>'You play '+N(m[1])+'. Tap a piece.'],
+    [/^Du spielst (.+)\. Warte auf Gegner\.$/,m=>'You play '+N(m[1])+'. Waiting for opponent.'],
+    [/^Du spielst (.+)\. Dein Gegner hat (.+) gewählt\.$/,m=>'You play '+N(m[1])+'. Your opponent chose '+N(m[2])+'.'],
+    [/^Du spielst (.+)$/,m=>'You play '+N(m[1])],
+    [/^Spieler 1: (.+), Spieler 2: (.+)\. Spieler 1 beginnt\.$/,m=>'Player 1: '+N(m[1])+', Player 2: '+N(m[2])+'. Player 1 starts.'],
+    [/^Schach! (.+) muss den König retten\.$/,m=>'Check! '+N(m[1])+' must save the king.'],
+    [/^(.+) ist am Zug\.$/,m=>N(m[1])+' to move.'],
+    [/^(.+) plant den nächsten Zug …$/,m=>N(m[1])+' is planning the next move …'],
+    [/^Dein Zug, (.+)\.$/,m=>'Your move, '+N(m[1])+'.'],
+    [/^Warte auf Gegner … Schick ihm den Code (.+)\.$/,m=>'Waiting for opponent … Send them the code '+m[1]+'.'],
+    [/^Spiel mit mir Weltmacht Schach! Code: (.+)$/,m=>'Play Checkmate Nations with me! Code: '+m[1]]
+  ];
+  function tr(s){
+    const t=s.trim(); if(!t) return s;
+    let r=D[t];
+    if(r===undefined) for(const [re,f] of P){ const m=t.match(re); if(m){ r=f(m); break; } }
+    return r===undefined?s:s.replace(t,r);
+  }
+  window.T=s=>lang==='en'?tr(s):s;
+  const lb=document.getElementById('langBtn'); if(lb) lb.textContent=lang==='en'?'Deutsch':'English';
+  if(lang!=='en') return;
+  const ATTR=['aria-label','alt','title','placeholder'];
+  function attrs(n){ for(const a of ATTR){ const v=n.getAttribute(a); if(v){ const t=tr(v); if(t!==v) n.setAttribute(a,t); } } }
+  function walk(n){
+    if(n.nodeType===3){ const v=n.nodeValue, t=tr(v); if(t!==v) n.nodeValue=t; return; }
+    if(n.nodeType!==1||n.tagName==='SCRIPT'||n.tagName==='STYLE') return;
+    attrs(n); for(const c of n.childNodes) walk(c);
+  }
+  walk(document.body); document.title=tr(document.title);
+  new MutationObserver(ms=>{ for(const m of ms){
+    if(m.type==='characterData') walk(m.target);
+    else if(m.type==='attributes') attrs(m.target);
+    else m.addedNodes.forEach(walk);
+  } }).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR});
+})();
+</script>
 <script>
 (function(){
 const T = THREE;
@@ -1695,7 +1797,7 @@ $('onJoin').addEventListener('click',onlineJoin);
 $('onCode').addEventListener('keydown',e=>{ if(e.key==='Enter') onlineJoin(); });
 $('onLeave').addEventListener('click',()=>{ onlineLeave(); resetBoard(); onMsg('Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.'); });
 $('onCopy').addEventListener('click',()=>{
-  const t='Spiel mit mir Weltmacht Schach! Code: '+on.code;
+  const t=window.T('Spiel mit mir Weltmacht Schach! Code: '+on.code);
   if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>onMsg('Code kopiert.',true)).catch(()=>{});
 });
 
