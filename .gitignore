@@ -1,0 +1,6 @@
+tools/clip/video.html
+tools/clip/test.png
+tools/clip/frames/
+tools/clip/node_modules
+tools/clip/moves.json
+*.mp4

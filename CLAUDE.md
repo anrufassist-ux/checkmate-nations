@@ -28,3 +28,6 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 - After editing, syntax-check the main script with node before pushing.
 - Keep everything a nation needs together: `NATIONS` entry, flag texture branch, queen builder,
   queen scale, king lapel pin, picker flag SVG and hover CSS.
+
+## Marketing clips
+- `tools/clip/` records scripted games as vertical videos (see its README). The game page itself stays untouched; `make_video_page.py` patches a copy.
