@@ -319,7 +319,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
     'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
     'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
-    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Impressum':'Legal notice','Datenschutz':'Privacy','Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.':'Satire. Not affiliated with any person or country shown, no political statement.','2D-Figuren an':'2D pieces on','2D-Figuren aus':'2D pieces off','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
+    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Verbindung zum Server fehlgeschlagen. Versuch es gleich nochmal.':'Could not reach the server. Please try again in a moment.','Erstelle Spiel …':'Creating game …','Trete bei …':'Joining …','Spiel konnte nicht erstellt werden. Versuch es nochmal.':'Could not create the game. Please try again.','Beitreten fehlgeschlagen. Versuch es nochmal.':'Could not join. Please try again.','Der Server hat den Zug abgelehnt.':'The server rejected the move.','Zug konnte nicht gesendet werden. Lade neu …':'Could not send the move. Reloading …','Impressum':'Legal notice','Datenschutz':'Privacy','Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.':'Satire. Not affiliated with any person or country shown, no political statement.','2D-Figuren an':'2D pieces on','2D-Figuren aus':'2D pieces off','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
     'Karikaturen an':'Caricatures on','Karikaturen aus':'Caricatures off','Flaggen an':'Flags on','Flaggen aus':'Flags off',
     'Neues Spiel':'New game','Spiel erstellen':'Create game','oder':'or','Beitreten':'Join','Spielcode':'Game code',
     'Kopieren':'Copy','Verlassen':'Leave','Erstelle ein Spiel und schick den Code deinem Gegner.':'Create a game and send the code to your opponent.',
@@ -1638,8 +1638,6 @@ function openModeScreen(){
   pickerOpen=true;
   $('modeScreen').hidden=false;
   $('modeScreen').querySelector('.rematch').hidden=!(mode==='online'&&on.code&&on.ready);
-  // online play needs the Claude artifact runtime; on a plain website it stays hidden until it has its own backend
-  $('modeScreen').querySelector('[data-m="online"]').hidden=!window.claude;
   $('modeClose').hidden=!gameStarted;
   $('modeClose').onclick=()=>{ $('modeScreen').hidden=true; pickerOpen=false; };
   document.querySelectorAll('.modeBtn').forEach(b=>b.onclick=()=>{
@@ -1700,28 +1698,49 @@ $('flags').addEventListener('click',e=>{
 });
 $('mode').addEventListener('change',e=>chooseMode(e.target.value));
 
-/* ---------- Online 1 gegen 1: game state lives in db (games/<CODE>), presence via a named room ---------- */
-const on={doc:null,poll:null,db:null,user:null,room:null,me:null,code:null,color:null,ref:null,unsub:null,named:null,epoch:0,moveNo:0,ready:false,queue:null,opp:false};
-const CODE_ABC='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-// seats belong to a device, so one account can test on phone and laptop
-function deviceId(){
-  let d=null; try{ d=localStorage.getItem('wms-device'); }catch(e){}
-  if(!d){ d='d'+Math.random().toString(36).slice(2,12); try{ localStorage.setItem('wms-device',d); }catch(e){} }
-  return d;
-}
-const DEV=deviceId();
+/* ---------- Online 1 gegen 1 (Supabase): guests play friendly games by code. Clients only read their games;
+   every change goes through the "game" edge function, which checks each move with chess.js (supabase/). ---------- */
+const SB_URL='https://uerlobtrjmgveqeoykwk.supabase.co', SB_KEY='sb_publishable_LonNZRxlG1jfaVZzmPCi7g_3VEu6KPy'; // public by design
+const on={sb:null,me:null,id:null,code:null,color:null,doc:null,chan:null,poll:null,epoch:0,moveNo:0,ready:false,queue:null,opp:false};
 function onMsg(t,ok){ const m=$('onMsg'); m.textContent=t; m.className='onmsg'+(ok?' ok':''); }
+function loadSupabase(){ // only fetched when someone picks online play
+  if(window.supabase) return Promise.resolve();
+  return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='vendor/supabase-2.117.3.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+}
+async function signIn(){ // a guest account is created silently and kept in this browser
+  const {data:{session}}=await on.sb.auth.getSession();
+  if(session){ on.me=session.user.id; return; }
+  const r=await on.sb.auth.signInAnonymously(); if(r.error) throw r.error;
+  on.me=r.data.user.id;
+}
 async function onlineInit(){
   onMsg('Verbinde …');
   try{
-    on.db=on.db||await window.claude?.use?.('db');
-    on.user=on.user||await window.claude?.use?.('user');
-    on.me=on.user?await on.user.id():null;
-  }catch(e){}
-  if(!on.db||!on.me){ onMsg('Online-Spiel ist hier nicht verfügbar. Du musst angemeldet sein und das Spiel muss mit dir mit Mitwirkenden-Rechten geteilt sein.'); return; }
+    await loadSupabase();
+    on.sb=on.sb||window.supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'wms-auth',persistSession:true,autoRefreshToken:true}});
+    await signIn();
+  }catch(e){ on.me=null; onMsg('Verbindung zum Server fehlgeschlagen. Versuch es gleich nochmal.'); return; }
   onMsg('Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.');
   setStatus('Online: Spiel erstellen oder beitreten.','w');
 }
+async function api(action,body,retried){
+  try{
+    const {data,error}=await on.sb.functions.invoke('game',{body:Object.assign({action},body)});
+    if(!error) return data;
+    let j=null; try{ j=await error.context.json(); }catch(e){}
+    const status=error.context&&error.context.status;
+    if(status===401&&!retried){ await on.sb.auth.signOut().catch(()=>{}); await signIn(); return api(action,body,true); } // guest was cleaned up
+    return {error:(j&&j.error)||'network',status,game:j&&j.game};
+  }catch(e){ return {error:'network'}; }
+}
+// server game -> the shape onlineDrain works with (same as before the move to Supabase)
+function toDoc(g){
+  const resigned=g.reason==='resign'?(g.result==='1-0'?'b':'w'):null;
+  return {id:g.id,code:g.code,white:g.white,black:g.black,nations:g.nations,fen:g.fen,moveNo:g.moveNo,last:g.last,
+    caps:g.caps||{w:[],b:[]},epoch:g.epoch,resigned,resignEpoch:resigned?g.epoch:null};
+}
+const fromRow=r=>({id:r.id,code:r.code,white:r.white_id,black:r.black_id,nations:{w:r.white_nation,b:r.black_nation},fen:r.fen,
+  moveNo:r.move_no,last:r.last_move,caps:r.caps,epoch:r.epoch,result:r.result,reason:r.reason});
 function showCode(){
   $('onStart').hidden=!!on.code; $('onInfo').hidden=!on.code;
   $('onCodeShow').textContent=on.code||'';
@@ -1729,82 +1748,64 @@ function showCode(){
   if(on.code&&matchMedia('(max-width:600px)').matches) setCollapsed(true);
 }
 function onlineCreate(){
-  if(!on.db||!on.me) return;
-  openPicker((my,opp)=>onlineCreateAs('w',my,opp));
+  if(!on.me) return;
+  openPicker((my,opp)=>onlineCreateAs(my,opp));
 }
-async function onlineCreateAs(color,my,opp){
-  setNations(my,opp);
-  let code=''; for(let i=0;i<4;i++) code+=CODE_ABC[Math.random()*CODE_ABC.length|0];
-  const ref=on.db.doc('games/'+code);
-  try{
-    await ref.set({white:color==='w'?DEV:null,black:color==='b'?DEV:null,nations:{w:my,b:opp},fen:new Chess().fen(),moveNo:0,last:null,caps:{w:[],b:[]},epoch:1,created:Date.now()});
-  }catch(e){ onMsg('Spiel konnte nicht erstellt werden. Hast du Mitwirkenden-Rechte?'); return; }
-  onlineAttach(code,color);
+async function onlineCreateAs(my,opp){
+  setNations(my,opp); onMsg('Erstelle Spiel …');
+  const r=await api('create',{w:my,b:opp});
+  if(r.error){ onMsg('Spiel konnte nicht erstellt werden. Versuch es nochmal.'); return; }
+  onlineAttach(r.game,'w');
 }
 async function onlineJoin(){
-  if(!on.db||!on.me) return;
+  if(!on.me) return;
   const code=($('onCode').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
   if(code.length!==4){ onMsg('Der Code hat 4 Zeichen.'); return; }
-  const ref=on.db.doc('games/'+code);
-  let snap; try{ snap=await ref.get(); }catch(e){ onMsg('Verbindung fehlgeschlagen. Versuch es nochmal.'); return; }
-  if(!snap.exists){ onMsg('Kein Spiel mit diesem Code gefunden.'); return; }
-  const d=snap.data();
-  if(d.nations&&NATIONS[d.nations.w]&&NATIONS[d.nations.b]) setNations(d.nations.w,d.nations.b);
-  if(d.white===DEV){ onlineAttach(code,'w'); return; }
-  if(d.black===DEV){ onlineAttach(code,'b'); return; }
-  if(d.white&&d.black){ onMsg('Dieses Spiel ist schon voll.'); return; }
-  let seat;
-  try{
-    const l=await ref.acquire({holder:DEV,ttlMs:4000});
-    if(!l.acquired){ onMsg('Jemand anderes tritt gerade bei. Versuch es gleich nochmal.'); return; }
-    const again=(await ref.get()).data();
-    seat=!again.white?'w':!again.black?'b':null; // the creator picked a country, you get the other one
-    if(!seat){ onMsg('Dieses Spiel ist schon voll.'); return; }
-    await ref.update(seat==='w'?{white:DEV}:{black:DEV});
-  }catch(e){ onMsg('Beitreten fehlgeschlagen. Hast du Mitwirkenden-Rechte?'); return; }
+  onMsg('Trete bei …');
+  const r=await api('join',{code});
+  if(r.error){ onMsg(r.status===404||r.status===400?'Kein Spiel mit diesem Code gefunden.':r.status===409?'Dieses Spiel ist schon voll.':'Beitreten fehlgeschlagen. Versuch es nochmal.'); return; }
+  const g=r.game, seat=r.seat;
+  if(g.nations&&NATIONS[g.nations.w]&&NATIONS[g.nations.b]) setNations(g.nations.w,g.nations.b);
   onMsg('Du spielst '+CNAME[seat]+'. Dein Gegner hat '+CNAME[seat==='w'?'b':'w']+' gewählt.',true);
-  onlineAttach(code,seat);
+  onlineAttach(g,seat);
 }
-function onlineAttach(code,color){
+function onlineAttach(g,color){
   onlineDetach();
-  on.code=code; on.color=color; on.ref=on.db.doc('games/'+code); on.epoch=-1; on.moveNo=-1; on.ready=false;
+  const id=g.id;
+  on.id=id; on.code=g.code; on.color=color; on.epoch=-1; on.moveNo=-1; on.ready=false;
   showCode(); swingTo(color);
-  on.unsub=on.ref.onSnapshot(s=>onlineSnap(s),()=>onMsg('Verbindung zum Spiel verloren. Lade die Seite neu.'));
-  // safety net: while waiting for the opponent, re-read the game every few seconds
+  onlineSnap(toDoc(g));
+  // live: the opponent's moves arrive as row updates; presence shows whether they are on the page
+  const ch=on.sb.channel('game-'+id,{config:{presence:{key:on.me}}});
+  ch.on('postgres_changes',{event:'UPDATE',schema:'public',table:'games',filter:'id=eq.'+id},p=>{ if(on.id===id&&p.new) onlineSnap(toDoc(fromRow(p.new))); })
+    .on('presence',{event:'sync'},()=>{ if(on.id!==id) return; on.opp=Object.keys(ch.presenceState()).some(k=>k!==on.me); onlineStatus(); })
+    .subscribe(st=>{ if(st==='SUBSCRIBED'&&on.id===id){ ch.track({color}).catch(()=>{}); onlineFetch(); } });
+  on.chan=ch;
+  // safety net: re-read the game every few seconds in case a live update got lost
   on.poll=setInterval(()=>{
-    if(mode!=='online'||!on.ref||document.hidden) return;
-    if(busy){ if(Date.now()-busySince>20000&&!tweens.length){ busy=false; onlineResync(); } return; }
-    on.ref.get().then(s=>{ if(on.code===code) onlineSnap(s); }).catch(()=>{});
-  },5000);
-  (async()=>{ // presence: is the opponent here right now?
-    try{
-      on.room=on.room||await window.claude?.use?.('room');
-      if(!on.room||on.code!==code) return;
-      const r=await on.room.join('wms-'+code.toLowerCase());
-      if(on.code!==code){ r.leave(); return; }
-      on.named=r; r.presence({color});
-      r.on('mv',m=>{ if(m.sameTab||!m.data||on.code!==code) return; onlineQueue(Object.assign({},on.doc||{},m.data)); });
-      r.onPeers(ch=>{ on.opp=ch.peers.some(p=>!p.isMe&&p.presence&&p.presence.color&&p.presence.color!==color); onlineStatus(); });
-    }catch(e){}
-  })();
+    if(mode!=='online'||!on.id||document.hidden) return;
+    if(busy){ if(Date.now()-busySince>20000&&!tweens.length){ busy=false; onlineFetch(true); } return; }
+    onlineFetch();
+  },6000);
 }
 function onlineDetach(){
-  if(on.unsub){ on.unsub(); on.unsub=null; }
+  if(on.chan){ try{ on.sb.removeChannel(on.chan); }catch(e){} on.chan=null; }
   if(on.poll){ clearInterval(on.poll); on.poll=null; }
-  on.doc=null;
-  if(on.named){ try{ on.named.leave(); }catch(e){} on.named=null; }
-  on.code=null; on.color=null; on.ref=null; on.ready=false; on.queue=null; on.opp=false;
+  on.doc=null; on.id=null;
+  on.code=null; on.color=null; on.ready=false; on.queue=null; on.opp=false;
 }
 function onlineLeave(){ onlineDetach(); showCode(); }
-function onlineSnap(s){
-  if(!s.exists){ onMsg('Das Spiel existiert nicht mehr.'); return; }
-  on.doc=s.data(); onlineQueue(on.doc);
-}
+function onlineSnap(d){ on.doc=d; onlineQueue(d); }
 function newer(a,b){ return !b||a.epoch>b.epoch||(a.epoch===b.epoch&&a.moveNo>=b.moveNo); }
 function onlineQueue(d){ if(newer(d,on.queue)) on.queue=d; onlineDrain(); }
-function onlineResync(){ // load the stored position directly
-  if(!on.ref) return;
-  on.ref.get().then(s=>{ if(!s.exists) return; const d=s.data(); on.doc=d; on.epoch=-1; on.queue=null; onlineQueue(d); }).catch(()=>{});
+function onlineFetch(force){ // read the stored game; force = load the position directly
+  if(!on.id) return; const id=on.id;
+  on.sb.from('games').select('*').eq('id',id).maybeSingle().then(({data})=>{
+    if(!data||on.id!==id) return;
+    const d=toDoc(fromRow(data));
+    if(force){ on.epoch=-1; on.queue=null; }
+    onlineSnap(d);
+  }).catch(()=>{});
 }
 function onlineDrain(){
   const d=on.queue; if(!d||busy) return; on.queue=null;
@@ -1829,10 +1830,12 @@ function onlineDrain(){
 }
 function onlinePush(res){
   on.moveNo++;
-  const body={fen:game.fen(),moveNo:on.moveNo,last:{from:res.from,to:res.to,promotion:res.promotion||null},
-    caps:{w:capturedBy.w.concat(res.captured&&res.color==='w'?[res.captured]:[]),b:capturedBy.b.concat(res.captured&&res.color==='b'?[res.captured]:[])}};
-  on.ref.update(body).catch(()=>onMsg('Zug konnte nicht gesendet werden. Lade die Seite neu.'));
-  if(on.named) on.named.emit('mv',Object.assign({epoch:on.epoch,white:true,black:true},body)).catch(()=>{});
+  const id=on.id;
+  api('move',{id,from:res.from,to:res.to,promotion:res.promotion||null,moveNo:on.moveNo-1}).then(r=>{
+    if(on.id!==id) return;
+    if(r.error){ onMsg(r.status===400?'Der Server hat den Zug abgelehnt.':'Zug konnte nicht gesendet werden. Lade neu …'); onlineFetch(true); return; }
+    onlineSnap(toDoc(r.game));
+  });
 }
 function onlineStatus(){
   if(mode!=='online'||!on.code) return;
@@ -1844,11 +1847,10 @@ function onlineStatus(){
   setStatus(myTurn?(game.in_check()?'Schach! Rette deinen König.':'Dein Zug, '+mine+'.'):'Gegner ist am Zug …',game.turn(),!myTurn);
 }
 function onlineResign(){
-  if(!on.ref) return;
+  if(!on.id) return;
   const loser=on.color, winner=loser==='w'?'b':'w';
   over=true; selected=null; targets=[]; clearMarkers();
-  on.ref.update({resigned:loser,resignEpoch:on.epoch}).catch(()=>onMsg('Aufgabe konnte nicht gesendet werden.'));
-  if(on.named) on.named.emit('mv',Object.assign({},on.doc||{},{resigned:loser,resignEpoch:on.epoch})).catch(()=>{});
+  api('resign',{id:on.id}).then(r=>{ if(r.error) onMsg('Aufgabe konnte nicht gesendet werden.'); else onlineSnap(toDoc(r.game)); });
   banner('Aufgegeben','Sieg für '+TEAM[winner].winner+'.',true);
   onlineStatus(); setTimeout(openModeScreen,1800);
 }
@@ -1860,13 +1862,14 @@ function checkResign(d){
   onlineStatus(); return true;
 }
 async function onlineRematch(){
-  if(!on.ref||busy) return;
-  try{ await on.ref.update({fen:new Chess().fen(),moveNo:0,last:null,caps:{w:[],b:[]},epoch:on.epoch+1,resigned:null,resignEpoch:null}); }
-  catch(e){ onMsg('Revanche konnte nicht gestartet werden.'); }
+  if(!on.id||busy) return;
+  const r=await api('rematch',{id:on.id});
+  if(r.error){ onMsg('Revanche konnte nicht gestartet werden.'); return; }
+  onlineSnap(toDoc(r.game));
 }
 $('onCreate').addEventListener('click',onlineCreate);
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&mode==='online'&&on.ref) on.ref.get().then(s=>onlineSnap(s)).catch(()=>{});
+  if(document.visibilityState==='visible'&&mode==='online'&&on.id) onlineFetch();
 });
 /* info panel: collapsible, collapsed by default on phones */
 function setCollapsed(c){

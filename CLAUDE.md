@@ -24,10 +24,18 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 - Caricature mode is on by default.
 - View: header button "View" opens camera presets (Free 3D default, Play view, Top view) plus the caricature/flag toggles. Every preset is fitted by `fitCamera()` so the whole board fits between header and info panel (camera view offset); stored in localStorage `wms-view`. The "2D pieces" toggle in that menu swaps every piece for a flat disc with the classic chess symbol in nation colours (`makeFlatPiece()`), forces the top view straight down and is stored in `wms-flat`; choosing another view turns it off.
 - Volume: one header button opens sliders for sounds and music (0-100 %, default 70 %, 0 = off), stored in localStorage `wms-vol`. All sound effects go through `sfxBus()`, music through `musicBus()`.
-- Online 1v1 moves to Supabase (free plan) with login, server-validated moves, Elo and a
-  Nations League. The Claude artifact path (`window.claude`) gets removed in that step; until then
-  the online button stays hidden on the website. Rated games: 10 min + 5 s, opponents only via
-  matchmaking. Code games between friends are unrated. Online only USA and Russia for now.
+- Online 1v1 runs on Supabase (free plan, project `uerlobtrjmgveqeoykwk`, Frankfurt), see `supabase/README.md`.
+  Phase 1 (built): anonymous guest sign-in, unrated friendly games by 4-letter code. Clients only read
+  their own rows in `games` (RLS); every write goes through the edge function `game`, which replays and
+  checks each move with chess.js 0.10.3 (same as the client) inside a row-locked transaction. Live updates
+  via Realtime postgres_changes plus a 6 s polling fallback. supabase-js is self-hosted in `vendor/` and
+  only loaded when online play is chosen. Online only USA and Russia (enforced server-side).
+- Planned next: e-mail accounts with profiles, rated games 10 min + 5 s via matchmaking only (code games stay
+  unrated), Elo (start 1200, K 40 for the first 20 games, then 20), Nations League per season: 3/1/0 points,
+  ranked by points per game, only rated games between different nations, entry via any nation purchase or a
+  small league pass, at most ~10 games per player per day count for the nation, weaker players count less,
+  suspected sandbagging silently excluded. Guests can never play rated, league or buy.
+- Login rule: playing is always free without login; an account is only needed to buy, play rated or join the league.
 - Nation colours must stay distinct: USA navy, Russia red, Europe silver-white, China gold,
   Germany anthracite, Israel sky blue, Iran green. Queens stand slightly below king height.
 
