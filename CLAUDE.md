@@ -11,8 +11,10 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 ## Structure
 - `index.html` is the whole game, one self-contained file (~4.5 MB): sounds, music, caricature
   images and sprites are embedded as base64 in `window.SFX`, `window.MUSIC`, `window.HEADS`,
-  `window.SPRITES`. Three.js r128 (cdnjs), OrbitControls (jsdelivr three@0.128.0), chess.js 0.10.3.
-- No build step. Vercel serves the file statically.
+  `window.SPRITES`. Three.js r128, OrbitControls (three@0.128.0) and chess.js 0.10.3 are self-hosted in `vendor/`,
+  fonts (Black Ops One, Barlow, Barlow Condensed) in `fonts/`. No external requests (no Google Fonts, no CDNs), keep it that way (GDPR).
+- `impressum.html`, `datenschutz.html` (+ `legal.css`): legal pages, German binding text plus English. Linked from the mode screen and the info panel. Update the privacy policy before adding accounts, payments, analytics or any third-party service.
+- No build step. Vercel serves the files statically.
 
 ## Product decisions
 - International audience: English is the default language for everyone (also German browsers); German only when the player picks it (button in the header, stored in localStorage `wms-lang`). Translations live in the small script before the main game script: exact phrases in `D`, composed sentences as regex patterns in `P`. Any new German UI text needs an English entry there.
