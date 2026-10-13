@@ -32,6 +32,20 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);overflow:hid
 .brand .vs b{font-weight:700}
 .brand .usa{color:var(--usa)} .brand .ru{color:var(--ru)}
 .controls{display:flex;gap:8px;pointer-events:auto;flex-wrap:wrap}
+.volWrap{position:relative}
+.volPop{position:absolute;top:calc(100% + 6px);left:0;z-index:30;width:240px;max-width:calc(100vw - 32px);display:grid;gap:12px;padding:14px 16px;background:rgba(20,26,24,.97);border:1px solid var(--line);border-radius:8px}
+.volPop[hidden]{display:none}
+.volPop label{display:grid;gap:6px;font-family:var(--f-label);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg)}
+.volPop .vrow{display:flex;justify-content:space-between}.volPop .vrow output{color:var(--muted)}
+.volPop input[type=range]{width:100%;accent-color:var(--sand)}
+.volPop .vhead{font-family:var(--f-label);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.volPop .vopts{display:grid;gap:6px}
+.volPop .vopts .btn{text-align:left;display:grid;gap:2px;text-transform:none;letter-spacing:.02em}
+.volPop .vopts .btn b{text-transform:uppercase;letter-spacing:.1em}
+.volPop .vopts .btn span{font-family:var(--f-body);font-weight:400;font-size:12px;color:var(--muted)}
+.volPop .vopts .btn[aria-pressed=true]{border-color:var(--sand);box-shadow:inset 3px 0 0 var(--sand)}
+.volPop .vtog{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:600px){.volPop{position:fixed;left:16px;right:16px;width:auto;max-width:none}}
 .btn,.sel{font-family:var(--f-label);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer}
 .btn:hover,.sel:hover{border-color:var(--sand)}
 .btn:focus-visible,.sel:focus-visible{outline:2px solid var(--sand);outline-offset:2px}
@@ -163,10 +177,30 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <option value="1">Leicht</option>
       <option value="2" selected>Normal</option>
     </select>
-    <button class="btn" id="sound" type="button" aria-pressed="true">Ton an</button>
-    <button class="btn" id="music" type="button" aria-pressed="true">Musik an</button>
-    <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
-    <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
+    <div class="volWrap">
+      <button class="btn" id="volBtn" type="button" aria-expanded="false" aria-controls="volPop">Lautstärke</button>
+      <div class="volPop" id="volPop" hidden>
+        <label><span class="vrow"><span>Töne</span><output id="sndVal">70 %</output></span><input type="range" id="sndVol" min="0" max="100" step="5" value="70" aria-label="Töne"></label>
+        <label><span class="vrow"><span>Musik</span><output id="musVal">70 %</output></span><input type="range" id="musVol" min="0" max="100" step="5" value="70" aria-label="Musik"></label>
+      </div>
+    </div>
+    <div class="volWrap">
+      <button class="btn" id="viewBtn" type="button" aria-expanded="false" aria-controls="viewPop">Ansicht</button>
+      <div class="volPop" id="viewPop" hidden>
+        <div class="vhead">Kamera</div>
+        <div class="vopts">
+          <button class="btn" type="button" data-view="3d" aria-pressed="false"><b>3D frei</b><span>Schräg von vorn, drehen und zoomen erlaubt</span></button>
+          <button class="btn" type="button" data-view="play" aria-pressed="false"><b>Spielansicht</b><span>Steiler Blick, ganzes Brett, feste Kamera</span></button>
+          <button class="btn" type="button" data-view="top" aria-pressed="false"><b>Draufsicht</b><span>Fast senkrecht von oben, wie klassisches Schach</span></button>
+        </div>
+        <div class="vhead">Figuren</div>
+        <div class="vtog">
+          <button class="btn" id="flatBtn" type="button" aria-pressed="false">2D-Figuren aus</button>
+          <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
+          <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
+        </div>
+      </div>
+    </div>
     <button class="btn" id="langBtn" type="button" aria-label="Language / Sprache" onclick="setLang(LANG==='en'?'de':'en')">EN · DE</button>
     <button class="btn primary" id="reset" type="button">Neues Spiel</button>
   </div>
@@ -272,17 +306,17 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script>
-/* ---------- Language: English for everyone, German when the browser is German or the player chose it ---------- */
+/* ---------- Language: English by default, German only when the player picks it ---------- */
 (function(){
   let lang=null; try{ lang=localStorage.getItem('wms-lang'); }catch(e){}
-  if(lang!=='de'&&lang!=='en') lang=String(navigator.language||'en').toLowerCase().startsWith('de')?'de':'en';
+  if(lang!=='de'&&lang!=='en') lang='en';
   window.LANG=lang; document.documentElement.lang=lang;
   window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
   const D={
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
     'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
     'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
-    'Ton an':'Sound on','Ton aus':'Sound off','Musik an':'Music on','Musik aus':'Music off',
+    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','2D-Figuren an':'2D pieces on','2D-Figuren aus':'2D pieces off','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
     'Karikaturen an':'Caricatures on','Karikaturen aus':'Caricatures off','Flaggen an':'Flags on','Flaggen aus':'Flags off',
     'Neues Spiel':'New game','Spiel erstellen':'Create game','oder':'or','Beitreten':'Join','Spielcode':'Game code',
     'Kopieren':'Copy','Verlassen':'Leave','Erstelle ein Spiel und schick den Code deinem Gegner.':'Create a game and send the code to your opponent.',
@@ -799,7 +833,34 @@ function applyFlagLook(g,color){
     if(hx===team.body||hx===team.suit) o.material=flagMat(team.key,hx);
   });
 }
+/* 2D pieces for the top view: flat discs with the classic chess symbol in the nation's colours */
+let flat2d=false; try{ flat2d=localStorage.getItem('wms-flat')==='1'; }catch(e){}
+const FLAT_GLYPH={k:'\u265A',q:'\u265B',r:'\u265C',b:'\u265D',n:'\u265E',p:'\u265F'}, flatTex={};
+function hexCss(h){ return '#'+h.toString(16).padStart(6,'0'); }
+function makeFlatPiece(type,color){
+  const team=TEAM[color], key=team.key+type+color;
+  let tex=flatTex[key];
+  if(!tex){
+    const c=document.createElement('canvas'); c.width=c.height=256; const x=c.getContext('2d');
+    const lum=(((team.body>>16)&255)*.3+((team.body>>8)&255)*.59+(team.body&255)*.11)/255;
+    x.beginPath(); x.arc(128,128,122,0,Math.PI*2); x.fillStyle=hexCss(team.accent); x.fill();
+    x.beginPath(); x.arc(128,128,108,0,Math.PI*2); x.fillStyle=hexCss(team.body); x.fill();
+    x.font='190px "Segoe UI Symbol","Noto Sans Symbols 2","Apple Symbols","DejaVu Sans",serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.lineWidth=10; x.strokeStyle=lum>.6?'#f4f1e8':'#111'; x.fillStyle=lum>.6?'#15151a':'#fbf8ef';
+    const gl=FLAT_GLYPH[type]+'\uFE0E'; // text style, never the emoji version of the pawn
+    x.strokeText(gl,128,146); x.fillText(gl,128,146);
+    tex=flatTex[key]=new T.CanvasTexture(c); tex.encoding=T.sRGBEncoding; tex.anisotropy=4;
+  }
+  const g=new T.Group();
+  const disc=new T.Mesh(new T.CircleGeometry(.44,40), new T.MeshBasicMaterial({map:tex,transparent:true}));
+  disc.rotation.x=-Math.PI/2; disc.position.y=.03; g.add(disc);
+  g.userData={type,color,phase:0,flat:disc};
+  disc.userData.owner=g;
+  return g;
+}
 function makePiece(type,color){
+  if(flat2d) return makeFlatPiece(type,color);
   const team=TEAM[color], dir=color==='w'?-1:1;
   if(type==='q') return makeQueen(color);
   const sdef=window.SPRITES&&window.SPRITES[type+color];
@@ -977,6 +1038,13 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* ---------- Sound ---------- */
 let actx=null, soundOn=true;
+/* Volume: sounds and music each 0-100 %, saved per device; 0 switches that part off */
+const vol={s:70,m:70};
+try{ const v=JSON.parse(localStorage.getItem('wms-vol')||'null'); if(v){ if(v.s>=0&&v.s<=100) vol.s=v.s; if(v.m>=0&&v.m<=100) vol.m=v.m; } }catch(e){}
+soundOn=vol.s>0;
+let sfxOut=null, musicOut=null;
+function sfxBus(){ if(!sfxOut){ sfxOut=actx.createGain(); sfxOut.gain.value=vol.s/100; sfxOut.connect(actx.destination); } return sfxOut; }
+function musicBus(){ if(!musicOut){ musicOut=actx.createGain(); musicOut.gain.value=vol.m/100; musicOut.connect(actx.destination); } return musicOut; }
 const samples={};
 function loadSamples(){
   const src=window.SFX||{};
@@ -991,10 +1059,10 @@ function loadSamples(){
 function playSample(k,vol){
   const buf=samples[k]; if(!buf) return false;
   const s=actx.createBufferSource(), g=actx.createGain(); s.buffer=buf; g.gain.value=vol;
-  s.connect(g); g.connect(actx.destination); s.start(); return true;
+  s.connect(g); g.connect(sfxBus()); s.start(); return true;
 }
 /* Background music: seamless loop, own on/off switch, starts on first tap (browsers block autoplay) */
-let musicOn=true, musicBuf=null, musicSrc=null, musicGain=null, musicLoading=false;
+let musicOn=vol.m>0, musicBuf=null, musicSrc=null, musicGain=null, musicLoading=false;
 function loadMusic(){
   if(musicLoading||!window.MUSIC) return; musicLoading=true;
   try{
@@ -1008,7 +1076,7 @@ function startMusic(){
   musicGain=actx.createGain(); musicGain.gain.setValueAtTime(0,actx.currentTime);
   musicGain.gain.linearRampToValueAtTime(.32,actx.currentTime+1.5);
   musicSrc=actx.createBufferSource(); musicSrc.buffer=musicBuf; musicSrc.loop=true;
-  musicSrc.connect(musicGain); musicGain.connect(actx.destination); musicSrc.start();
+  musicSrc.connect(musicGain); musicGain.connect(musicBus()); musicSrc.start();
 }
 function stopMusic(){
   if(!musicSrc) return;
@@ -1033,13 +1101,13 @@ function boom(big){
   const src=actx.createBufferSource(); src.buffer=buf;
   const f=actx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=big?500:900;
   const g=actx.createGain(); g.gain.value=big?1.1:.8;
-  src.connect(f); f.connect(g); g.connect(actx.destination); src.start();
+  src.connect(f); f.connect(g); g.connect(sfxBus()); src.start();
 }
 function blip(freq){
   if(!soundOn||!actx) return;
   const o=actx.createOscillator(), g=actx.createGain(); o.type='square'; o.frequency.value=freq;
   g.gain.setValueAtTime(.05,actx.currentTime); g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+.12);
-  o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+.13);
+  o.connect(g); g.connect(sfxBus()); o.start(); o.stop(actx.currentTime+.13);
 }
 
 /* ---------- UI ---------- */
@@ -1177,7 +1245,7 @@ function sfxNoise(t0,dur,type,freq,gain,q){
   const s=actx.createBufferSource(); s.buffer=buf;
   const f=actx.createBiquadFilter(); f.type=type; f.frequency.value=freq; if(q) f.Q.value=q;
   const g=actx.createGain(); g.gain.value=gain;
-  s.connect(f); f.connect(g); g.connect(actx.destination); s.start(t0);
+  s.connect(f); f.connect(g); g.connect(sfxBus()); s.start(t0);
   return {f,g};
 }
 function sfxTone(t0,dur,type,f0,f1,gain,f2){
@@ -1186,7 +1254,7 @@ function sfxTone(t0,dur,type,f0,f1,gain,f2){
   if(f2){ o.frequency.linearRampToValueAtTime(f1,t0+dur*.5); o.frequency.linearRampToValueAtTime(f2,t0+dur); }
   else o.frequency.exponentialRampToValueAtTime(Math.max(f1,1),t0+dur);
   g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(gain,t0+Math.min(.05,dur*.2)); g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
-  o.connect(g); g.connect(actx.destination); o.start(t0); o.stop(t0+dur+.02);
+  o.connect(g); g.connect(sfxBus()); o.start(t0); o.stop(t0+dur+.02);
   return o;
 }
 function vehicleSound(type){
@@ -1196,7 +1264,7 @@ function vehicleSound(type){
   if(type==='p'){ // marching boots
     for(let i=0;i<4;i++) sfxNoise(t+i*.12,.05,'lowpass',700,.45);
   } else if(type==='r'){ // diesel rumble + track clank
-    const f=actx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=240; f.connect(actx.destination);
+    const f=actx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=240; f.connect(sfxBus());
     for(const hz of [38,41]){
       const o=actx.createOscillator(), g=actx.createGain(); o.type='sawtooth';
       o.frequency.setValueAtTime(hz,t); o.frequency.linearRampToValueAtTime(hz*1.4,t+.25); o.frequency.linearRampToValueAtTime(hz,t+.6);
@@ -1588,11 +1656,30 @@ function chooseMode(m){
   else openPicker(applyColor);
 }
 $('reset').addEventListener('click',newGame);
-$('music').addEventListener('click',e=>{
-  musicOn=!musicOn; e.currentTarget.textContent=musicOn?'Musik an':'Musik aus';
-  e.currentTarget.setAttribute('aria-pressed',String(musicOn));
-  ensureAudio(); if(musicOn) startMusic(); else stopMusic();
-});
+function applyVolume(){
+  try{ localStorage.setItem('wms-vol',JSON.stringify(vol)); }catch(e){}
+  $('sndVal').textContent=vol.s+' %'; $('musVal').textContent=vol.m+' %';
+  soundOn=vol.s>0; ensureAudio(); if(!actx) return;
+  const t=actx.currentTime;
+  sfxBus().gain.setTargetAtTime(vol.s/100,t,.03); musicBus().gain.setTargetAtTime(vol.m/100,t,.03);
+  if(vol.m>0&&!musicOn){ musicOn=true; startMusic(); } else if(vol.m===0&&musicOn){ musicOn=false; stopMusic(); }
+}
+$('sndVol').value=vol.s; $('musVol').value=vol.m; $('sndVal').textContent=vol.s+' %'; $('musVal').textContent=vol.m+' %';
+$('sndVol').addEventListener('input',e=>{ vol.s=+e.target.value; applyVolume(); });
+$('sndVol').addEventListener('change',()=>{ if(vol.s>0) playSample('p',.8); }); // short preview after letting go
+$('musVol').addEventListener('input',e=>{ vol.m=+e.target.value; applyVolume(); });
+/* header pop-up menus (volume, view): one open at a time, close on outside tap or Escape */
+const POPS=[['volBtn','volPop'],['viewBtn','viewPop']];
+function setPop(id,o){
+  POPS.forEach(([b,p])=>{
+    const open=o&&p===id;
+    if(open) $(p).style.top=matchMedia('(max-width:600px)').matches?($(b).getBoundingClientRect().bottom+6)+'px':'';
+    $(p).hidden=!open; $(b).setAttribute('aria-expanded',String(open));
+  });
+}
+POPS.forEach(([b,p])=>$(b).addEventListener('click',()=>setPop(p,$(p).hidden)));
+document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.volWrap')) setPop(null,false); });
+document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; const o=POPS.find(([,p])=>!$(p).hidden); if(o){ setPop(null,false); $(o[0]).focus(); } });
 document.addEventListener('pointerdown',()=>ensureAudio(),{once:true});
 $('heads').addEventListener('click',e=>{
   if(busy) return;
@@ -1782,9 +1869,10 @@ document.addEventListener('visibilitychange',()=>{
 function setCollapsed(c){
   document.querySelector('.console').classList.toggle('collapsed',c);
   $('statusBar').setAttribute('aria-expanded',String(!c));
+  if(typeof refit==='function') setTimeout(refit,30);
 }
 $('statusBar').addEventListener('click',()=>setCollapsed(!document.querySelector('.console').classList.contains('collapsed')));
-if(matchMedia('(max-width:600px)').matches) setCollapsed(true);
+if(matchMedia('(max-width:600px), (max-height:500px)').matches) setCollapsed(true); // phones, also held sideways
 $('onJoin').addEventListener('click',onlineJoin);
 $('onCode').addEventListener('keydown',e=>{ if(e.key==='Enter') onlineJoin(); });
 $('onLeave').addEventListener('click',()=>{ onlineLeave(); resetBoard(); onMsg('Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.'); });
@@ -1809,19 +1897,78 @@ function swingTo(color){
     camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(sph));
   }).then(()=>camSwinging=false);
 }
-$('sound').addEventListener('click',e=>{ soundOn=!soundOn; e.currentTarget.textContent=soundOn?'Ton an':'Ton aus'; e.currentTarget.setAttribute('aria-pressed',String(soundOn)); ensureAudio(); });
 
 /* ---------- Loop ---------- */
 function resize(){
   const w=stage.clientWidth, h=stage.clientHeight; renderer.setSize(w,h,false);
   camera.aspect=w/h; camera.updateProjectionMatrix();
 }
-function placeCamera(){
-  const a=stage.clientWidth/stage.clientHeight;
-  const d=a<.7?17:a<1.1?14:11.5;
-  camera.position.set(0,d*.78,d*.72);
+/* View presets. Every preset is fitted so the whole board fits between header and info panel */
+const VIEWS={ '3d':{phi:.745,free:true}, play:{phi:.42}, top:{phi:.12} };
+let view='3d';
+try{ const v=localStorage.getItem('wms-view'); if(VIEWS[v]) view=v; }catch(e){}
+if(flat2d) view='top';
+const viewPhi=()=>view==='top'&&flat2d?.001:VIEWS[view].phi;
+const FIT_PTS=[];
+for(const x of [-4.65,4.65]) for(const z of [-4.65,4.65]) FIT_PTS.push(new T.Vector3(x,-.1,z));
+for(const x of [-3.5,3.5]) for(const z of [-3.5,3.5]) FIT_PTS.push(new T.Vector3(x,1.35,z)); // tall back-rank pieces
+const fitP=new T.Vector3();
+function overlayPx(sel,edge){ // how far an overlay reaches into the screen; 0 when it is hidden
+  const el=document.querySelector(sel); if(!el) return 0;
+  const r=el.getBoundingClientRect(); if(!r.height||getComputedStyle(el).display==='none') return 0;
+  return edge==='top'?r.bottom:stage.clientHeight-r.top;
 }
+function fitCamera(phi){
+  const w=stage.clientWidth, h=stage.clientHeight; if(!w||!h) return;
+  const top=overlayPx('.top','top')+8, bot=overlayPx('.console','bottom')+8, side=10;
+  // shift the picture so the board centre sits in the middle of the free area
+  camera.setViewOffset(w,h,0,-(top-bot)/2,w,h); camera.updateProjectionMatrix();
+  const yt=1-2*top/h, yb=-1+2*bot/h, xm=1-2*side/w;
+  const rel=camera.position.clone().sub(controls.target); sph.setFromVector3(rel);
+  const theta=rel.length()<1?0:sph.theta; // first call: camera not placed yet, look from white's side
+  const fits=d=>{
+    camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(sph.set(d,phi,theta)));
+    camera.lookAt(controls.target); camera.updateMatrixWorld();
+    return FIT_PTS.every(p=>{ fitP.copy(p).project(camera); return Math.abs(fitP.x)<=xm&&fitP.y<=yt&&fitP.y>=yb; });
+  };
+  let lo=3, hi=80; for(let i=0;i<26;i++){ const m=(lo+hi)/2; if(fits(m)) hi=m; else lo=m; }
+  fits(hi);
+  controls.minDistance=Math.min(7,hi*.6); controls.maxDistance=Math.max(24,hi*1.4);
+  try{ wake(600); }catch(e){} // not defined yet on the very first call
+}
+function setView(v){
+  view=VIEWS[v]?v:'3d';
+  try{ localStorage.setItem('wms-view',view); }catch(e){}
+  const free=!!VIEWS[view].free;
+  controls.enableRotate=free; controls.enableZoom=free;
+  document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
+  $('flatBtn').setAttribute('aria-pressed',String(flat2d)); $('flatBtn').textContent=flat2d?'2D-Figuren an':'2D-Figuren aus';
+  // snap to the side we are looking from (white or black), then fit
+  const rel=camera.position.clone().sub(controls.target);
+  const fromBlack=rel.length()>=1&&rel.z<0;
+  controls.target.set(0,0,.3); camera.position.set(0,5,fromBlack?-5:5);
+  fitCamera(viewPhi());
+}
+function placeCamera(){ setView(view); }
+function refit(){ // after resize or when the info panel opens/closes: keep the angle, fit again
+  if(jailView||camSwinging) return;
+  if(VIEWS[view].free){ sph.setFromVector3(camera.position.clone().sub(controls.target)); fitCamera(sph.phi); }
+  else fitCamera(viewPhi());
+}
+function setFlat(f){
+  if(f===flat2d) return;
+  flat2d=f; try{ localStorage.setItem('wms-flat',f?'1':'0'); }catch(e){}
+  selected=null; targets=[]; clearMarkers(); setupPieces();
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{
+  if(busy) { setView(b.dataset.view); return; }
+  if(b.dataset.view!=='top') setFlat(false); // 2D pieces only make sense from straight above
+  setView(b.dataset.view);
+}));
+$('flatBtn').addEventListener('click',()=>{ if(busy) return; setFlat(!flat2d); setView(flat2d?'top':view); });
 window.addEventListener('resize',resize);
+window.addEventListener('resize',()=>setTimeout(refit,50));
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(refit,50)); // header height changes once web fonts arrive
 resize(); placeCamera(); setupPieces(); setStatus('Wähle einen Spielmodus.','w'); openModeScreen();
 
 const clock=new T.Clock(); const camPos=new T.Vector3(), headPos=new T.Vector3();
@@ -1865,6 +2012,7 @@ function loop(){
       if(i!==s.last){ s.last=i; s.tex.offset.set((i%s.def.cols)/s.def.cols, 1-(Math.floor(i/s.def.cols)+1)/s.def.rows); }
     }
     if(u.tears){ const r=.25; u.tears.forEach(d=>{ const k=((t+d.userData.off)%0.9)/0.9; d.position.set(d.userData.side*r*.36,r*.05-k*.32,r*.85+k*.05); d.material.opacity=.9*(1-k); }); }
+    if(u.flat) u.flat.rotation.z=camPos.z<controls.target.z?Math.PI:0;
     if(u.float) u.float.position.y=u.floatY+Math.sin(t*2+u.phase)*.035;
     if(u.rotors) u.rotors.forEach(r=>r.rotation.y+=dt*30);
   }
