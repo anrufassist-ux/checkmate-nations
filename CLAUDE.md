@@ -16,11 +16,14 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 
 ## Product decisions
 - International audience: English is the default language; German when the browser is German or the player picks it (button in the header, stored in localStorage `wms-lang`). Translations live in the small script before the main game script: exact phrases in `D`, composed sentences as regex patterns in `P`. Any new German UI text needs an English entry there.
-- USA vs Russia is free. Every other nation is paid (purchase is simulated for now, unlocks in
-  localStorage `wms-unlocked`). Planned pricing: bundle of 3 nations 2.99 EUR, all nations 4.99 EUR.
+- USA vs Russia is free. Every other nation is paid and locked ("coming soon") until a real checkout
+  exists; ownership will then live server-side per account, never in localStorage. Planned pricing:
+  bundle of 3 nations 2.99 EUR, all nations 4.99 EUR.
 - Caricature mode is on by default.
-- Online 1v1 only works inside the Claude artifact runtime (`window.claude`); on the website the
-  button is hidden until a real backend (e.g. Supabase) with login and ranking exists.
+- Online 1v1 moves to Supabase (free plan) with login, server-validated moves, Elo and a
+  Nations League. The Claude artifact path (`window.claude`) gets removed in that step; until then
+  the online button stays hidden on the website. Rated games: 10 min + 5 s, opponents only via
+  matchmaking. Code games between friends are unrated. Online only USA and Russia for now.
 - Nation colours must stay distinct: USA navy, Russia red, Europe silver-white, China gold,
   Germany anthracite, Israel sky blue, Iran green. Queens stand slightly below king height.
 

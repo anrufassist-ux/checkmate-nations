@@ -203,7 +203,6 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <span><b>Dame</b> · Bobblehead-Slot</span>
       <span><b>König</b> · Bobblehead-Slot</span>
     </div>
-    <p class="note"><button class="pickBack" id="resetBuys" type="button" style="padding:0">Test-Käufe zurücksetzen</button></p>
     <p class="note">Tipp: Auf die Statuszeile tippen klappt dieses Feld ein und aus. Rochade: König antippen, dann den blau markierten Panzer oder das blaue Zielfeld. Modus „Zwei Spieler“: Ihr wechselt euch am selben Gerät ab, die Kamera dreht sich nach jedem Zug zur Seite, die dran ist. Die Köpfe von König und Dame sind Platzhalter. Dort kommen später die Karikaturen hinein. Schlagen: Figur antippen, dann Ziel. Ziehen mit einem Finger dreht die Kamera.</p>
   </details>
 </div>
@@ -249,9 +248,8 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     <h2 id="buyTitle">China freischalten</h2>
     <p class="pickSub">Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen.</p>
     <div class="price" id="buyPrice">0,99 €</div>
-    <button class="btn primary buyBtn" id="buyOk" type="button">Kaufen</button>
-    <button class="pickBack" id="buyCancel" type="button">Abbrechen</button>
-    <p class="testNote">Testversion: Hier öffnet die fertige App den Kauf im App Store oder bei Google Play. Jetzt wird nichts berechnet, das Land wird nur auf diesem Gerät freigeschaltet.</p>
+    <p class="testNote">Bald verfügbar. Der Kauf ist noch nicht freigeschaltet, bis dahin spielst du USA gegen Russland.</p>
+    <button class="btn primary buyBtn" id="buyCancel" type="button">OK</button>
   </div>
 </div>
 
@@ -302,7 +300,6 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Wenn du jetzt ein neues Spiel startest, verlierst du diese Partie. Dein Gegner gewinnt und du bekommst keine Punkte.':'If you start a new game now, you lose this game. Your opponent wins and you get no points.',
     'Aufgeben':'Resign','Neues Land':'New country','Kaufen':'Buy','Abbrechen':'Cancel',
     'Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen.':'Its own pieces, its own queen, its own flag pattern. Buy once, play forever.',
-    'Testversion: Hier öffnet die fertige App den Kauf im App Store oder bei Google Play. Jetzt wird nichts berechnet, das Land wird nur auf diesem Gerät freigeschaltet.':'Test version: the finished game opens the real checkout here. Nothing is charged now; the country is only unlocked on this device.',
     'Ab ins Gefängnis!':'Off to jail!','Spielmodus':'Game mode','Spielstärke':'Difficulty','Der besiegte König':'The defeated king',
     'BUMM!':'BOOM!','KRACH!':'CRASH!','ZACK!':'ZAP!','WUMMS!':'WHAM!','PENG!':'BANG!',
     'Rochade!':'Castling!','Kurze Rochade: König in Sicherheit.':'Short castling: king in safety.','Lange Rochade: König in Sicherheit.':'Long castling: king in safety.',
@@ -312,7 +309,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Diese Figur kann gerade nicht ziehen.':'This piece cannot move right now.','Neues Online-Spiel':'New online game','Du ziehst zuerst.':'You move first.',
     'Gegen wen spielst du?':'Who do you play against?','Land für Spieler 2':'Country for player 2','Land für deinen Gegner':'Country for your opponent',
     'Dieses Land spielt die KI.':'The AI plays this country.','Spieler 2 zieht als Zweites.':'Player 2 moves second.','Dein Gegner bekommt dieses Land.':'Your opponent gets this country.',
-    'schon gewählt':'already taken','spielbereit':'ready to play','freischalten':'unlock','Verbinde …':'Connecting …',
+    'schon gewählt':'already taken','spielbereit':'ready to play','freischalten':'unlock','bald verfügbar':'coming soon','Bald verfügbar. Der Kauf ist noch nicht freigeschaltet, bis dahin spielst du USA gegen Russland.':'Coming soon. Purchases are not open yet, until then you play USA vs Russia.','Verbinde …':'Connecting …',
     'Online-Spiel ist hier nicht verfügbar. Du musst angemeldet sein und das Spiel muss mit dir mit Mitwirkenden-Rechten geteilt sein.':'Online play is not available here.',
     'Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.':'Create a game and send the code to your opponent, or enter their code.',
     'Online: Spiel erstellen oder beitreten.':'Online: create or join a game.','Spiel konnte nicht erstellt werden. Hast du Mitwirkenden-Rechte?':'Could not create the game.',
@@ -397,10 +394,7 @@ function setNations(w,b){
   sideNation.w=w; sideNation.b=b; TEAM.w=NATIONS[w]; TEAM.b=NATIONS[b];
   try{ updateNationUI(); }catch(e){}
 }
-let unlocked={};
-try{ unlocked=JSON.parse(localStorage.getItem('wms-unlocked')||'{}')||{}; }catch(e){}
-function isOwned(k){ return !NATIONS[k].price||!!unlocked[k]; }
-function saveUnlocks(){ try{ localStorage.setItem('wms-unlocked',JSON.stringify(unlocked)); }catch(e){} }
+function isOwned(k){ return !NATIONS[k].price; } // paid nations stay locked until real checkout exists
 const SKIN = 0xe3b48d;
 let caricatures=true; // caricature heads for the kings (USA, Russland), on by default
 
@@ -1505,7 +1499,7 @@ function renderPickButtons(taken,onChoose){
     if(n.key===taken) b.classList.add('taken');
     b.innerHTML=flagHTML(n.key)+'<span class="pn"></span><span class="ps"></span>'+(isOwned(n.key)?'':'<span class="lockPill">'+LOCK+n.price+'</span>');
     b.querySelector('.pn').textContent=n.name; b.querySelector('.pn').style.color=n.css;
-    b.querySelector('.ps').textContent=n.key===taken?'schon gewählt':isOwned(n.key)?'spielbereit':'freischalten';
+    b.querySelector('.ps').textContent=n.key===taken?'schon gewählt':isOwned(n.key)?'spielbereit':'bald verfügbar';
     b.onclick=()=>{ if(!isOwned(n.key)){ openBuy(n.key,()=>renderPickButtons(taken,onChoose)); return; } onChoose(n.key); };
     row.appendChild(b);
   });
@@ -1534,9 +1528,8 @@ function openBuy(k,after){
   const n=NATIONS[k];
   $('buyTitle').textContent=n.name+' freischalten'; $('buyPrice').textContent=n.price; $('buyFlag').innerHTML=flagHTML(k);
   $('buy').hidden=false;
-  $('buyOk').onclick=()=>{ unlocked[k]=true; saveUnlocks(); $('buy').hidden=true; after(); };
   $('buyCancel').onclick=()=>{ $('buy').hidden=true; };
-  setTimeout(()=>$('buyOk').focus(),50);
+  setTimeout(()=>$('buyCancel').focus(),50);
 }
 function updateNationUI(){
   const r=document.documentElement.style;
@@ -1608,7 +1601,6 @@ $('heads').addEventListener('click',e=>{
   e.currentTarget.setAttribute('aria-pressed',String(caricatures));
   selected=null; targets=[]; clearMarkers(); setupPieces();
 });
-$('resetBuys').addEventListener('click',()=>{ unlocked={}; saveUnlocks(); $('resetBuys').textContent='Zurückgesetzt'; });
 $('flags').addEventListener('click',e=>{
   if(busy) return;
   flagLook=!flagLook;
