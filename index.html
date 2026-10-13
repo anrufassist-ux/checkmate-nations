@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Weltmacht Schach</title>
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
@@ -448,6 +453,8 @@ stage.appendChild(renderer.domElement);
 const scene = new T.Scene();
 scene.background = new T.Color(0x0d1110);
 scene.fog = new T.Fog(0x0d1110, 16, 40);
+// the fog only hides the far floor: it follows the camera distance so the board itself never turns grey
+function fogToCamera(){ const d=camera.position.distanceTo(controls.target); scene.fog.near=d+4; scene.fog.far=d+30; };
 
 const camera = new T.PerspectiveCamera(42, 1, .1, 100);
 const controls = new T.OrbitControls(camera, renderer.domElement);
@@ -1940,6 +1947,7 @@ function fitCamera(phi){
   let lo=3, hi=80; for(let i=0;i<26;i++){ const m=(lo+hi)/2; if(fits(m)) hi=m; else lo=m; }
   fits(hi);
   controls.minDistance=Math.min(7,hi*.6); controls.maxDistance=Math.max(24,hi*1.4);
+  fogToCamera();
   try{ wake(600); }catch(e){} // not defined yet on the very first call
 }
 function setView(v){
@@ -1982,7 +1990,7 @@ let activeUntil=performance.now()+2000, lastRender=0;
 function wake(ms){ activeUntil=Math.max(activeUntil,performance.now()+(ms||1500)); }
 renderer.domElement.addEventListener('pointerdown',()=>wake(2500));
 renderer.domElement.addEventListener('pointermove',()=>wake(800));
-controls.addEventListener('change',()=>wake(600));
+controls.addEventListener('change',()=>{ wake(600); fogToCamera(); });
 window.addEventListener('resize',()=>wake(1000));
 function loop(){
   requestAnimationFrame(loop);
