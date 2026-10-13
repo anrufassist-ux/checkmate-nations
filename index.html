@@ -32,6 +32,13 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);overflow:hid
 .brand .vs b{font-weight:700}
 .brand .usa{color:var(--usa)} .brand .ru{color:var(--ru)}
 .controls{display:flex;gap:8px;pointer-events:auto;flex-wrap:wrap}
+.volWrap{position:relative}
+.volPop{position:absolute;top:calc(100% + 6px);left:0;z-index:30;width:240px;max-width:calc(100vw - 32px);display:grid;gap:12px;padding:14px 16px;background:rgba(20,26,24,.97);border:1px solid var(--line);border-radius:8px}
+.volPop[hidden]{display:none}
+.volPop label{display:grid;gap:6px;font-family:var(--f-label);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg)}
+.volPop .vrow{display:flex;justify-content:space-between}.volPop .vrow output{color:var(--muted)}
+.volPop input[type=range]{width:100%;accent-color:var(--sand)}
+@media (max-width:600px){.volPop{position:fixed;left:16px;right:16px;width:auto;max-width:none}}
 .btn,.sel{font-family:var(--f-label);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer}
 .btn:hover,.sel:hover{border-color:var(--sand)}
 .btn:focus-visible,.sel:focus-visible{outline:2px solid var(--sand);outline-offset:2px}
@@ -163,8 +170,13 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <option value="1">Leicht</option>
       <option value="2" selected>Normal</option>
     </select>
-    <button class="btn" id="sound" type="button" aria-pressed="true">Ton an</button>
-    <button class="btn" id="music" type="button" aria-pressed="true">Musik an</button>
+    <div class="volWrap">
+      <button class="btn" id="volBtn" type="button" aria-expanded="false" aria-controls="volPop">Lautstärke</button>
+      <div class="volPop" id="volPop" hidden>
+        <label><span class="vrow"><span>Töne</span><output id="sndVal">70 %</output></span><input type="range" id="sndVol" min="0" max="100" step="5" value="70" aria-label="Töne"></label>
+        <label><span class="vrow"><span>Musik</span><output id="musVal">70 %</output></span><input type="range" id="musVol" min="0" max="100" step="5" value="70" aria-label="Musik"></label>
+      </div>
+    </div>
     <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
     <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
     <button class="btn" id="langBtn" type="button" aria-label="Language / Sprache" onclick="setLang(LANG==='en'?'de':'en')">EN · DE</button>
@@ -272,17 +284,17 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script>
-/* ---------- Language: English for everyone, German when the browser is German or the player chose it ---------- */
+/* ---------- Language: English by default, German only when the player picks it ---------- */
 (function(){
   let lang=null; try{ lang=localStorage.getItem('wms-lang'); }catch(e){}
-  if(lang!=='de'&&lang!=='en') lang=String(navigator.language||'en').toLowerCase().startsWith('de')?'de':'en';
+  if(lang!=='de'&&lang!=='en') lang='en';
   window.LANG=lang; document.documentElement.lang=lang;
   window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
   const D={
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
     'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
     'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
-    'Ton an':'Sound on','Ton aus':'Sound off','Musik an':'Music on','Musik aus':'Music off',
+    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music',
     'Karikaturen an':'Caricatures on','Karikaturen aus':'Caricatures off','Flaggen an':'Flags on','Flaggen aus':'Flags off',
     'Neues Spiel':'New game','Spiel erstellen':'Create game','oder':'or','Beitreten':'Join','Spielcode':'Game code',
     'Kopieren':'Copy','Verlassen':'Leave','Erstelle ein Spiel und schick den Code deinem Gegner.':'Create a game and send the code to your opponent.',
@@ -977,6 +989,13 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* ---------- Sound ---------- */
 let actx=null, soundOn=true;
+/* Volume: sounds and music each 0-100 %, saved per device; 0 switches that part off */
+const vol={s:70,m:70};
+try{ const v=JSON.parse(localStorage.getItem('wms-vol')||'null'); if(v){ if(v.s>=0&&v.s<=100) vol.s=v.s; if(v.m>=0&&v.m<=100) vol.m=v.m; } }catch(e){}
+soundOn=vol.s>0;
+let sfxOut=null, musicOut=null;
+function sfxBus(){ if(!sfxOut){ sfxOut=actx.createGain(); sfxOut.gain.value=vol.s/100; sfxOut.connect(actx.destination); } return sfxOut; }
+function musicBus(){ if(!musicOut){ musicOut=actx.createGain(); musicOut.gain.value=vol.m/100; musicOut.connect(actx.destination); } return musicOut; }
 const samples={};
 function loadSamples(){
   const src=window.SFX||{};
@@ -991,10 +1010,10 @@ function loadSamples(){
 function playSample(k,vol){
   const buf=samples[k]; if(!buf) return false;
   const s=actx.createBufferSource(), g=actx.createGain(); s.buffer=buf; g.gain.value=vol;
-  s.connect(g); g.connect(actx.destination); s.start(); return true;
+  s.connect(g); g.connect(sfxBus()); s.start(); return true;
 }
 /* Background music: seamless loop, own on/off switch, starts on first tap (browsers block autoplay) */
-let musicOn=true, musicBuf=null, musicSrc=null, musicGain=null, musicLoading=false;
+let musicOn=vol.m>0, musicBuf=null, musicSrc=null, musicGain=null, musicLoading=false;
 function loadMusic(){
   if(musicLoading||!window.MUSIC) return; musicLoading=true;
   try{
@@ -1008,7 +1027,7 @@ function startMusic(){
   musicGain=actx.createGain(); musicGain.gain.setValueAtTime(0,actx.currentTime);
   musicGain.gain.linearRampToValueAtTime(.32,actx.currentTime+1.5);
   musicSrc=actx.createBufferSource(); musicSrc.buffer=musicBuf; musicSrc.loop=true;
-  musicSrc.connect(musicGain); musicGain.connect(actx.destination); musicSrc.start();
+  musicSrc.connect(musicGain); musicGain.connect(musicBus()); musicSrc.start();
 }
 function stopMusic(){
   if(!musicSrc) return;
@@ -1033,13 +1052,13 @@ function boom(big){
   const src=actx.createBufferSource(); src.buffer=buf;
   const f=actx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=big?500:900;
   const g=actx.createGain(); g.gain.value=big?1.1:.8;
-  src.connect(f); f.connect(g); g.connect(actx.destination); src.start();
+  src.connect(f); f.connect(g); g.connect(sfxBus()); src.start();
 }
 function blip(freq){
   if(!soundOn||!actx) return;
   const o=actx.createOscillator(), g=actx.createGain(); o.type='square'; o.frequency.value=freq;
   g.gain.setValueAtTime(.05,actx.currentTime); g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+.12);
-  o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+.13);
+  o.connect(g); g.connect(sfxBus()); o.start(); o.stop(actx.currentTime+.13);
 }
 
 /* ---------- UI ---------- */
@@ -1177,7 +1196,7 @@ function sfxNoise(t0,dur,type,freq,gain,q){
   const s=actx.createBufferSource(); s.buffer=buf;
   const f=actx.createBiquadFilter(); f.type=type; f.frequency.value=freq; if(q) f.Q.value=q;
   const g=actx.createGain(); g.gain.value=gain;
-  s.connect(f); f.connect(g); g.connect(actx.destination); s.start(t0);
+  s.connect(f); f.connect(g); g.connect(sfxBus()); s.start(t0);
   return {f,g};
 }
 function sfxTone(t0,dur,type,f0,f1,gain,f2){
@@ -1186,7 +1205,7 @@ function sfxTone(t0,dur,type,f0,f1,gain,f2){
   if(f2){ o.frequency.linearRampToValueAtTime(f1,t0+dur*.5); o.frequency.linearRampToValueAtTime(f2,t0+dur); }
   else o.frequency.exponentialRampToValueAtTime(Math.max(f1,1),t0+dur);
   g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(gain,t0+Math.min(.05,dur*.2)); g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
-  o.connect(g); g.connect(actx.destination); o.start(t0); o.stop(t0+dur+.02);
+  o.connect(g); g.connect(sfxBus()); o.start(t0); o.stop(t0+dur+.02);
   return o;
 }
 function vehicleSound(type){
@@ -1196,7 +1215,7 @@ function vehicleSound(type){
   if(type==='p'){ // marching boots
     for(let i=0;i<4;i++) sfxNoise(t+i*.12,.05,'lowpass',700,.45);
   } else if(type==='r'){ // diesel rumble + track clank
-    const f=actx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=240; f.connect(actx.destination);
+    const f=actx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=240; f.connect(sfxBus());
     for(const hz of [38,41]){
       const o=actx.createOscillator(), g=actx.createGain(); o.type='sawtooth';
       o.frequency.setValueAtTime(hz,t); o.frequency.linearRampToValueAtTime(hz*1.4,t+.25); o.frequency.linearRampToValueAtTime(hz,t+.6);
@@ -1588,11 +1607,24 @@ function chooseMode(m){
   else openPicker(applyColor);
 }
 $('reset').addEventListener('click',newGame);
-$('music').addEventListener('click',e=>{
-  musicOn=!musicOn; e.currentTarget.textContent=musicOn?'Musik an':'Musik aus';
-  e.currentTarget.setAttribute('aria-pressed',String(musicOn));
-  ensureAudio(); if(musicOn) startMusic(); else stopMusic();
-});
+function applyVolume(){
+  try{ localStorage.setItem('wms-vol',JSON.stringify(vol)); }catch(e){}
+  $('sndVal').textContent=vol.s+' %'; $('musVal').textContent=vol.m+' %';
+  soundOn=vol.s>0; ensureAudio(); if(!actx) return;
+  const t=actx.currentTime;
+  sfxBus().gain.setTargetAtTime(vol.s/100,t,.03); musicBus().gain.setTargetAtTime(vol.m/100,t,.03);
+  if(vol.m>0&&!musicOn){ musicOn=true; startMusic(); } else if(vol.m===0&&musicOn){ musicOn=false; stopMusic(); }
+}
+$('sndVol').value=vol.s; $('musVol').value=vol.m; $('sndVal').textContent=vol.s+' %'; $('musVal').textContent=vol.m+' %';
+$('sndVol').addEventListener('input',e=>{ vol.s=+e.target.value; applyVolume(); });
+$('sndVol').addEventListener('change',()=>{ if(vol.s>0) playSample('p',.8); }); // short preview after letting go
+$('musVol').addEventListener('input',e=>{ vol.m=+e.target.value; applyVolume(); });
+function setVolOpen(o){
+  if(o) $('volPop').style.top=matchMedia('(max-width:600px)').matches?($('volBtn').getBoundingClientRect().bottom+6)+'px':'';
+  $('volPop').hidden=!o; $('volBtn').setAttribute('aria-expanded',String(o)); }
+$('volBtn').addEventListener('click',()=>setVolOpen($('volPop').hidden));
+document.addEventListener('pointerdown',e=>{ if(!$('volPop').hidden&&!e.target.closest('.volWrap')) setVolOpen(false); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('volPop').hidden){ setVolOpen(false); $('volBtn').focus(); } });
 document.addEventListener('pointerdown',()=>ensureAudio(),{once:true});
 $('heads').addEventListener('click',e=>{
   if(busy) return;
@@ -1809,7 +1841,6 @@ function swingTo(color){
     camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(sph));
   }).then(()=>camSwinging=false);
 }
-$('sound').addEventListener('click',e=>{ soundOn=!soundOn; e.currentTarget.textContent=soundOn?'Ton an':'Ton aus'; e.currentTarget.setAttribute('aria-pressed',String(soundOn)); ensureAudio(); });
 
 /* ---------- Loop ---------- */
 function resize(){
