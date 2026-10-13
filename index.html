@@ -195,6 +195,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
         </div>
         <div class="vhead">Figuren</div>
         <div class="vtog">
+          <button class="btn" id="flatBtn" type="button" aria-pressed="false">2D-Figuren aus</button>
           <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
           <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
         </div>
@@ -315,7 +316,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
     'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
     'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
-    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
+    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','2D-Figuren an':'2D pieces on','2D-Figuren aus':'2D pieces off','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
     'Karikaturen an':'Caricatures on','Karikaturen aus':'Caricatures off','Flaggen an':'Flags on','Flaggen aus':'Flags off',
     'Neues Spiel':'New game','Spiel erstellen':'Create game','oder':'or','Beitreten':'Join','Spielcode':'Game code',
     'Kopieren':'Copy','Verlassen':'Leave','Erstelle ein Spiel und schick den Code deinem Gegner.':'Create a game and send the code to your opponent.',
@@ -832,7 +833,34 @@ function applyFlagLook(g,color){
     if(hx===team.body||hx===team.suit) o.material=flagMat(team.key,hx);
   });
 }
+/* 2D pieces for the top view: flat discs with the classic chess symbol in the nation's colours */
+let flat2d=false; try{ flat2d=localStorage.getItem('wms-flat')==='1'; }catch(e){}
+const FLAT_GLYPH={k:'\u265A',q:'\u265B',r:'\u265C',b:'\u265D',n:'\u265E',p:'\u265F'}, flatTex={};
+function hexCss(h){ return '#'+h.toString(16).padStart(6,'0'); }
+function makeFlatPiece(type,color){
+  const team=TEAM[color], key=team.key+type+color;
+  let tex=flatTex[key];
+  if(!tex){
+    const c=document.createElement('canvas'); c.width=c.height=256; const x=c.getContext('2d');
+    const lum=(((team.body>>16)&255)*.3+((team.body>>8)&255)*.59+(team.body&255)*.11)/255;
+    x.beginPath(); x.arc(128,128,122,0,Math.PI*2); x.fillStyle=hexCss(team.accent); x.fill();
+    x.beginPath(); x.arc(128,128,108,0,Math.PI*2); x.fillStyle=hexCss(team.body); x.fill();
+    x.font='190px "Segoe UI Symbol","Noto Sans Symbols 2","Apple Symbols","DejaVu Sans",serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.lineWidth=10; x.strokeStyle=lum>.6?'#f4f1e8':'#111'; x.fillStyle=lum>.6?'#15151a':'#fbf8ef';
+    const gl=FLAT_GLYPH[type]+'\uFE0E'; // text style, never the emoji version of the pawn
+    x.strokeText(gl,128,146); x.fillText(gl,128,146);
+    tex=flatTex[key]=new T.CanvasTexture(c); tex.encoding=T.sRGBEncoding; tex.anisotropy=4;
+  }
+  const g=new T.Group();
+  const disc=new T.Mesh(new T.CircleGeometry(.44,40), new T.MeshBasicMaterial({map:tex,transparent:true}));
+  disc.rotation.x=-Math.PI/2; disc.position.y=.03; g.add(disc);
+  g.userData={type,color,phase:0,flat:disc};
+  disc.userData.owner=g;
+  return g;
+}
 function makePiece(type,color){
+  if(flat2d) return makeFlatPiece(type,color);
   const team=TEAM[color], dir=color==='w'?-1:1;
   if(type==='q') return makeQueen(color);
   const sdef=window.SPRITES&&window.SPRITES[type+color];
@@ -1879,6 +1907,8 @@ function resize(){
 const VIEWS={ '3d':{phi:.745,free:true}, play:{phi:.42}, top:{phi:.12} };
 let view='3d';
 try{ const v=localStorage.getItem('wms-view'); if(VIEWS[v]) view=v; }catch(e){}
+if(flat2d) view='top';
+const viewPhi=()=>view==='top'&&flat2d?.001:VIEWS[view].phi;
 const FIT_PTS=[];
 for(const x of [-4.65,4.65]) for(const z of [-4.65,4.65]) FIT_PTS.push(new T.Vector3(x,-.1,z));
 for(const x of [-3.5,3.5]) for(const z of [-3.5,3.5]) FIT_PTS.push(new T.Vector3(x,1.35,z)); // tall back-rank pieces
@@ -1912,19 +1942,30 @@ function setView(v){
   const free=!!VIEWS[view].free;
   controls.enableRotate=free; controls.enableZoom=free;
   document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
+  $('flatBtn').setAttribute('aria-pressed',String(flat2d)); $('flatBtn').textContent=flat2d?'2D-Figuren an':'2D-Figuren aus';
   // snap to the side we are looking from (white or black), then fit
   const rel=camera.position.clone().sub(controls.target);
   const fromBlack=rel.length()>=1&&rel.z<0;
   controls.target.set(0,0,.3); camera.position.set(0,5,fromBlack?-5:5);
-  fitCamera(VIEWS[view].phi);
+  fitCamera(viewPhi());
 }
 function placeCamera(){ setView(view); }
 function refit(){ // after resize or when the info panel opens/closes: keep the angle, fit again
   if(jailView||camSwinging) return;
   if(VIEWS[view].free){ sph.setFromVector3(camera.position.clone().sub(controls.target)); fitCamera(sph.phi); }
-  else fitCamera(VIEWS[view].phi);
+  else fitCamera(viewPhi());
 }
-document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{ setView(b.dataset.view); }));
+function setFlat(f){
+  if(f===flat2d) return;
+  flat2d=f; try{ localStorage.setItem('wms-flat',f?'1':'0'); }catch(e){}
+  selected=null; targets=[]; clearMarkers(); setupPieces();
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{
+  if(busy) { setView(b.dataset.view); return; }
+  if(b.dataset.view!=='top') setFlat(false); // 2D pieces only make sense from straight above
+  setView(b.dataset.view);
+}));
+$('flatBtn').addEventListener('click',()=>{ if(busy) return; setFlat(!flat2d); setView(flat2d?'top':view); });
 window.addEventListener('resize',resize);
 window.addEventListener('resize',()=>setTimeout(refit,50));
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(refit,50)); // header height changes once web fonts arrive
@@ -1971,6 +2012,7 @@ function loop(){
       if(i!==s.last){ s.last=i; s.tex.offset.set((i%s.def.cols)/s.def.cols, 1-(Math.floor(i/s.def.cols)+1)/s.def.rows); }
     }
     if(u.tears){ const r=.25; u.tears.forEach(d=>{ const k=((t+d.userData.off)%0.9)/0.9; d.position.set(d.userData.side*r*.36,r*.05-k*.32,r*.85+k*.05); d.material.opacity=.9*(1-k); }); }
+    if(u.flat) u.flat.rotation.z=camPos.z<controls.target.z?Math.PI:0;
     if(u.float) u.float.position.y=u.floatY+Math.sin(t*2+u.phase)*.035;
     if(u.rotors) u.rotors.forEach(r=>r.rotation.y+=dt*30);
   }
