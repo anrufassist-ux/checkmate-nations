@@ -20,6 +20,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   exists; ownership will then live server-side per account, never in localStorage. Planned pricing:
   bundle of 3 nations 2.99 EUR, all nations 4.99 EUR.
 - Caricature mode is on by default.
+- View: header button "View" opens camera presets (Free 3D default, Play view, Top view) plus the caricature/flag toggles. Every preset is fitted by `fitCamera()` so the whole board fits between header and info panel (camera view offset); stored in localStorage `wms-view`.
 - Volume: one header button opens sliders for sounds and music (0-100 %, default 70 %, 0 = off), stored in localStorage `wms-vol`. All sound effects go through `sfxBus()`, music through `musicBus()`.
 - Online 1v1 moves to Supabase (free plan) with login, server-validated moves, Elo and a
   Nations League. The Claude artifact path (`window.claude`) gets removed in that step; until then

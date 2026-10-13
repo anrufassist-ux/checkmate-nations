@@ -38,6 +38,13 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);overflow:hid
 .volPop label{display:grid;gap:6px;font-family:var(--f-label);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg)}
 .volPop .vrow{display:flex;justify-content:space-between}.volPop .vrow output{color:var(--muted)}
 .volPop input[type=range]{width:100%;accent-color:var(--sand)}
+.volPop .vhead{font-family:var(--f-label);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.volPop .vopts{display:grid;gap:6px}
+.volPop .vopts .btn{text-align:left;display:grid;gap:2px;text-transform:none;letter-spacing:.02em}
+.volPop .vopts .btn b{text-transform:uppercase;letter-spacing:.1em}
+.volPop .vopts .btn span{font-family:var(--f-body);font-weight:400;font-size:12px;color:var(--muted)}
+.volPop .vopts .btn[aria-pressed=true]{border-color:var(--sand);box-shadow:inset 3px 0 0 var(--sand)}
+.volPop .vtog{display:flex;gap:6px;flex-wrap:wrap}
 @media (max-width:600px){.volPop{position:fixed;left:16px;right:16px;width:auto;max-width:none}}
 .btn,.sel{font-family:var(--f-label);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer}
 .btn:hover,.sel:hover{border-color:var(--sand)}
@@ -177,8 +184,22 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
         <label><span class="vrow"><span>Musik</span><output id="musVal">70 %</output></span><input type="range" id="musVol" min="0" max="100" step="5" value="70" aria-label="Musik"></label>
       </div>
     </div>
-    <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
-    <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
+    <div class="volWrap">
+      <button class="btn" id="viewBtn" type="button" aria-expanded="false" aria-controls="viewPop">Ansicht</button>
+      <div class="volPop" id="viewPop" hidden>
+        <div class="vhead">Kamera</div>
+        <div class="vopts">
+          <button class="btn" type="button" data-view="3d" aria-pressed="false"><b>3D frei</b><span>Schräg von vorn, drehen und zoomen erlaubt</span></button>
+          <button class="btn" type="button" data-view="play" aria-pressed="false"><b>Spielansicht</b><span>Steiler Blick, ganzes Brett, feste Kamera</span></button>
+          <button class="btn" type="button" data-view="top" aria-pressed="false"><b>Draufsicht</b><span>Fast senkrecht von oben, wie klassisches Schach</span></button>
+        </div>
+        <div class="vhead">Figuren</div>
+        <div class="vtog">
+          <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
+          <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
+        </div>
+      </div>
+    </div>
     <button class="btn" id="langBtn" type="button" aria-label="Language / Sprache" onclick="setLang(LANG==='en'?'de':'en')">EN · DE</button>
     <button class="btn primary" id="reset" type="button">Neues Spiel</button>
   </div>
@@ -294,7 +315,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
     'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
     'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
-    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music',
+    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
     'Karikaturen an':'Caricatures on','Karikaturen aus':'Caricatures off','Flaggen an':'Flags on','Flaggen aus':'Flags off',
     'Neues Spiel':'New game','Spiel erstellen':'Create game','oder':'or','Beitreten':'Join','Spielcode':'Game code',
     'Kopieren':'Copy','Verlassen':'Leave','Erstelle ein Spiel und schick den Code deinem Gegner.':'Create a game and send the code to your opponent.',
@@ -1619,12 +1640,18 @@ $('sndVol').value=vol.s; $('musVol').value=vol.m; $('sndVal').textContent=vol.s+
 $('sndVol').addEventListener('input',e=>{ vol.s=+e.target.value; applyVolume(); });
 $('sndVol').addEventListener('change',()=>{ if(vol.s>0) playSample('p',.8); }); // short preview after letting go
 $('musVol').addEventListener('input',e=>{ vol.m=+e.target.value; applyVolume(); });
-function setVolOpen(o){
-  if(o) $('volPop').style.top=matchMedia('(max-width:600px)').matches?($('volBtn').getBoundingClientRect().bottom+6)+'px':'';
-  $('volPop').hidden=!o; $('volBtn').setAttribute('aria-expanded',String(o)); }
-$('volBtn').addEventListener('click',()=>setVolOpen($('volPop').hidden));
-document.addEventListener('pointerdown',e=>{ if(!$('volPop').hidden&&!e.target.closest('.volWrap')) setVolOpen(false); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('volPop').hidden){ setVolOpen(false); $('volBtn').focus(); } });
+/* header pop-up menus (volume, view): one open at a time, close on outside tap or Escape */
+const POPS=[['volBtn','volPop'],['viewBtn','viewPop']];
+function setPop(id,o){
+  POPS.forEach(([b,p])=>{
+    const open=o&&p===id;
+    if(open) $(p).style.top=matchMedia('(max-width:600px)').matches?($(b).getBoundingClientRect().bottom+6)+'px':'';
+    $(p).hidden=!open; $(b).setAttribute('aria-expanded',String(open));
+  });
+}
+POPS.forEach(([b,p])=>$(b).addEventListener('click',()=>setPop(p,$(p).hidden)));
+document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.volWrap')) setPop(null,false); });
+document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; const o=POPS.find(([,p])=>!$(p).hidden); if(o){ setPop(null,false); $(o[0]).focus(); } });
 document.addEventListener('pointerdown',()=>ensureAudio(),{once:true});
 $('heads').addEventListener('click',e=>{
   if(busy) return;
@@ -1814,9 +1841,10 @@ document.addEventListener('visibilitychange',()=>{
 function setCollapsed(c){
   document.querySelector('.console').classList.toggle('collapsed',c);
   $('statusBar').setAttribute('aria-expanded',String(!c));
+  if(typeof refit==='function') setTimeout(refit,30);
 }
 $('statusBar').addEventListener('click',()=>setCollapsed(!document.querySelector('.console').classList.contains('collapsed')));
-if(matchMedia('(max-width:600px)').matches) setCollapsed(true);
+if(matchMedia('(max-width:600px), (max-height:500px)').matches) setCollapsed(true); // phones, also held sideways
 $('onJoin').addEventListener('click',onlineJoin);
 $('onCode').addEventListener('keydown',e=>{ if(e.key==='Enter') onlineJoin(); });
 $('onLeave').addEventListener('click',()=>{ onlineLeave(); resetBoard(); onMsg('Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.'); });
@@ -1847,12 +1875,59 @@ function resize(){
   const w=stage.clientWidth, h=stage.clientHeight; renderer.setSize(w,h,false);
   camera.aspect=w/h; camera.updateProjectionMatrix();
 }
-function placeCamera(){
-  const a=stage.clientWidth/stage.clientHeight;
-  const d=a<.7?17:a<1.1?14:11.5;
-  camera.position.set(0,d*.78,d*.72);
+/* View presets. Every preset is fitted so the whole board fits between header and info panel */
+const VIEWS={ '3d':{phi:.745,free:true}, play:{phi:.42}, top:{phi:.12} };
+let view='3d';
+try{ const v=localStorage.getItem('wms-view'); if(VIEWS[v]) view=v; }catch(e){}
+const FIT_PTS=[];
+for(const x of [-4.65,4.65]) for(const z of [-4.65,4.65]) FIT_PTS.push(new T.Vector3(x,-.1,z));
+for(const x of [-3.5,3.5]) for(const z of [-3.5,3.5]) FIT_PTS.push(new T.Vector3(x,1.35,z)); // tall back-rank pieces
+const fitP=new T.Vector3();
+function overlayPx(sel,edge){ // how far an overlay reaches into the screen; 0 when it is hidden
+  const el=document.querySelector(sel); if(!el) return 0;
+  const r=el.getBoundingClientRect(); if(!r.height||getComputedStyle(el).display==='none') return 0;
+  return edge==='top'?r.bottom:stage.clientHeight-r.top;
 }
+function fitCamera(phi){
+  const w=stage.clientWidth, h=stage.clientHeight; if(!w||!h) return;
+  const top=overlayPx('.top','top')+8, bot=overlayPx('.console','bottom')+8, side=10;
+  // shift the picture so the board centre sits in the middle of the free area
+  camera.setViewOffset(w,h,0,-(top-bot)/2,w,h); camera.updateProjectionMatrix();
+  const yt=1-2*top/h, yb=-1+2*bot/h, xm=1-2*side/w;
+  const rel=camera.position.clone().sub(controls.target); sph.setFromVector3(rel);
+  const theta=rel.length()<1?0:sph.theta; // first call: camera not placed yet, look from white's side
+  const fits=d=>{
+    camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(sph.set(d,phi,theta)));
+    camera.lookAt(controls.target); camera.updateMatrixWorld();
+    return FIT_PTS.every(p=>{ fitP.copy(p).project(camera); return Math.abs(fitP.x)<=xm&&fitP.y<=yt&&fitP.y>=yb; });
+  };
+  let lo=3, hi=80; for(let i=0;i<26;i++){ const m=(lo+hi)/2; if(fits(m)) hi=m; else lo=m; }
+  fits(hi);
+  controls.minDistance=Math.min(7,hi*.6); controls.maxDistance=Math.max(24,hi*1.4);
+  try{ wake(600); }catch(e){} // not defined yet on the very first call
+}
+function setView(v){
+  view=VIEWS[v]?v:'3d';
+  try{ localStorage.setItem('wms-view',view); }catch(e){}
+  const free=!!VIEWS[view].free;
+  controls.enableRotate=free; controls.enableZoom=free;
+  document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
+  // snap to the side we are looking from (white or black), then fit
+  const rel=camera.position.clone().sub(controls.target);
+  const fromBlack=rel.length()>=1&&rel.z<0;
+  controls.target.set(0,0,.3); camera.position.set(0,5,fromBlack?-5:5);
+  fitCamera(VIEWS[view].phi);
+}
+function placeCamera(){ setView(view); }
+function refit(){ // after resize or when the info panel opens/closes: keep the angle, fit again
+  if(jailView||camSwinging) return;
+  if(VIEWS[view].free){ sph.setFromVector3(camera.position.clone().sub(controls.target)); fitCamera(sph.phi); }
+  else fitCamera(VIEWS[view].phi);
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{ setView(b.dataset.view); }));
 window.addEventListener('resize',resize);
+window.addEventListener('resize',()=>setTimeout(refit,50));
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(refit,50)); // header height changes once web fonts arrive
 resize(); placeCamera(); setupPieces(); setStatus('Wähle einen Spielmodus.','w'); openModeScreen();
 
 const clock=new T.Clock(); const camPos=new T.Vector3(), headPos=new T.Vector3();
