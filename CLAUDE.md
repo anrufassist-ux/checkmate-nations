@@ -36,7 +36,8 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   server (first move of each side: 60 s, else aborted, no Elo; early resign also only aborts), flag fall via `claim`
   and the per-minute `sweep_clocks()` cron, Elo settled once in SQL `finish_game()` (start 1200, K 40 for the first
   20 games, then 20), leaderboard from `profiles`. Sign-in mails need custom SMTP (Resend), see supabase/README.md.
-  Lobby shows how many players are searching (`stats` action). Friendly code games keep a private head-to-head
+  Lobby shows players online in the online area (Realtime presence channel `lobby`, nothing stored) and how many
+  are searching (`stats` action). Friendly code games keep a private head-to-head
   record per pair (`friend_records`, counted in `finish_game()`); they never touch Elo or the leaderboard.
 - Planned next: Nations League per season: 3/1/0 points,
   ranked by points per game, only rated games between different nations, entry via any nation purchase or a

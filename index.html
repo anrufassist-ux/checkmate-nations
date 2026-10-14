@@ -439,6 +439,9 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     [/^Erster Zug: (\d+:\d\d)$/,m=>'First move: '+m[1]],
     [/^Gegner: (.+)$/,m=>'Opponent: '+m[1]],
     [/^(\d+) Spieler suchen gerade eine gewertete Partie\.$/,m=>m[1]+' players are looking for a rated game right now.'],
+    [/^(\d+) Spieler online · niemand sucht gerade eine gewertete Partie\.$/,m=>m[1]+' online · nobody is looking for a rated game.'],
+    [/^(\d+) Spieler online · 1 sucht eine gewertete Partie\.$/,m=>m[1]+' online · 1 is looking for a rated game.'],
+    [/^(\d+) Spieler online · (\d+) suchen eine gewertete Partie\.$/,m=>m[1]+' online · '+m[2]+' are looking for a rated game.'],
     [/^Eure Bilanz: Du (\d+) · Remis (\d+) · Gegner (\d+)$/,m=>'Your record: you '+m[1]+' · draws '+m[2]+' · opponent '+m[3]],
     [/^Elo ([+-]\d+), jetzt (\d+)\.$/,m=>'Elo '+m[1]+', now '+m[2]+'.']
   ];
@@ -1762,7 +1765,8 @@ $('mode').addEventListener('change',e=>chooseMode(e.target.value));
    every change goes through the "game" edge function, which checks each move with chess.js (supabase/). ---------- */
 const SB_URL='https://uerlobtrjmgveqeoykwk.supabase.co', SB_KEY='sb_publishable_LonNZRxlG1jfaVZzmPCi7g_3VEu6KPy'; // public by design
 const on={sb:null,me:null,user:null,profile:null,id:null,code:null,color:null,doc:null,chan:null,poll:null,epoch:0,moveNo:0,ready:false,queue:null,opp:false,
-  rated:false,clockTimer:null,offset:0,lastClaim:0,eloShown:false,search:null,lobbyTimer:null,recordKey:null};
+  rated:false,clockTimer:null,offset:0,lastClaim:0,eloShown:false,search:null,lobbyTimer:null,recordKey:null,
+  lobbyChan:null,lobbyOnline:0,lobbySearching:null};
 function onMsg(t,ok){ const m=$('onMsg'); m.textContent=t; m.className='onmsg'+(ok?' ok':''); }
 function loadSupabase(){ // only fetched when someone picks online play
   if(window.supabase) return Promise.resolve();
@@ -1852,7 +1856,8 @@ async function saveName(){
   on.profile=r.profile; closeAcct(); renderAccount();
 }
 async function logout(){
-  stopSearch(); await on.sb.auth.signOut().catch(()=>{});
+  stopSearch(); if(on.lobbyChan){ try{ on.sb.removeChannel(on.lobbyChan); }catch(e){} on.lobbyChan=null; }
+  await on.sb.auth.signOut().catch(()=>{});
   on.profile=null; await signIn().catch(()=>{}); refreshAccount();
 }
 async function deleteAccount(){
@@ -1875,12 +1880,27 @@ async function loadBoard(){
   }
 }
 /* ---------- lobby: how many players are searching right now ---------- */
-function showSearching(n){
-  $('onLobby').textContent=n===0?'Gerade sucht niemand eine gewertete Partie.':n===1?'1 Spieler sucht gerade eine gewertete Partie.':n+' Spieler suchen gerade eine gewertete Partie.';
+function showSearching(n){ on.lobbySearching=n; renderLobby(); }
+function renderLobby(){
+  const n=on.lobbySearching, o=on.lobbyOnline; if(n==null&&!o) return;
+  if(o>0) $('onLobby').textContent=o+' Spieler online · '+(!n?'niemand sucht gerade eine gewertete Partie.':n===1?'1 sucht eine gewertete Partie.':n+' suchen eine gewertete Partie.');
+  else $('onLobby').textContent=!n?'Gerade sucht niemand eine gewertete Partie.':n===1?'1 Spieler sucht gerade eine gewertete Partie.':n+' Spieler suchen gerade eine gewertete Partie.';
 }
 function lobbyTick(){
-  if(mode!=='online'||!on.sb||on.id||on.search||document.hidden) return;
+  if(mode!=='online'){ // left the online area: no longer counted as online
+    if(on.lobbyChan){ try{ on.sb.removeChannel(on.lobbyChan); }catch(e){} on.lobbyChan=null; on.lobbyOnline=0; }
+    return;
+  }
+  if(!on.sb||document.hidden) return;
+  if(!on.lobbyChan) joinLobby();
+  if(on.id||on.search) return;
   api('stats',{}).then(r=>{ if(typeof r.searching==='number'&&!on.id&&!on.search) showSearching(r.searching); });
+}
+function joinLobby(){ // everyone in the online area shows up here (presence only, nothing is stored)
+  const ch=on.sb.channel('lobby',{config:{presence:{key:on.me||'x'}}});
+  ch.on('presence',{event:'sync'},()=>{ on.lobbyOnline=Object.keys(ch.presenceState()).length; renderLobby(); })
+    .subscribe(st=>{ if(st==='SUBSCRIBED') ch.track({at:Date.now()}).catch(()=>{}); });
+  on.lobbyChan=ch;
 }
 function startLobby(){ if(!on.lobbyTimer){ on.lobbyTimer=setInterval(lobbyTick,15000); } lobbyTick(); }
 /* ---------- head-to-head record for friendly games (private, never rated) ---------- */
