@@ -234,6 +234,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <span class="onmsg" id="onSearch" hidden></span>
       <button class="btn" id="onSearchStop" type="button" hidden>Abbrechen</button>
     </div>
+    <div class="onmsg" id="onLobby"></div>
     <div class="lab onsub" id="onFriendlyLab">Freundschaftsspiel per Code (ungewertet)</div>
     <div class="onrow" id="onStart">
       <button class="btn primary" id="onCreate" type="button">Spiel erstellen</button>
@@ -370,7 +371,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
     'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
     'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
-    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Gewertete Partie suchen · 10+5':'Find a rated game · 10+5','Freundschaftsspiel per Code (ungewertet)':'Friendly game by code (unrated)','Anmelden':'Sign in','Abmelden':'Sign out','Rangliste':'Leaderboard','Konto löschen':'Delete account','Angemeldet':'Signed in','Spielernamen wählen':'Choose a player name','Gast · Gewertete Partien brauchen ein Konto.':'Guest · Rated games need an account.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','E-Mail-Adresse':'E-mail address','Link senden':'Send link','Spielername':'Player name','Speichern':'Save','Schließen':'Close','Dein Spielername erscheint in der Rangliste. 3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'Your player name appears on the leaderboard. 3 to 20 characters: letters, digits or _.','Mit welchem Land spielst du? 10 Minuten Bedenkzeit plus 5 Sekunden pro Zug.':'Which country do you play? 10 minutes plus 5 seconds per move.','Gewertete Partie':'Rated game','Gewertet':'Rated','Bitte eine gültige E-Mail-Adresse eingeben.':'Please enter a valid e-mail address.','Sende …':'Sending …','Das hat nicht geklappt. Versuch es in ein paar Minuten nochmal.':'That did not work. Please try again in a few minutes.','Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link.':'The link is on its way. Open the e-mail on this device and tap the link.','3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'3 to 20 characters: letters, digits or _.','Dieser Name ist schon vergeben.':'This name is already taken.','Speichern fehlgeschlagen. Versuch es nochmal.':'Saving failed. Please try again.','Konto und Elo-Wertung endgültig löschen?':'Delete your account and rating for good?','Löschen fehlgeschlagen. Versuch es nochmal.':'Deleting failed. Please try again.','Dein Konto wurde gelöscht.':'Your account has been deleted.','Lade …':'Loading …','Rangliste konnte nicht geladen werden.':'Could not load the leaderboard.','Noch keine gewerteten Partien.':'No rated games yet.','Suche fehlgeschlagen. Versuch es nochmal.':'Search failed. Please try again.','Partie abgebrochen':'Game aborted','Kein erster Zug innerhalb von 60 Sekunden. Keine Wertung.':'No first move within 60 seconds. Not rated.','Keine Wertung.':'Not rated.','Zeit abgelaufen':'Time is up','Partie vorbei. „Neues Spiel“ für die nächste Partie.':'Game over. "New game" for the next one.','Der Anmelde-Link ist abgelaufen oder ungültig. Fordere einen neuen an.':'The sign-in link has expired or is invalid. Request a new one.','Verbindung zum Server fehlgeschlagen. Versuch es gleich nochmal.':'Could not reach the server. Please try again in a moment.','Erstelle Spiel …':'Creating game …','Trete bei …':'Joining …','Spiel konnte nicht erstellt werden. Versuch es nochmal.':'Could not create the game. Please try again.','Beitreten fehlgeschlagen. Versuch es nochmal.':'Could not join. Please try again.','Der Server hat den Zug abgelehnt.':'The server rejected the move.','Zug konnte nicht gesendet werden. Lade neu …':'Could not send the move. Reloading …','Impressum':'Legal notice','Datenschutz':'Privacy','Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.':'Satire. Not affiliated with any person or country shown, no political statement.','2D-Figuren an':'2D pieces on','2D-Figuren aus':'2D pieces off','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
+    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Gewertete Partie suchen · 10+5':'Find a rated game · 10+5','Gerade sucht niemand eine gewertete Partie.':'Nobody is looking for a rated game right now.','1 Spieler sucht gerade eine gewertete Partie.':'1 player is looking for a rated game right now.','Freundschaftsspiel per Code (ungewertet)':'Friendly game by code (unrated)','Anmelden':'Sign in','Abmelden':'Sign out','Rangliste':'Leaderboard','Konto löschen':'Delete account','Angemeldet':'Signed in','Spielernamen wählen':'Choose a player name','Gast · Gewertete Partien brauchen ein Konto.':'Guest · Rated games need an account.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','E-Mail-Adresse':'E-mail address','Link senden':'Send link','Spielername':'Player name','Speichern':'Save','Schließen':'Close','Dein Spielername erscheint in der Rangliste. 3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'Your player name appears on the leaderboard. 3 to 20 characters: letters, digits or _.','Mit welchem Land spielst du? 10 Minuten Bedenkzeit plus 5 Sekunden pro Zug.':'Which country do you play? 10 minutes plus 5 seconds per move.','Gewertete Partie':'Rated game','Gewertet':'Rated','Bitte eine gültige E-Mail-Adresse eingeben.':'Please enter a valid e-mail address.','Sende …':'Sending …','Das hat nicht geklappt. Versuch es in ein paar Minuten nochmal.':'That did not work. Please try again in a few minutes.','Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link.':'The link is on its way. Open the e-mail on this device and tap the link.','3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'3 to 20 characters: letters, digits or _.','Dieser Name ist schon vergeben.':'This name is already taken.','Speichern fehlgeschlagen. Versuch es nochmal.':'Saving failed. Please try again.','Konto und Elo-Wertung endgültig löschen?':'Delete your account and rating for good?','Löschen fehlgeschlagen. Versuch es nochmal.':'Deleting failed. Please try again.','Dein Konto wurde gelöscht.':'Your account has been deleted.','Lade …':'Loading …','Rangliste konnte nicht geladen werden.':'Could not load the leaderboard.','Noch keine gewerteten Partien.':'No rated games yet.','Suche fehlgeschlagen. Versuch es nochmal.':'Search failed. Please try again.','Partie abgebrochen':'Game aborted','Kein erster Zug innerhalb von 60 Sekunden. Keine Wertung.':'No first move within 60 seconds. Not rated.','Keine Wertung.':'Not rated.','Zeit abgelaufen':'Time is up','Partie vorbei. „Neues Spiel“ für die nächste Partie.':'Game over. "New game" for the next one.','Der Anmelde-Link ist abgelaufen oder ungültig. Fordere einen neuen an.':'The sign-in link has expired or is invalid. Request a new one.','Verbindung zum Server fehlgeschlagen. Versuch es gleich nochmal.':'Could not reach the server. Please try again in a moment.','Erstelle Spiel …':'Creating game …','Trete bei …':'Joining …','Spiel konnte nicht erstellt werden. Versuch es nochmal.':'Could not create the game. Please try again.','Beitreten fehlgeschlagen. Versuch es nochmal.':'Could not join. Please try again.','Der Server hat den Zug abgelehnt.':'The server rejected the move.','Zug konnte nicht gesendet werden. Lade neu …':'Could not send the move. Reloading …','Impressum':'Legal notice','Datenschutz':'Privacy','Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.':'Satire. Not affiliated with any person or country shown, no political statement.','2D-Figuren an':'2D pieces on','2D-Figuren aus':'2D pieces off','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
     'Karikaturen an':'Caricatures on','Karikaturen aus':'Caricatures off','Flaggen an':'Flags on','Flaggen aus':'Flags off',
     'Neues Spiel':'New game','Spiel erstellen':'Create game','oder':'or','Beitreten':'Join','Spielcode':'Game code',
     'Kopieren':'Copy','Verlassen':'Leave','Erstelle ein Spiel und schick den Code deinem Gegner.':'Create a game and send the code to your opponent.',
@@ -437,6 +438,8 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     [/^Suche Gegner … (\d+:\d\d)$/,m=>'Looking for an opponent … '+m[1]],
     [/^Erster Zug: (\d+:\d\d)$/,m=>'First move: '+m[1]],
     [/^Gegner: (.+)$/,m=>'Opponent: '+m[1]],
+    [/^(\d+) Spieler suchen gerade eine gewertete Partie\.$/,m=>m[1]+' players are looking for a rated game right now.'],
+    [/^Eure Bilanz: Du (\d+) · Remis (\d+) · Gegner (\d+)$/,m=>'Your record: you '+m[1]+' · draws '+m[2]+' · opponent '+m[3]],
     [/^Elo ([+-]\d+), jetzt (\d+)\.$/,m=>'Elo '+m[1]+', now '+m[2]+'.']
   ];
   function tr(s){
@@ -1759,7 +1762,7 @@ $('mode').addEventListener('change',e=>chooseMode(e.target.value));
    every change goes through the "game" edge function, which checks each move with chess.js (supabase/). ---------- */
 const SB_URL='https://uerlobtrjmgveqeoykwk.supabase.co', SB_KEY='sb_publishable_LonNZRxlG1jfaVZzmPCi7g_3VEu6KPy'; // public by design
 const on={sb:null,me:null,user:null,profile:null,id:null,code:null,color:null,doc:null,chan:null,poll:null,epoch:0,moveNo:0,ready:false,queue:null,opp:false,
-  rated:false,clockTimer:null,offset:0,lastClaim:0,eloShown:false,search:null};
+  rated:false,clockTimer:null,offset:0,lastClaim:0,eloShown:false,search:null,lobbyTimer:null,recordKey:null};
 function onMsg(t,ok){ const m=$('onMsg'); m.textContent=t; m.className='onmsg'+(ok?' ok':''); }
 function loadSupabase(){ // only fetched when someone picks online play
   if(window.supabase) return Promise.resolve();
@@ -1782,6 +1785,7 @@ async function onlineInit(){
   setStatus('Online: Spiel erstellen oder beitreten.','w');
   await refreshAccount();
   resumeRated();
+  startLobby();
 }
 async function resumeRated(){ // after a reload: back into a rated game that is still running
   if(!on.profile||on.id) return;
@@ -1870,6 +1874,27 @@ async function loadBoard(){
     const sp=document.createElement('span'); sp.textContent=p.elo; li.appendChild(sp);
   }
 }
+/* ---------- lobby: how many players are searching right now ---------- */
+function showSearching(n){
+  $('onLobby').textContent=n===0?'Gerade sucht niemand eine gewertete Partie.':n===1?'1 Spieler sucht gerade eine gewertete Partie.':n+' Spieler suchen gerade eine gewertete Partie.';
+}
+function lobbyTick(){
+  if(mode!=='online'||!on.sb||on.id||on.search||document.hidden) return;
+  api('stats',{}).then(r=>{ if(typeof r.searching==='number'&&!on.id&&!on.search) showSearching(r.searching); });
+}
+function startLobby(){ if(!on.lobbyTimer){ on.lobbyTimer=setInterval(lobbyTick,15000); } lobbyTick(); }
+/* ---------- head-to-head record for friendly games (private, never rated) ---------- */
+async function loadRecord(){
+  const d=on.doc; if(!d||on.rated||!d.white||!d.black) return;
+  const opp=on.color==='w'?d.black:d.white, me=on.me, lo=me<opp?me:opp, hi=me<opp?opp:me, id=on.id;
+  try{
+    const {data}=await on.sb.from('friend_records').select('*').eq('a',lo).eq('b',hi).maybeSingle();
+    if(on.id!==id) return;
+    if(!data){ $('onVs').textContent=''; return; }
+    const mine=me===lo?data.a_wins:data.b_wins, theirs=me===lo?data.b_wins:data.a_wins;
+    $('onVs').textContent='Eure Bilanz: Du '+mine+' · Remis '+data.draws+' · Gegner '+theirs;
+  }catch(e){}
+}
 /* ---------- matchmaking: ask the server every few seconds until it pairs us ---------- */
 function startSearch(nation){
   closeAcct(); stopSearch();
@@ -1881,6 +1906,7 @@ function startSearch(nation){
     if(on.search!==s) return;
     if(r.game){ on.search=null; clearInterval(s.timer); onlineAttach(r.game,r.seat); return; }
     if(r.error){ on.search=null; clearInterval(s.timer); renderAccount(); onMsg('Suche fehlgeschlagen. Versuch es nochmal.'); return; }
+    if(typeof r.searching==='number') showSearching(r.searching);
     s.next=setTimeout(loop,3000);
   };
   loop();
@@ -1960,7 +1986,7 @@ const fromRow=r=>({id:r.id,code:r.code,white:r.white_id,black:r.black_id,nations
   clock:r.rated?{w:r.white_ms,b:r.black_ms,inc:r.increment_ms,turnStartedAt:r.turn_started_at}:null});
 function showCode(){
   const inGame=!!on.id;
-  $('onStart').hidden=inGame; $('onInfo').hidden=!inGame; $('onFriendlyLab').hidden=inGame;
+  $('onStart').hidden=inGame; $('onInfo').hidden=!inGame; $('onFriendlyLab').hidden=inGame; $('onLobby').hidden=inGame;
   $('onCodeLab').textContent=on.code?'Spielcode':'Gewertet'; $('onCodeShow').textContent=on.code||'10+5';
   $('onCopy').hidden=!on.code;
   $('codeChip').hidden=!on.code; $('codeChip').textContent=on.code||'';
@@ -1993,7 +2019,7 @@ function onlineAttach(g,color){
   onlineDetach();
   const id=g.id;
   on.id=id; on.code=g.code; on.color=color; on.epoch=-1; on.moveNo=-1; on.ready=false;
-  on.rated=!!g.rated; on.eloShown=false; $('onElo').textContent=''; $('onVs').textContent='';
+  on.rated=!!g.rated; on.eloShown=false; on.recordKey=null; $('onElo').textContent=''; $('onVs').textContent='';
   if(g.serverNow) on.offset=g.serverNow-Date.now();
   showCode(); swingTo(color);
   if(on.rated){
@@ -2023,7 +2049,7 @@ function onlineDetach(){
   on.doc=null; on.id=null; on.rated=false;
   on.code=null; on.color=null; on.ready=false; on.queue=null; on.opp=false;
 }
-function onlineLeave(){ stopSearch(); onlineDetach(); showCode(); }
+function onlineLeave(){ stopSearch(); onlineDetach(); showCode(); lobbyTick(); }
 function onlineSnap(d){ on.doc=d; onlineQueue(d); }
 function newer(a,b){ return !b||a.epoch>b.epoch||(a.epoch===b.epoch&&a.moveNo>=b.moveNo); }
 function onlineQueue(d){ if(newer(d,on.queue)) on.queue=d; onlineDrain(); }
@@ -2069,6 +2095,10 @@ function onlinePush(res){
 function onlineStatus(){
   if(mode!=='online'||!on.id) return;
   onlineEndCheck();
+  if(!on.rated&&on.ready&&on.doc){ // refresh the record once per game round (and after it ends)
+    const key=on.doc.epoch+':'+(on.doc.status==='finished');
+    if(on.recordKey!==key){ on.recordKey=key; loadRecord(); }
+  }
   const mine=CNAME[on.color];
   if(!on.ready){ onMsg('Warte auf Gegner … Schick ihm den Code '+on.code+'.'); setStatus('Du spielst '+mine+'. Warte auf Gegner.',on.color); return; }
   onMsg(on.opp?'Gegner ist online.':'Gegner ist gerade nicht auf der Seite. Seine Züge kommen an, sobald er zurück ist.',on.opp);

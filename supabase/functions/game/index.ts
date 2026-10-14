@@ -229,7 +229,7 @@ async function queue(u: User, body: Game) {
              and ((x.white_id = q.user_id and x.black_id = ${u.id}) or (x.white_id = ${u.id} and x.black_id = q.user_id)))
             < ${PAIR_GAMES_PER_DAY}
       order by q.joined_at limit 1`;
-    if (!opp) return reply({ waiting: true });
+    if (!opp) return reply({ waiting: true, searching: await countSearching(tx) });
     await tx`delete from public.match_queue where user_id in (${u.id}, ${opp.user_id})`;
     const meWhite = Math.random() < 0.5;
     const [wid, bid] = meWhite ? [u.id, opp.user_id] : [opp.user_id, u.id];
@@ -243,13 +243,19 @@ async function queue(u: User, body: Game) {
   });
 }
 
+// how many players are looking for a rated game right now (shown in the lobby)
+// deno-lint-ignore no-explicit-any
+const countSearching = async (q: any) =>
+  Number((await q`select count(*)::int as n from public.match_queue where seen_at > now() - interval '12 seconds'`)[0].n);
+const stats = async () => reply({ searching: await countSearching(sql) });
+
 async function unqueue(u: User) {
   await sql`delete from public.match_queue where user_id = ${u.id}`;
   return reply({ ok: true });
 }
 
 const ACTIONS: Record<string, (u: User, body: Game) => Promise<Response> | Response> = {
-  create, join, move, resign, claim, rematch, profile, queue, unqueue,
+  create, join, move, resign, claim, rematch, profile, queue, unqueue, stats: () => stats(),
   delete_account: (u) => deleteAccount(u),
 };
 
