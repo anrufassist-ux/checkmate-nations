@@ -10,7 +10,7 @@ const AUTH_USER_URL = Deno.env.get("SUPABASE_URL") + "/auth/v1/user";
 const ONLINE_NATIONS = new Set(["usa", "rus"]); // paid nations stay offline until real checkout exists
 const CODE_ABC = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const SQ = /^[a-h][1-8]$/;
-const BASE_MS = 600_000, INC_MS = 5_000, FIRST_MOVE_MS = 60_000;
+const BASE_MS = 900_000, INC_MS = 10_000, FIRST_MOVE_MS = 60_000;
 const PAIR_GAMES_PER_DAY = 3; // the same two players can't farm Elo off each other
 
 const CORS = {
@@ -69,10 +69,20 @@ function outcome(c: InstanceType<typeof Chess>, mover: "w" | "b") {
   return null;
 }
 
+// Flag fall: the side without time loses, unless the other side cannot mate at all (bare king,
+// king + bishop or king + knight), then it is a draw. Same rule as check_clock() in SQL.
+function onTime(fen: string, loser: string) {
+  const board = fen.split(" ")[0];
+  const rest = (loser === "w" ? board.replace(/[^a-z]/g, "") : board.replace(/[^A-Z]/g, "")).replace(/k/i, "");
+  if (rest === "" || /^[bn]$/i.test(rest)) return { result: "1/2", reason: "timeout-draw" };
+  return { result: loser === "w" ? "0-1" : "1-0", reason: "timeout" };
+}
+
 // ---------- friendly games by code (guests welcome, never rated) ----------
 async function create(u: User, body: Game) {
   const w = String(body.w || "usa"), b = String(body.b || "rus");
   if (!ONLINE_NATIONS.has(w) || !ONLINE_NATIONS.has(b)) return fail("nation not available online", 400);
+  if (w === b) return fail("both sides need different nations", 400);
   for (let i = 0; i < 8; i++) {
     let code = "";
     for (let k = 0; k < 4; k++) code += CODE_ABC[Math.floor(Math.random() * CODE_ABC.length)];
@@ -122,7 +132,7 @@ function move(u: User, body: Game) {
         myMs = seat === "w" ? g.white_ms : g.black_ms;
       } else {
         const left = (seat === "w" ? g.white_ms : g.black_ms) - elapsed;
-        if (left <= 0) return fail("time", 409, await finish(tx, g.id, seat === "w" ? "0-1" : "1-0", "timeout"));
+        if (left <= 0) { const t = onTime(g.fen, seat); return fail("time", 409, await finish(tx, g.id, t.result, t.reason)); }
         myMs = Math.round(left + g.increment_ms);
       }
     }
@@ -233,9 +243,10 @@ async function queue(u: User, body: Game) {
     await tx`delete from public.match_queue where user_id in (${u.id}, ${opp.user_id})`;
     const meWhite = Math.random() < 0.5;
     const [wid, bid] = meWhite ? [u.id, opp.user_id] : [opp.user_id, u.id];
-    const wn = meWhite ? nation : opp.nation;
-    let bn = meWhite ? opp.nation : nation;
-    if (bn === wn) bn = wn === "usa" ? "rus" : "usa"; // both sides need different colours
+    // the player who waited longer keeps their nation; the newcomer gets the other one if both picked the same
+    const mine = nation === opp.nation ? (opp.nation === "usa" ? "rus" : "usa") : nation;
+    const wn = meWhite ? mine : opp.nation;
+    const bn = meWhite ? opp.nation : mine;
     const [g] = await tx`insert into public.games (white_id, black_id, white_nation, black_nation, status, rated,
       white_ms, black_ms, increment_ms, turn_started_at)
       values (${wid}, ${bid}, ${wn}, ${bn}, 'active', true, ${BASE_MS}, ${BASE_MS}, ${INC_MS}, now()) returning *`;

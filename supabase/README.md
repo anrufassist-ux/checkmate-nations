@@ -8,6 +8,7 @@ chess.js auf dem Server prüft.
 - `migrations/001_online_games.sql`: Tabelle `games`, Leserechte (RLS), Live-Updates, nächtliches Aufräumen.
 - `migrations/002_accounts_rated.sql`: Profile (Spielername, Elo), Warteschlange, Schachuhr, Elo-Abrechnung (`finish_game`), Uhr-Prüfung jede Minute (`sweep_clocks`).
 - `migrations/003_friend_records.sql`: private Bilanz zwischen zwei Spielern bei Freundschaftsspielen.
+- `migrations/004_timeout_draw.sql`: Zeitüberschreitung ist Remis, wenn der Gegner gar nicht mehr mattsetzen kann.
 - `functions/game/index.ts`: die Server-Funktion.
 
 ## Einmal einrichten (im Supabase-Dashboard, kein Programm nötig)
