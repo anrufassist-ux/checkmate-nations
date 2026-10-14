@@ -11,7 +11,7 @@ const ONLINE_NATIONS = new Set(["usa", "rus"]); // paid nations stay offline unt
 const CODE_ABC = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const SQ = /^[a-h][1-8]$/;
 const BASE_MS = 900_000, INC_MS = 10_000, FIRST_MOVE_MS = 60_000;
-const PAIR_GAMES_PER_DAY = 3; // the same two players can't farm Elo off each other
+const PAIR_GAMES_PER_WEEK = 3; // the same two players can't farm Elo off each other
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -235,9 +235,10 @@ async function queue(u: User, body: Game) {
     const [opp] = await tx`select q.* from public.match_queue q
       where q.user_id <> ${u.id} and q.seen_at > now() - interval '12 seconds'
         and abs(q.elo - ${p.elo}) <= 150 + 10 * extract(epoch from now() - least(q.joined_at, ${me.joined_at}))
-        and (select count(*) from public.games x where x.rated and x.created_at > now() - interval '1 day' and x.reason is distinct from 'aborted'
+        and (select count(*) from public.games x where x.rated and x.created_at > now() - interval '7 days' and x.reason is distinct from 'aborted'
+             and coalesce((x.elo_change->>'short')::boolean, false) = false
              and ((x.white_id = q.user_id and x.black_id = ${u.id}) or (x.white_id = ${u.id} and x.black_id = q.user_id)))
-            < ${PAIR_GAMES_PER_DAY}
+            < ${PAIR_GAMES_PER_WEEK}
       order by q.joined_at limit 1`;
     if (!opp) return reply({ waiting: true, searching: await countSearching(tx) });
     await tx`delete from public.match_queue where user_id in (${u.id}, ${opp.user_id})`;

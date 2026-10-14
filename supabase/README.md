@@ -9,6 +9,7 @@ chess.js auf dem Server prüft.
 - `migrations/002_accounts_rated.sql`: Profile (Spielername, Elo), Warteschlange, Schachuhr, Elo-Abrechnung (`finish_game`), Uhr-Prüfung jede Minute (`sweep_clocks`).
 - `migrations/003_friend_records.sql`: private Bilanz zwischen zwei Spielern bei Freundschaftsspielen.
 - `migrations/004_timeout_draw.sql`: Zeitüberschreitung ist Remis, wenn der Gegner gar nicht mehr mattsetzen kann.
+- `migrations/005_fair_rating.sql`: Partien unter 10 Zügen pro Seite zählen nicht für Elo, Rangliste erst ab 5 verschiedenen Gegnern.
 - `functions/game/index.ts`: die Server-Funktion.
 
 ## Einmal einrichten (im Supabase-Dashboard, kein Programm nötig)
