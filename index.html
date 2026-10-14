@@ -86,6 +86,18 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 .online .lab{font-family:var(--f-label);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--muted)}
 .onmsg{font-size:13px;color:var(--muted);line-height:1.4}
 .onmsg.ok{color:var(--ok)}
+.onmsg:empty{display:none}
+.acct{justify-content:space-between;font-size:13px;color:var(--muted)}
+.acct .who b{color:var(--fg);font-weight:600}
+.onsub{display:block;margin-top:2px}
+.linkBtn{background:none;border:0;padding:0;color:var(--sand);font:inherit;font-size:13px;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.clk .on{color:var(--fg);text-decoration:underline;text-underline-offset:3px}
+.field{font:inherit;font-size:16px;padding:10px 12px;background:#0d1110;color:var(--fg);border:1px solid var(--line);border-radius:6px;width:100%}
+.acctPane{display:grid;gap:10px}.acctPane[hidden]{display:none}
+.acctBtns{display:flex;gap:8px;justify-content:center}
+.board{margin:0;padding:0 4px 0 30px;text-align:left;max-height:55vh;overflow:auto;font-size:15px;line-height:1.8}
+.board li span{float:right;color:var(--sand);font-family:var(--f-label);font-weight:700}
+.board li.me{color:var(--sand)}
 .pow{position:fixed;pointer-events:none;font-family:var(--f-display);font-size:clamp(28px,7vw,48px);color:#ffd447;-webkit-text-stroke:2px #1a1208;text-shadow:3px 3px 0 #c83a1e;transform:translate(-50%,-50%);animation:pow .9s ease-out forwards;white-space:nowrap;z-index:5}
 @keyframes pow{0%{transform:translate(-50%,-50%) scale(.2) rotate(-14deg);opacity:0}25%{transform:translate(-50%,-80%) scale(1.15) rotate(6deg);opacity:1}100%{transform:translate(-50%,-140%) scale(1) rotate(-4deg);opacity:0}}
 
@@ -213,9 +225,17 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 </header>
 
 <section class="console" aria-live="polite">
-  <button class="status" id="statusBar" type="button" aria-expanded="true" aria-controls="consoleBody"><span class="dot" id="dot"></span><span id="status">Du spielst USA. Tippe eine Figur an.</span><span class="chip" id="codeChip" hidden></span><span class="chev" aria-hidden="true"></span></button>
+  <button class="status" id="statusBar" type="button" aria-expanded="true" aria-controls="consoleBody"><span class="dot" id="dot"></span><span id="status">Du spielst USA. Tippe eine Figur an.</span><span class="chip" id="codeChip" hidden></span><span class="chip clk" id="clkChip" hidden></span><span class="chev" aria-hidden="true"></span></button>
   <div class="cbody" id="consoleBody">
   <div class="online" id="online" hidden>
+    <div class="onrow acct" id="onAcct"></div>
+    <div class="onrow" id="onRatedRow" hidden>
+      <button class="btn primary" id="onRated" type="button">Gewertete Partie suchen · 10+5</button>
+      <span class="onmsg" id="onSearch" hidden></span>
+      <button class="btn" id="onSearchStop" type="button" hidden>Abbrechen</button>
+    </div>
+    <div class="onmsg" id="onLobby"></div>
+    <div class="lab onsub" id="onFriendlyLab">Freundschaftsspiel per Code (ungewertet)</div>
     <div class="onrow" id="onStart">
       <button class="btn primary" id="onCreate" type="button">Spiel erstellen</button>
       <span class="or">oder</span>
@@ -223,11 +243,13 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <button class="btn" id="onJoin" type="button">Beitreten</button>
     </div>
     <div class="onrow" id="onInfo" hidden>
-      <span class="lab">Spielcode</span><span class="codeShow" id="onCodeShow"></span>
+      <span class="lab" id="onCodeLab">Spielcode</span><span class="codeShow" id="onCodeShow"></span>
       <button class="btn" id="onCopy" type="button">Kopieren</button>
       <button class="btn" id="onLeave" type="button">Verlassen</button>
     </div>
+    <div class="onmsg" id="onVs"></div>
     <div class="onmsg" id="onMsg">Erstelle ein Spiel und schick den Code deinem Gegner.</div>
+    <div class="onmsg ok" id="onElo"></div>
   </div>
   <div class="caps">
     <span class="lab" id="capWLab" style="color:var(--usa)">USA erbeutet</span><span class="row" id="capW"></span>
@@ -248,6 +270,31 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
   <p class="legal"><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
 </div>
 </section>
+
+<div class="pick" id="acct" hidden role="dialog" aria-modal="true" aria-labelledby="acctTitle">
+  <div class="pickCard">
+    <div class="pickEyebrow">Checkmate Nations</div>
+    <h2 id="acctTitle">Anmelden</h2>
+    <div class="acctPane" id="acctLogin" hidden>
+      <p class="pickSub">Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.</p>
+      <input class="field" id="acctEmail" type="email" placeholder="E-Mail-Adresse" autocomplete="email" aria-label="E-Mail-Adresse">
+      <button class="btn primary buyBtn" id="acctSend" type="button">Link senden</button>
+      <p class="testNote" id="acctNote"></p>
+    </div>
+    <div class="acctPane" id="acctName" hidden>
+      <p class="pickSub">Dein Spielername erscheint in der Rangliste. 3 bis 20 Zeichen: Buchstaben, Zahlen oder _.</p>
+      <input class="field" id="acctUser" maxlength="20" autocomplete="nickname" aria-label="Spielername">
+      <button class="btn primary buyBtn" id="acctSave" type="button">Speichern</button>
+      <p class="testNote" id="acctNameNote"></p>
+    </div>
+    <div class="acctPane" id="acctNation" hidden>
+      <p class="pickSub">Mit welchem Land spielst du? 10 Minuten Bedenkzeit plus 5 Sekunden pro Zug.</p>
+      <div class="acctBtns"><button class="btn" type="button" data-nat="usa">USA</button><button class="btn" type="button" data-nat="rus">Russland</button></div>
+    </div>
+    <div class="acctPane" id="acctBoard" hidden><ol class="board" id="boardList"></ol></div>
+    <button class="pickBack" id="acctClose" type="button">Schließen</button>
+  </div>
+</div>
 
 <div class="pick" id="modeScreen" hidden role="dialog" aria-modal="true" aria-labelledby="modeTitle">
   <div class="pickCard">
@@ -324,7 +371,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
     'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
     'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
-    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Verbindung zum Server fehlgeschlagen. Versuch es gleich nochmal.':'Could not reach the server. Please try again in a moment.','Erstelle Spiel …':'Creating game …','Trete bei …':'Joining …','Spiel konnte nicht erstellt werden. Versuch es nochmal.':'Could not create the game. Please try again.','Beitreten fehlgeschlagen. Versuch es nochmal.':'Could not join. Please try again.','Der Server hat den Zug abgelehnt.':'The server rejected the move.','Zug konnte nicht gesendet werden. Lade neu …':'Could not send the move. Reloading …','Impressum':'Legal notice','Datenschutz':'Privacy','Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.':'Satire. Not affiliated with any person or country shown, no political statement.','2D-Figuren an':'2D pieces on','2D-Figuren aus':'2D pieces off','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
+    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Gewertete Partie suchen · 10+5':'Find a rated game · 10+5','Gerade sucht niemand eine gewertete Partie.':'Nobody is looking for a rated game right now.','1 Spieler sucht gerade eine gewertete Partie.':'1 player is looking for a rated game right now.','Freundschaftsspiel per Code (ungewertet)':'Friendly game by code (unrated)','Anmelden':'Sign in','Abmelden':'Sign out','Rangliste':'Leaderboard','Konto löschen':'Delete account','Angemeldet':'Signed in','Spielernamen wählen':'Choose a player name','Gast · Gewertete Partien brauchen ein Konto.':'Guest · Rated games need an account.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','E-Mail-Adresse':'E-mail address','Link senden':'Send link','Spielername':'Player name','Speichern':'Save','Schließen':'Close','Dein Spielername erscheint in der Rangliste. 3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'Your player name appears on the leaderboard. 3 to 20 characters: letters, digits or _.','Mit welchem Land spielst du? 10 Minuten Bedenkzeit plus 5 Sekunden pro Zug.':'Which country do you play? 10 minutes plus 5 seconds per move.','Gewertete Partie':'Rated game','Gewertet':'Rated','Bitte eine gültige E-Mail-Adresse eingeben.':'Please enter a valid e-mail address.','Sende …':'Sending …','Das hat nicht geklappt. Versuch es in ein paar Minuten nochmal.':'That did not work. Please try again in a few minutes.','Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link.':'The link is on its way. Open the e-mail on this device and tap the link.','3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'3 to 20 characters: letters, digits or _.','Dieser Name ist schon vergeben.':'This name is already taken.','Speichern fehlgeschlagen. Versuch es nochmal.':'Saving failed. Please try again.','Konto und Elo-Wertung endgültig löschen?':'Delete your account and rating for good?','Löschen fehlgeschlagen. Versuch es nochmal.':'Deleting failed. Please try again.','Dein Konto wurde gelöscht.':'Your account has been deleted.','Lade …':'Loading …','Rangliste konnte nicht geladen werden.':'Could not load the leaderboard.','Noch keine gewerteten Partien.':'No rated games yet.','Suche fehlgeschlagen. Versuch es nochmal.':'Search failed. Please try again.','Partie abgebrochen':'Game aborted','Kein erster Zug innerhalb von 60 Sekunden. Keine Wertung.':'No first move within 60 seconds. Not rated.','Keine Wertung.':'Not rated.','Zeit abgelaufen':'Time is up','Partie vorbei. „Neues Spiel“ für die nächste Partie.':'Game over. "New game" for the next one.','Der Anmelde-Link ist abgelaufen oder ungültig. Fordere einen neuen an.':'The sign-in link has expired or is invalid. Request a new one.','Verbindung zum Server fehlgeschlagen. Versuch es gleich nochmal.':'Could not reach the server. Please try again in a moment.','Erstelle Spiel …':'Creating game …','Trete bei …':'Joining …','Spiel konnte nicht erstellt werden. Versuch es nochmal.':'Could not create the game. Please try again.','Beitreten fehlgeschlagen. Versuch es nochmal.':'Could not join. Please try again.','Der Server hat den Zug abgelehnt.':'The server rejected the move.','Zug konnte nicht gesendet werden. Lade neu …':'Could not send the move. Reloading …','Impressum':'Legal notice','Datenschutz':'Privacy','Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.':'Satire. Not affiliated with any person or country shown, no political statement.','2D-Figuren an':'2D pieces on','2D-Figuren aus':'2D pieces off','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
     'Karikaturen an':'Caricatures on','Karikaturen aus':'Caricatures off','Flaggen an':'Flags on','Flaggen aus':'Flags off',
     'Neues Spiel':'New game','Spiel erstellen':'Create game','oder':'or','Beitreten':'Join','Spielcode':'Game code',
     'Kopieren':'Copy','Verlassen':'Leave','Erstelle ein Spiel und schick den Code deinem Gegner.':'Create a game and send the code to your opponent.',
@@ -387,7 +434,16 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     [/^(.+) plant den nächsten Zug …$/,m=>N(m[1])+' is planning the next move …'],
     [/^Dein Zug, (.+)\.$/,m=>'Your move, '+N(m[1])+'.'],
     [/^Warte auf Gegner … Schick ihm den Code (.+)\.$/,m=>'Waiting for opponent … Send them the code '+m[1]+'.'],
-    [/^Spiel mit mir Weltmacht Schach! Code: (.+)$/,m=>'Play Checkmate Nations with me! Code: '+m[1]]
+    [/^Spiel mit mir Weltmacht Schach! Code: (.+)$/,m=>'Play Checkmate Nations with me! Code: '+m[1]],
+    [/^Suche Gegner … (\d+:\d\d)$/,m=>'Looking for an opponent … '+m[1]],
+    [/^Erster Zug: (\d+:\d\d)$/,m=>'First move: '+m[1]],
+    [/^Gegner: (.+)$/,m=>'Opponent: '+m[1]],
+    [/^(\d+) Spieler suchen gerade eine gewertete Partie\.$/,m=>m[1]+' players are looking for a rated game right now.'],
+    [/^(\d+) Spieler online · niemand sucht gerade eine gewertete Partie\.$/,m=>m[1]+' online · nobody is looking for a rated game.'],
+    [/^(\d+) Spieler online · 1 sucht eine gewertete Partie\.$/,m=>m[1]+' online · 1 is looking for a rated game.'],
+    [/^(\d+) Spieler online · (\d+) suchen eine gewertete Partie\.$/,m=>m[1]+' online · '+m[2]+' are looking for a rated game.'],
+    [/^Eure Bilanz: Du (\d+) · Remis (\d+) · Gegner (\d+)$/,m=>'Your record: you '+m[1]+' · draws '+m[2]+' · opponent '+m[3]],
+    [/^Elo ([+-]\d+), jetzt (\d+)\.$/,m=>'Elo '+m[1]+', now '+m[2]+'.']
   ];
   function tr(s){
     const t=s.trim(); if(!t) return s;
@@ -1541,7 +1597,7 @@ renderer.domElement.addEventListener('pointerup',e=>{
 });
 function onPick(sq){
   if(pickerOpen||busy||over||(mode==='ai'&&game.turn()!==myColor)) return;
-  if(mode==='online'&&(!on.code||!on.color||game.turn()!==on.color||!on.ready)) return;
+  if(mode==='online'&&(!on.id||!on.color||game.turn()!==on.color||!on.ready)) return;
   const t=targets.find(m=>m.to===sq);
   if(selected&&t){ doMove(t.promotion?targets.find(m=>m.to===sq&&m.promotion==='q'):t); return; }
   const p=game.get(sq), turn=game.turn();
@@ -1631,7 +1687,7 @@ function resetBoard(){
   setupPieces(); setStatus(startText(),'w');
 }
 function newGame(){
-  if(mode==='online'&&on.code&&on.ready&&!over&&!busy){ // leaving a running online game counts as resignation
+  if(mode==='online'&&on.id&&on.ready&&!over&&!busy){ // leaving a running online game counts as resignation
     $('resign').hidden=false;
     $('resignCancel').onclick=()=>{ $('resign').hidden=true; };
     $('resignOk').onclick=()=>{ $('resign').hidden=true; onlineResign(); };
@@ -1644,7 +1700,7 @@ let gameStarted=false;
 function openModeScreen(){
   pickerOpen=true;
   $('modeScreen').hidden=false;
-  $('modeScreen').querySelector('.rematch').hidden=!(mode==='online'&&on.code&&on.ready);
+  $('modeScreen').querySelector('.rematch').hidden=!(mode==='online'&&on.id&&on.ready&&!on.rated);
   $('modeClose').hidden=!gameStarted;
   $('modeClose').onclick=()=>{ $('modeScreen').hidden=true; pickerOpen=false; };
   document.querySelectorAll('.modeBtn').forEach(b=>b.onclick=()=>{
@@ -1708,7 +1764,9 @@ $('mode').addEventListener('change',e=>chooseMode(e.target.value));
 /* ---------- Online 1 gegen 1 (Supabase): guests play friendly games by code. Clients only read their games;
    every change goes through the "game" edge function, which checks each move with chess.js (supabase/). ---------- */
 const SB_URL='https://uerlobtrjmgveqeoykwk.supabase.co', SB_KEY='sb_publishable_LonNZRxlG1jfaVZzmPCi7g_3VEu6KPy'; // public by design
-const on={sb:null,me:null,id:null,code:null,color:null,doc:null,chan:null,poll:null,epoch:0,moveNo:0,ready:false,queue:null,opp:false};
+const on={sb:null,me:null,user:null,profile:null,id:null,code:null,color:null,doc:null,chan:null,poll:null,epoch:0,moveNo:0,ready:false,queue:null,opp:false,
+  rated:false,clockTimer:null,offset:0,lastClaim:0,eloShown:false,search:null,lobbyTimer:null,recordKey:null,
+  lobbyChan:null,lobbyOnline:0,lobbySearching:null};
 function onMsg(t,ok){ const m=$('onMsg'); m.textContent=t; m.className='onmsg'+(ok?' ok':''); }
 function loadSupabase(){ // only fetched when someone picks online play
   if(window.supabase) return Promise.resolve();
@@ -1727,13 +1785,209 @@ async function onlineInit(){
     on.sb=on.sb||window.supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'wms-auth',persistSession:true,autoRefreshToken:true}});
     await signIn();
   }catch(e){ on.me=null; onMsg('Verbindung zum Server fehlgeschlagen. Versuch es gleich nochmal.'); return; }
-  onMsg('Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.');
+  onMsg(AUTH_ERR?'Der Anmelde-Link ist abgelaufen oder ungültig. Fordere einen neuen an.':'Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.');
   setStatus('Online: Spiel erstellen oder beitreten.','w');
+  await refreshAccount();
+  resumeRated();
+  startLobby();
+}
+async function resumeRated(){ // after a reload: back into a rated game that is still running
+  if(!on.profile||on.id) return;
+  try{
+    const {data}=await on.sb.from('games').select('*').eq('status','active').eq('rated',true)
+      .or('white_id.eq.'+on.me+',black_id.eq.'+on.me).limit(1);
+    const row=data&&data[0]; if(!row||on.id) return;
+    onlineAttach(fromRow(row),row.white_id===on.me?'w':'b');
+  }catch(e){}
+}
+/* ---------- accounts: a guest turns into an e-mail account (magic link) and picks a player name ---------- */
+const AUTH_ERR=/error_description=/.test(location.hash);
+const isReg=u=>!!(u&&!u.is_anonymous&&u.email&&u.email_confirmed_at);
+async function refreshAccount(){
+  try{ const {data}=await on.sb.auth.getUser(); on.user=data.user||null; }catch(e){ on.user=null; }
+  on.profile=null;
+  if(isReg(on.user)){ try{ const {data}=await on.sb.from('profiles').select('*').eq('id',on.user.id).maybeSingle(); on.profile=data||null; }catch(e){} }
+  renderAccount();
+  if(isReg(on.user)&&!on.profile) openAcct('name');
+}
+function renderAccount(){
+  const el=$('onAcct'); el.textContent='';
+  const add=(tag,txt,cls,fn)=>{ const x=document.createElement(tag); if(txt!=null) x.textContent=txt; if(cls) x.className=cls; if(fn){ x.type='button'; x.onclick=fn; } el.appendChild(x); return x; };
+  if(on.profile){
+    const who=add('span',null,'who'), b=document.createElement('b'); b.textContent=on.profile.username;
+    who.appendChild(b); who.appendChild(document.createTextNode(' · Elo '+on.profile.elo+(on.profile.games<20?'?':'')));
+    add('button','Rangliste','linkBtn',()=>openAcct('board')); add('button','Abmelden','linkBtn',logout); add('button','Konto löschen','linkBtn',deleteAccount);
+  }else if(isReg(on.user)){
+    add('span','Angemeldet','who'); add('button','Spielernamen wählen','linkBtn',()=>openAcct('name')); add('button','Abmelden','linkBtn',logout);
+  }else{
+    add('span','Gast · Gewertete Partien brauchen ein Konto.','who');
+    add('button','Anmelden','linkBtn',()=>openAcct('login')); add('button','Rangliste','linkBtn',()=>openAcct('board'));
+  }
+  $('onRatedRow').hidden=!on.profile||!!on.id;
+  $('onRated').hidden=!!on.search; $('onSearch').hidden=!on.search; $('onSearchStop').hidden=!on.search;
+}
+function openAcct(v){
+  ['login','name','nation','board'].forEach(k=>{ $('acct'+k[0].toUpperCase()+k.slice(1)).hidden=k!==v; });
+  $('acctTitle').textContent={login:'Anmelden',name:'Spielername',nation:'Gewertete Partie',board:'Rangliste'}[v];
+  $('acct').hidden=false; pickerOpen=true;
+  if(v==='login'){ $('acctNote').textContent=''; setTimeout(()=>$('acctEmail').focus(),50); }
+  if(v==='name'){ $('acctNameNote').textContent=''; $('acctUser').value=on.profile?on.profile.username:''; setTimeout(()=>$('acctUser').focus(),50); }
+  if(v==='board') loadBoard();
+}
+function closeAcct(){ $('acct').hidden=true; pickerOpen=false; }
+async function sendLink(){
+  const email=($('acctEmail').value||'').trim(), note=$('acctNote');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ note.textContent='Bitte eine gültige E-Mail-Adresse eingeben.'; return; }
+  note.textContent='Sende …';
+  const redirect=location.origin+location.pathname;
+  let err='exists';
+  if(on.user&&on.user.is_anonymous){ // the guest becomes a real account and keeps its id
+    const r=await on.sb.auth.updateUser({email},{emailRedirectTo:redirect});
+    err=r.error?(/already|exists|registered/i.test(r.error.message||'')?'exists':r.error):null;
+  }
+  if(err==='exists'){ const r=await on.sb.auth.signInWithOtp({email,options:{emailRedirectTo:redirect,shouldCreateUser:true}}); err=r.error; }
+  note.textContent=err?'Das hat nicht geklappt. Versuch es in ein paar Minuten nochmal.':'Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link.';
+}
+async function saveName(){
+  const n=($('acctUser').value||'').trim(), note=$('acctNameNote');
+  if(!/^[A-Za-z0-9_]{3,20}$/.test(n)){ note.textContent='3 bis 20 Zeichen: Buchstaben, Zahlen oder _.'; return; }
+  const r=await api('profile',{username:n});
+  if(r.error){ note.textContent=r.status===409?'Dieser Name ist schon vergeben.':'Speichern fehlgeschlagen. Versuch es nochmal.'; return; }
+  on.profile=r.profile; closeAcct(); renderAccount();
+}
+async function logout(){
+  stopSearch(); if(on.lobbyChan){ try{ on.sb.removeChannel(on.lobbyChan); }catch(e){} on.lobbyChan=null; }
+  await on.sb.auth.signOut().catch(()=>{});
+  on.profile=null; await signIn().catch(()=>{}); refreshAccount();
+}
+async function deleteAccount(){
+  if(!confirm(window.T('Konto und Elo-Wertung endgültig löschen?'))) return;
+  stopSearch();
+  const r=await api('delete_account',{});
+  if(r.error){ onMsg('Löschen fehlgeschlagen. Versuch es nochmal.'); return; }
+  await on.sb.auth.signOut().catch(()=>{}); on.profile=null; await signIn().catch(()=>{}); await refreshAccount();
+  onMsg('Dein Konto wurde gelöscht.',true);
+}
+async function loadBoard(){
+  const ol=$('boardList'), item=(t,cls)=>{ const li=document.createElement('li'); li.textContent=t; if(cls) li.className=cls; ol.appendChild(li); return li; };
+  ol.textContent=''; item('Lade …');
+  let res; try{ res=await on.sb.from('profiles').select('id,username,elo,games').gt('games',0).order('elo',{ascending:false}).limit(50); }catch(e){ res={error:e}; }
+  ol.textContent='';
+  if(res.error||!res.data||!res.data.length){ item(res.error?'Rangliste konnte nicht geladen werden.':'Noch keine gewerteten Partien.'); return; }
+  for(const p of res.data){
+    const li=item(p.username+(p.games<20?' ?':''),on.profile&&p.id===on.profile.id?'me':'');
+    const sp=document.createElement('span'); sp.textContent=p.elo; li.appendChild(sp);
+  }
+}
+/* ---------- lobby: how many players are searching right now ---------- */
+function showSearching(n){ on.lobbySearching=n; renderLobby(); }
+function renderLobby(){
+  const n=on.lobbySearching, o=on.lobbyOnline; if(n==null&&!o) return;
+  if(o>0) $('onLobby').textContent=o+' Spieler online · '+(!n?'niemand sucht gerade eine gewertete Partie.':n===1?'1 sucht eine gewertete Partie.':n+' suchen eine gewertete Partie.');
+  else $('onLobby').textContent=!n?'Gerade sucht niemand eine gewertete Partie.':n===1?'1 Spieler sucht gerade eine gewertete Partie.':n+' Spieler suchen gerade eine gewertete Partie.';
+}
+function lobbyTick(){
+  if(mode!=='online'){ // left the online area: no longer counted as online
+    if(on.lobbyChan){ try{ on.sb.removeChannel(on.lobbyChan); }catch(e){} on.lobbyChan=null; on.lobbyOnline=0; }
+    return;
+  }
+  if(!on.sb||document.hidden) return;
+  if(!on.lobbyChan) joinLobby();
+  if(on.id||on.search) return;
+  api('stats',{}).then(r=>{ if(typeof r.searching==='number'&&!on.id&&!on.search) showSearching(r.searching); });
+}
+function joinLobby(){ // everyone in the online area shows up here (presence only, nothing is stored)
+  const ch=on.sb.channel('lobby',{config:{presence:{key:on.me||'x'}}});
+  ch.on('presence',{event:'sync'},()=>{ on.lobbyOnline=Object.keys(ch.presenceState()).length; renderLobby(); })
+    .subscribe(st=>{ if(st==='SUBSCRIBED') ch.track({at:Date.now()}).catch(()=>{}); });
+  on.lobbyChan=ch;
+}
+function startLobby(){ if(!on.lobbyTimer){ on.lobbyTimer=setInterval(lobbyTick,15000); } lobbyTick(); }
+/* ---------- head-to-head record for friendly games (private, never rated) ---------- */
+async function loadRecord(){
+  const d=on.doc; if(!d||on.rated||!d.white||!d.black) return;
+  const opp=on.color==='w'?d.black:d.white, me=on.me, lo=me<opp?me:opp, hi=me<opp?opp:me, id=on.id;
+  try{
+    const {data}=await on.sb.from('friend_records').select('*').eq('a',lo).eq('b',hi).maybeSingle();
+    if(on.id!==id) return;
+    if(!data){ $('onVs').textContent=''; return; }
+    const mine=me===lo?data.a_wins:data.b_wins, theirs=me===lo?data.b_wins:data.a_wins;
+    $('onVs').textContent='Eure Bilanz: Du '+mine+' · Remis '+data.draws+' · Gegner '+theirs;
+  }catch(e){}
+}
+/* ---------- matchmaking: ask the server every few seconds until it pairs us ---------- */
+function startSearch(nation){
+  closeAcct(); stopSearch();
+  const s={nation,t0:Date.now(),timer:null,next:null}; on.search=s; renderAccount(); tickSearch();
+  s.timer=setInterval(tickSearch,1000);
+  const loop=async()=>{
+    if(on.search!==s) return;
+    const r=await api('queue',{nation});
+    if(on.search!==s) return;
+    if(r.game){ on.search=null; clearInterval(s.timer); onlineAttach(r.game,r.seat); return; }
+    if(r.error){ on.search=null; clearInterval(s.timer); renderAccount(); onMsg('Suche fehlgeschlagen. Versuch es nochmal.'); return; }
+    if(typeof r.searching==='number') showSearching(r.searching);
+    s.next=setTimeout(loop,3000);
+  };
+  loop();
+}
+function tickSearch(){
+  if(!on.search) return;
+  const t=Math.floor((Date.now()-on.search.t0)/1000);
+  $('onSearch').textContent='Suche Gegner … '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
+}
+function stopSearch(){
+  const s=on.search; if(!s) return;
+  on.search=null; clearInterval(s.timer); clearTimeout(s.next);
+  if(on.sb) api('unqueue',{}); renderAccount();
+}
+/* ---------- chess clock (rated): the server's numbers count, the display just counts down ---------- */
+function fmtClock(ms){ const t=Math.ceil(Math.max(0,ms)/1000); return Math.floor(t/60)+':'+String(t%60).padStart(2,'0'); }
+const thinking=d=>Date.now()+on.offset-Date.parse(d.clock.turnStartedAt);
+function clockLeft(d,side){
+  let ms=d.clock[side];
+  if(d.status==='active'&&d.moveNo>=2&&d.fen.split(' ')[1]===side) ms-=thinking(d);
+  return ms;
+}
+function renderClock(){
+  const d=on.doc, chip=$('clkChip');
+  if(!on.rated||!d||!d.clock||!d.clock.turnStartedAt){ chip.hidden=true; return; }
+  chip.hidden=false;
+  const turn=d.fen.split(' ')[1], opp=on.color==='w'?'b':'w', running=d.status==='active';
+  if(running&&d.moveNo<2){
+    const left=60000-thinking(d);
+    chip.textContent='Erster Zug: '+fmtClock(left);
+    if(left<=0) claimClock();
+    return;
+  }
+  chip.textContent='';
+  for(const [side,sep] of [[on.color,' · '],[opp,'']]){
+    const sp=document.createElement('span'); sp.textContent=fmtClock(clockLeft(d,side));
+    if(running&&side===turn) sp.className='on';
+    chip.appendChild(sp); if(sep) chip.appendChild(document.createTextNode(sep));
+  }
+  if(running&&clockLeft(d,turn)<=0) claimClock();
+}
+function claimClock(){ // a clock reached zero: the server checks with its own time
+  if(Date.now()-on.lastClaim<3000) return; on.lastClaim=Date.now();
+  const id=on.id; api('claim',{id}).then(r=>{ if(on.id===id&&r.game) onlineSnap(toDoc(r.game)); });
+}
+function onlineEndCheck(){ // results the board cannot see by itself: time, abort, Elo
+  const d=on.doc; if(!d||d.status!=='finished'||d.epoch!==on.epoch||busy) return;
+  if(!over&&(d.reason==='timeout'||d.reason==='aborted')){
+    over=true; selected=null; targets=[]; clearMarkers();
+    if(d.reason==='aborted') banner('Partie abgebrochen','Kein erster Zug innerhalb von 60 Sekunden. Keine Wertung.',true);
+    else banner('Zeit abgelaufen','Sieg für '+TEAM[d.result==='1-0'?'w':'b'].winner+'!',true);
+  }
+  if(on.rated&&d.eloChange&&!on.eloShown){
+    on.eloShown=true; const dx=d.eloChange[on.color];
+    refreshAccount().then(()=>{ if(on.profile) $('onElo').textContent='Elo '+(dx>=0?'+':'')+dx+', jetzt '+on.profile.elo+'.'; });
+  }
 }
 async function api(action,body,retried){
   try{
     const {data,error}=await on.sb.functions.invoke('game',{body:Object.assign({action},body)});
-    if(!error) return data;
+    if(!error){ if(data&&data.game&&data.game.serverNow) on.offset=data.game.serverNow-Date.now(); return data; }
     let j=null; try{ j=await error.context.json(); }catch(e){}
     const status=error.context&&error.context.status;
     if(status===401&&!retried){ await on.sb.auth.signOut().catch(()=>{}); await signIn(); return api(action,body,true); } // guest was cleaned up
@@ -1744,15 +1998,20 @@ async function api(action,body,retried){
 function toDoc(g){
   const resigned=g.reason==='resign'?(g.result==='1-0'?'b':'w'):null;
   return {id:g.id,code:g.code,white:g.white,black:g.black,nations:g.nations,fen:g.fen,moveNo:g.moveNo,last:g.last,
-    caps:g.caps||{w:[],b:[]},epoch:g.epoch,resigned,resignEpoch:resigned?g.epoch:null};
+    caps:g.caps||{w:[],b:[]},epoch:g.epoch,resigned,resignEpoch:resigned?g.epoch:null,
+    rated:!!g.rated,clock:g.clock||null,eloChange:g.eloChange||null,status:g.status,result:g.result,reason:g.reason};
 }
 const fromRow=r=>({id:r.id,code:r.code,white:r.white_id,black:r.black_id,nations:{w:r.white_nation,b:r.black_nation},fen:r.fen,
-  moveNo:r.move_no,last:r.last_move,caps:r.caps,epoch:r.epoch,result:r.result,reason:r.reason});
+  moveNo:r.move_no,last:r.last_move,caps:r.caps,epoch:r.epoch,status:r.status,result:r.result,reason:r.reason,rated:r.rated,eloChange:r.elo_change,
+  clock:r.rated?{w:r.white_ms,b:r.black_ms,inc:r.increment_ms,turnStartedAt:r.turn_started_at}:null});
 function showCode(){
-  $('onStart').hidden=!!on.code; $('onInfo').hidden=!on.code;
-  $('onCodeShow').textContent=on.code||'';
+  const inGame=!!on.id;
+  $('onStart').hidden=inGame; $('onInfo').hidden=!inGame; $('onFriendlyLab').hidden=inGame; $('onLobby').hidden=inGame;
+  $('onCodeLab').textContent=on.code?'Spielcode':'Gewertet'; $('onCodeShow').textContent=on.code||'10+5';
+  $('onCopy').hidden=!on.code;
   $('codeChip').hidden=!on.code; $('codeChip').textContent=on.code||'';
-  if(on.code&&matchMedia('(max-width:600px)').matches) setCollapsed(true);
+  if(on.sb) renderAccount();
+  if(inGame&&matchMedia('(max-width:600px)').matches) setCollapsed(true);
 }
 function onlineCreate(){
   if(!on.me) return;
@@ -1780,7 +2039,14 @@ function onlineAttach(g,color){
   onlineDetach();
   const id=g.id;
   on.id=id; on.code=g.code; on.color=color; on.epoch=-1; on.moveNo=-1; on.ready=false;
+  on.rated=!!g.rated; on.eloShown=false; on.recordKey=null; $('onElo').textContent=''; $('onVs').textContent='';
+  if(g.serverNow) on.offset=g.serverNow-Date.now();
   showCode(); swingTo(color);
+  if(on.rated){
+    on.clockTimer=setInterval(renderClock,250);
+    const oppId=color==='w'?g.black:g.white; // show who we are playing
+    on.sb.from('profiles').select('username,elo').eq('id',oppId).maybeSingle().then(({data})=>{ if(on.id===id&&data) $('onVs').textContent='Gegner: '+data.username+' ('+data.elo+')'; });
+  }
   onlineSnap(toDoc(g));
   // live: the opponent's moves arrive as row updates; presence shows whether they are on the page
   const ch=on.sb.channel('game-'+id,{config:{presence:{key:on.me}}});
@@ -1798,10 +2064,12 @@ function onlineAttach(g,color){
 function onlineDetach(){
   if(on.chan){ try{ on.sb.removeChannel(on.chan); }catch(e){} on.chan=null; }
   if(on.poll){ clearInterval(on.poll); on.poll=null; }
-  on.doc=null; on.id=null;
+  if(on.clockTimer){ clearInterval(on.clockTimer); on.clockTimer=null; }
+  $('clkChip').hidden=true; $('onVs').textContent='';
+  on.doc=null; on.id=null; on.rated=false;
   on.code=null; on.color=null; on.ready=false; on.queue=null; on.opp=false;
 }
-function onlineLeave(){ onlineDetach(); showCode(); }
+function onlineLeave(){ stopSearch(); onlineDetach(); showCode(); lobbyTick(); }
 function onlineSnap(d){ on.doc=d; onlineQueue(d); }
 function newer(a,b){ return !b||a.epoch>b.epoch||(a.epoch===b.epoch&&a.moveNo>=b.moveNo); }
 function onlineQueue(d){ if(newer(d,on.queue)) on.queue=d; onlineDrain(); }
@@ -1845,11 +2113,16 @@ function onlinePush(res){
   });
 }
 function onlineStatus(){
-  if(mode!=='online'||!on.code) return;
+  if(mode!=='online'||!on.id) return;
+  onlineEndCheck();
+  if(!on.rated&&on.ready&&on.doc){ // refresh the record once per game round (and after it ends)
+    const key=on.doc.epoch+':'+(on.doc.status==='finished');
+    if(on.recordKey!==key){ on.recordKey=key; loadRecord(); }
+  }
   const mine=CNAME[on.color];
   if(!on.ready){ onMsg('Warte auf Gegner … Schick ihm den Code '+on.code+'.'); setStatus('Du spielst '+mine+'. Warte auf Gegner.',on.color); return; }
   onMsg(on.opp?'Gegner ist online.':'Gegner ist gerade nicht auf der Seite. Seine Züge kommen an, sobald er zurück ist.',on.opp);
-  if(over){ setStatus('Partie vorbei. „Neues Spiel“ startet eine Revanche.',on.color); return; }
+  if(over){ setStatus(on.rated?'Partie vorbei. „Neues Spiel“ für die nächste Partie.':'Partie vorbei. „Neues Spiel“ startet eine Revanche.',on.color); return; }
   const myTurn=game.turn()===on.color;
   setStatus(myTurn?(game.in_check()?'Schach! Rette deinen König.':'Dein Zug, '+mine+'.'):'Gegner ist am Zug …',game.turn(),!myTurn);
 }
@@ -1857,8 +2130,9 @@ function onlineResign(){
   if(!on.id) return;
   const loser=on.color, winner=loser==='w'?'b':'w';
   over=true; selected=null; targets=[]; clearMarkers();
+  const abort=on.rated&&on.moveNo<2; // a rated game is only aborted before both sides moved
   api('resign',{id:on.id}).then(r=>{ if(r.error) onMsg('Aufgabe konnte nicht gesendet werden.'); else onlineSnap(toDoc(r.game)); });
-  banner('Aufgegeben','Sieg für '+TEAM[winner].winner+'.',true);
+  if(abort) banner('Partie abgebrochen','Keine Wertung.',true); else banner('Aufgegeben','Sieg für '+TEAM[winner].winner+'.',true);
   onlineStatus(); setTimeout(openModeScreen,1800);
 }
 function checkResign(d){
@@ -1875,6 +2149,16 @@ async function onlineRematch(){
   onlineSnap(toDoc(r.game));
 }
 $('onCreate').addEventListener('click',onlineCreate);
+$('onRated').addEventListener('click',()=>{ if(on.profile) openAcct('nation'); });
+$('onSearchStop').addEventListener('click',()=>stopSearch());
+document.querySelectorAll('[data-nat]').forEach(b=>b.addEventListener('click',()=>startSearch(b.dataset.nat)));
+$('acctSend').addEventListener('click',sendLink);
+$('acctEmail').addEventListener('keydown',e=>{ if(e.key==='Enter') sendLink(); });
+$('acctSave').addEventListener('click',saveName);
+$('acctUser').addEventListener('keydown',e=>{ if(e.key==='Enter') saveName(); });
+$('acctClose').addEventListener('click',closeAcct);
+// coming back from the e-mail link: open online play right away so the sign-in completes
+if(/access_token=|error_description=/.test(location.hash)) setTimeout(()=>{ $('modeScreen').hidden=true; pickerOpen=false; chooseMode('online'); },300);
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'&&mode==='online'&&on.id) onlineFetch();
 });
