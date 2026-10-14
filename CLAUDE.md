@@ -32,10 +32,10 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   only loaded when online play is chosen. Online only USA and Russia (enforced server-side).
 - Phase 2 (built): e-mail accounts via magic link (a guest is upgraded in place with `updateUser({email})`),
   player names in `profiles` (public, unique case-insensitive), rated games 15 min + 10 s only via matchmaking (if both picked the same nation, whoever waited longer keeps it)
-  (`queue` action, Elo window widens with waiting time, max 3 rated games per pair per day), clocks checked by the
+  (`queue` action, Elo window widens with waiting time, max 3 counted rated games per pair per week; games under 10 moves per side never change Elo), clocks checked by the
   server (first move of each side: 60 s, else aborted, no Elo; early resign also only aborts), flag fall via `claim` (a draw if the side with time left has only K, K+B or K+N)
   and the per-minute `sweep_clocks()` cron, Elo settled once in SQL `finish_game()` (start 1200, K 40 for the first
-  20 games, then 20), leaderboard from `profiles`. Sign-in mails need custom SMTP (Resend), see supabase/README.md.
+  20 games, then 20), leaderboard via SQL `leaderboard()` (only players with rated games against at least 5 different opponents; `?` = provisional, under 20 games). Sign-in mails need custom SMTP (Resend), see supabase/README.md.
   Lobby shows players online in the online area (Realtime presence channel `lobby`, nothing stored) and how many
   are searching (`stats` action). Friendly code games keep a private head-to-head
   record per pair (`friend_records`, counted in `finish_game()`); they never touch Elo or the leaderboard.
