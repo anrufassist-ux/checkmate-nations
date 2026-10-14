@@ -1,13 +1,19 @@
 // Checkmate Nations: the only way to change a game. Every move is replayed and checked with chess.js
 // on the server, so a modified client cannot play illegal moves, move for the opponent, fake a result
-// or stop its clock. Rated games (10 min + 5 s) only come from matchmaking; Elo is settled in SQL.
+// or stop its clock. Rated games (15 min + 10 s) only come from matchmaking; Elo and the Nations League
+// are settled in SQL. Purchases go through Stripe Checkout and are granted here once Stripe says "paid".
 // Deploy as edge function "game" (JWT verification off: this function checks the user itself).
 import postgres from "npm:postgres@3.4.5";
 import { Chess } from "npm:chess.js@0.10.3";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { prepare: false, max: 4, idle_timeout: 20 });
 const AUTH_USER_URL = Deno.env.get("SUPABASE_URL") + "/auth/v1/user";
-const ONLINE_NATIONS = new Set(["usa", "rus"]); // paid nations stay offline until real checkout exists
+const FREE_NATIONS = ["usa", "rus"];
+const PAID_NATIONS = ["eu", "ger", "isr", "irn", "chn"];
+const ALL_NATIONS = new Set([...FREE_NATIONS, ...PAID_NATIONS]);
+const STRIPE_API = Deno.env.get("STRIPE_API") || "https://api.stripe.com";
+const PRICES: Record<string, number> = { bundle3: 299, all: 499, pass: 99 }; // cents, no VAT (§ 19 UStG)
+const RETURN_OK = /^https:\/\/((www\.)?checkmatenations\.com|[a-z0-9-]+-anrufassist-uxs-projects\.vercel\.app)\//;
 const CODE_ABC = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const SQ = /^[a-h][1-8]$/;
 const BASE_MS = 900_000, INC_MS = 10_000, FIRST_MOVE_MS = 60_000;
@@ -81,7 +87,8 @@ function onTime(fen: string, loser: string) {
 // ---------- friendly games by code (guests welcome, never rated) ----------
 async function create(u: User, body: Game) {
   const w = String(body.w || "usa"), b = String(body.b || "rus");
-  if (!ONLINE_NATIONS.has(w) || !ONLINE_NATIONS.has(b)) return fail("nation not available online", 400);
+  const mine = await ownedNations(sql, u.id); // the creator may also hand an owned nation to the friend
+  if (!mine.includes(w) || !mine.includes(b)) return fail("nation not owned", 403);
   if (w === b) return fail("both sides need different nations", 400);
   for (let i = 0; i < 8; i++) {
     let code = "";
@@ -220,7 +227,9 @@ async function queue(u: User, body: Game) {
   if (!registered(u)) return fail("account needed", 403);
   const [p] = await sql`select * from public.profiles where id = ${u.id}`;
   if (!p) return fail("no profile", 412);
-  const nation = ONLINE_NATIONS.has(String(body.nation)) ? String(body.nation) : "usa";
+  const owned = await ownedNations(sql, u.id);
+  const nation = String(body.nation || "usa");
+  if (!owned.includes(nation)) return fail("nation not owned", 403);
   return sql.begin(async (tx) => {
     await tx`select pg_advisory_xact_lock(4711)`; // one matcher at a time
     const [cur] = await tx`select * from public.games where rated and status = 'active'
@@ -239,13 +248,13 @@ async function queue(u: User, body: Game) {
              and coalesce((x.elo_change->>'short')::boolean, false) = false
              and ((x.white_id = q.user_id and x.black_id = ${u.id}) or (x.white_id = ${u.id} and x.black_id = q.user_id)))
             < ${PAIR_GAMES_PER_WEEK}
-      order by q.joined_at limit 1`;
+      order by (q.nation = ${nation}), q.joined_at limit 1`; // prefer an opponent with another nation
     if (!opp) return reply({ waiting: true, searching: await countSearching(tx) });
     await tx`delete from public.match_queue where user_id in (${u.id}, ${opp.user_id})`;
     const meWhite = Math.random() < 0.5;
     const [wid, bid] = meWhite ? [u.id, opp.user_id] : [opp.user_id, u.id];
     // the player who waited longer keeps their nation; the newcomer gets the other one if both picked the same
-    const mine = nation === opp.nation ? (opp.nation === "usa" ? "rus" : "usa") : nation;
+    const mine = nation !== opp.nation ? nation : (opp.nation === "usa" ? "rus" : "usa");
     const wn = meWhite ? mine : opp.nation;
     const bn = meWhite ? opp.nation : mine;
     const [g] = await tx`insert into public.games (white_id, black_id, white_nation, black_nation, status, rated,
@@ -266,8 +275,144 @@ async function unqueue(u: User) {
   return reply({ ok: true });
 }
 
+// ---------- shop: what a player owns, Stripe Checkout ----------
+// deno-lint-ignore no-explicit-any
+async function ownedNations(q: any, uid: string): Promise<string[]> {
+  const rows = await q`select nation from public.owned_nations where user_id = ${uid}`;
+  return [...FREE_NATIONS, ...rows.map((r: Game) => r.nation)];
+}
+const season = async () => (await sql`select public.current_season() s`)[0].s as string;
+
+async function stripe(path: string, form?: URLSearchParams) {
+  const key = Deno.env.get("STRIPE_SECRET_KEY");
+  if (!key) throw new Error("STRIPE_SECRET_KEY missing");
+  const r = await fetch(STRIPE_API + path, {
+    method: form ? "POST" : "GET",
+    headers: { Authorization: "Bearer " + key, ...(form ? { "Content-Type": "application/x-www-form-urlencoded" } : {}) },
+    body: form,
+  });
+  const j = await r.json();
+  if (!r.ok) throw new Error("stripe " + r.status + ": " + JSON.stringify(j.error || j));
+  return j;
+}
+
+// Ask Stripe about this player's open checkouts and grant what was paid (safe to call often)
+async function syncPurchases(uid: string) {
+  const open = await sql`select session_id from public.checkouts where user_id = ${uid} and status = 'open'
+    and created_at > now() - interval '3 days'`;
+  for (const { session_id } of open) {
+    let cs;
+    try { cs = await stripe("/v1/checkout/sessions/" + encodeURIComponent(session_id)); } catch (e) { console.error(e); continue; }
+    if (cs.payment_status === "paid") {
+      await sql.begin(async (tx) => {
+        const [c] = await tx`update public.checkouts set status = 'paid', paid_at = now()
+          where session_id = ${session_id} and status = 'open' returning *`;
+        if (!c) return; // granted already
+        if (c.product === "pass") {
+          await tx`insert into public.league_passes (user_id, season, session_id) values (${uid}, ${c.season}, ${session_id})
+            on conflict do nothing`;
+        } else {
+          for (const n of c.nations) {
+            await tx`insert into public.owned_nations (user_id, nation, session_id) values (${uid}, ${n}, ${session_id})
+              on conflict do nothing`;
+          }
+        }
+      });
+    } else if (cs.status === "expired") {
+      await sql`update public.checkouts set status = 'expired' where session_id = ${session_id} and status = 'open'`;
+    }
+  }
+}
+
+// League access this season: any bought nation, or a league pass for this season
+async function shopState(uid: string) {
+  const s = await season();
+  const owned = await ownedNations(sql, uid);
+  const [pass] = await sql`select 1 from public.league_passes where user_id = ${uid} and season = ${s}`;
+  const [entry] = await sql`select nation, joined_at from public.league_entries where season = ${s} and user_id = ${uid}`;
+  return { season: s, owned, pass: !!pass, access: !!pass || owned.length > FREE_NATIONS.length, entry: entry || null };
+}
+
+async function me(u: User) {
+  if (!registered(u)) return reply({ season: await season(), owned: FREE_NATIONS, pass: false, access: false, entry: null });
+  await syncPurchases(u.id);
+  return reply(await shopState(u.id));
+}
+
+async function checkout(u: User, body: Game) {
+  if (!registered(u)) return fail("account needed", 403);
+  if (body.consent !== true) return fail("consent needed", 400);
+  const product = String(body.product || "");
+  if (!(product in PRICES)) return fail("bad product", 400);
+  const st = await shopState(u.id);
+  let nations: string[] = [];
+  let name = "";
+  if (product === "bundle3") {
+    nations = [...new Set((Array.isArray(body.nations) ? body.nations : []).map(String))];
+    if (nations.length !== 3 || nations.some((n) => !PAID_NATIONS.includes(n) || st.owned.includes(n))) {
+      return fail("pick 3 nations you don't own yet", 400);
+    }
+    name = "Checkmate Nations: 3 nations";
+  } else if (product === "all") {
+    nations = PAID_NATIONS.filter((n) => !st.owned.includes(n));
+    if (!nations.length) return fail("owned already", 409);
+    name = "Checkmate Nations: all nations";
+  } else {
+    if (st.access) return fail("league access already", 409);
+    name = "Checkmate Nations: Nations League pass " + st.season;
+  }
+  const back = RETURN_OK.test(String(body.returnUrl || "")) ? String(body.returnUrl).split(/[?#]/)[0] : "https://checkmatenations.com/";
+  const f = new URLSearchParams({
+    mode: "payment",
+    "line_items[0][quantity]": "1",
+    "line_items[0][price_data][currency]": "eur",
+    "line_items[0][price_data][unit_amount]": String(PRICES[product]),
+    "line_items[0][price_data][product_data][name]": name,
+    success_url: back + "?paid={CHECKOUT_SESSION_ID}",
+    cancel_url: back,
+    client_reference_id: u.id,
+    "metadata[user_id]": u.id,
+    "metadata[product]": product,
+    "metadata[nations]": nations.join(","),
+    "custom_text[submit][message]":
+      "Digital content, unlocked immediately. You agreed to immediate unlocking and lose your right of withdrawal. " +
+      "No VAT is charged (small business, § 19 UStG). / Digitale Inhalte, sofort freigeschaltet; mit deiner Zustimmung " +
+      "zur sofortigen Ausführung erlischt dein Widerrufsrecht. Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.",
+  });
+  if (u.email) f.set("customer_email", u.email);
+  const cs = await stripe("/v1/checkout/sessions", f);
+  await sql`insert into public.checkouts (session_id, user_id, product, nations, season, amount, consent_at)
+    values (${cs.id}, ${u.id}, ${product}, ${nations}, ${product === "pass" ? st.season : null}, ${PRICES[product]}, now())`;
+  return reply({ url: cs.url });
+}
+
+// ---------- Nations League ----------
+async function league(u: User, body: Game) {
+  const s = body.season && /^\d{4}-\d{2}$/.test(String(body.season)) ? String(body.season) : null;
+  const [t] = await sql`select public.league_table(${s}) t`;
+  const out: Game = { table: t.t };
+  if (body.hall) out.hall = (await sql`select public.hall_of_fame() h`)[0].h;
+  return reply(out);
+}
+
+async function leagueJoin(u: User, body: Game) {
+  if (!registered(u)) return fail("account needed", 403);
+  const [p] = await sql`select 1 from public.profiles where id = ${u.id}`;
+  if (!p) return fail("no profile", 412);
+  await syncPurchases(u.id);
+  const st = await shopState(u.id);
+  if (st.entry) return reply(st); // the nation is fixed for the whole season
+  if (!st.access) return fail("league access needed", 402);
+  const nation = String(body.nation || "");
+  if (!st.owned.includes(nation)) return fail("nation not owned", 403);
+  await sql`insert into public.league_entries (season, user_id, nation) values (${st.season}, ${u.id}, ${nation})
+    on conflict do nothing`;
+  return reply(await shopState(u.id));
+}
+
 const ACTIONS: Record<string, (u: User, body: Game) => Promise<Response> | Response> = {
   create, join, move, resign, claim, rematch, profile, queue, unqueue, stats: () => stats(),
+  me, checkout, league, league_join: leagueJoin,
   delete_account: (u) => deleteAccount(u),
 };
 
