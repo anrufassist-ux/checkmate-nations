@@ -92,12 +92,13 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 .onsub{display:block;margin-top:2px}
 .linkBtn{background:none;border:0;padding:0;color:var(--sand);font:inherit;font-size:13px;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 .clk .on{color:var(--fg);text-decoration:underline;text-underline-offset:3px}
-.field{font:inherit;font-size:16px;padding:10px 12px;background:#0d1110;color:var(--fg);border:1px solid var(--line);border-radius:6px;width:100%}
+.field{box-sizing:border-box;min-width:0;font:inherit;font-size:16px;padding:10px 12px;background:#0d1110;color:var(--fg);border:1px solid var(--line);border-radius:6px;width:100%}
 .acctPane{display:grid;gap:10px}.acctPane[hidden]{display:none}
 .acctBtns{display:flex;gap:8px;justify-content:center}
 .board{margin:0;padding:0 4px 0 30px;text-align:left;max-height:55vh;overflow:auto;font-size:15px;line-height:1.8}
 .board li span{float:right;color:var(--sand);font-family:var(--f-label);font-weight:700}
 .board li.me{color:var(--sand)}
+.otpRow{display:flex;gap:8px}.otpRow .field{flex:1;letter-spacing:.2em;text-align:center}.owned{flex-basis:100%;font-size:12.5px;color:var(--muted)}
 .buyOpts{display:grid;gap:8px}.buyOpt{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;border:2px solid var(--line);background:rgba(0,0,0,.25);color:var(--fg);font:inherit;cursor:pointer;text-align:left}
 .buyOpt b{font-family:var(--f-display);font-weight:400;color:var(--sand);font-size:20px;white-space:nowrap}.buyOpt.on{border-color:var(--sand)}.buyOpt small{display:block;color:var(--muted);font-size:12.5px}
 .buyPicks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.buyPicks .btn.on{border-color:var(--sand);color:var(--sand)}
@@ -285,9 +286,13 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     <div class="pickEyebrow">Checkmate Nations</div>
     <h2 id="acctTitle">Anmelden</h2>
     <div class="acctPane" id="acctLogin" hidden>
-      <p class="pickSub">Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.</p>
+      <p class="pickSub">Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.</p>
       <input class="field" id="acctEmail" type="email" placeholder="E-Mail-Adresse" autocomplete="email" aria-label="E-Mail-Adresse">
-      <button class="btn primary buyBtn" id="acctSend" type="button">Link senden</button>
+      <button class="btn primary buyBtn" id="acctSend" type="button">Code senden</button>
+      <div class="otpRow" id="acctCodeRow" hidden>
+        <input class="field" id="acctCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="Code aus der E-Mail" aria-label="Code aus der E-Mail">
+        <button class="btn primary" id="acctVerify" type="button">Anmelden</button>
+      </div>
       <p class="testNote" id="acctNote"></p>
     </div>
     <div class="acctPane" id="acctName" hidden>
@@ -385,6 +390,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
   window.LANG=lang; document.documentElement.lang=lang;
   window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
   const D={
+    'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
     '2,99 €':'€2.99','4,99 €':'€4.99','0,99 €':'€0.99',
     'Neue Länder':'New nations','Länder freischalten':'Unlock nations','League-Pass':'League pass','Damit spielst du diese Saison mit USA oder Russland in der Nations League. Wer ein Land kauft, ist ohne Pass in jeder Saison dabei.':'Play this season of the Nations League with the USA or Russia. Anyone who buys a nation is in every season without a pass.','Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen, auch online. Jeder Länderkauf enthält die Nations League für alle Saisons.':'Own pieces, own queen, own flag pattern. Buy once, play forever, online too. Every nation purchase includes the Nations League for all seasons.','3 Länder nach Wahl':'3 nations of your choice','Du wählst gleich aus':'You pick them next','Alle Länder':'All nations','Alle noch gesperrten Länder':'Every nation still locked','Gilt bis zum Monatsende':'Valid until the end of the month','Weiter zur Zahlung':'Continue to payment','Ich möchte, dass die Freischaltung sofort erfolgt, und weiß, dass ich damit mein Widerrufsrecht verliere. Es gelten die':'I want the unlock to happen immediately and understand that I thereby lose my right of withdrawal. The following apply:','AGB':'Terms','Endpreise. Gemäß § 19 UStG wird keine Umsatzsteuer berechnet. Bezahlt wird über Stripe.':'Final prices. No VAT is charged (small business, § 19 UStG). Payment via Stripe.','Du hast schon alle Länder.':'You already own every nation.','Bitte genau 3 Länder wählen.':'Please pick exactly 3 nations.','Bitte bestätige zuerst das Häkchen.':'Please tick the box first.','Einen Moment …':'One moment …','Verbindung zum Server fehlgeschlagen.':'Could not connect to the server.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.','Das hast du schon.':'You already have this.','Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.':'Could not start the purchase. Please try again.','Danke für deinen Kauf!':'Thanks for your purchase!','Die Zahlung wird noch bestätigt …':'Payment is being confirmed …','Freigeschaltet. Viel Spaß!':'Unlocked. Have fun!','Die Zahlung ist noch nicht bestätigt. Lade die Seite gleich nochmal.':'The payment is not confirmed yet. Reload the page in a moment.','Saison':'Season','League konnte nicht geladen werden.':'Could not load the league.','Für die League brauchst du ein Konto und ein gekauftes Land oder den League-Pass.':'For the league you need an account and a bought nation or the league pass.','Wähle zuerst einen Spielernamen.':'Choose a player name first.','Wähle dein Land für diese Saison. Es bleibt bis zum Monatsende fest.':'Choose your nation for this season. It stays fixed until the end of the month.','Dabei bist du mit jedem Länderkauf (gilt für alle Saisons) oder mit dem League-Pass für diese Saison.':'You are in with any nation purchase (valid for all seasons) or with the league pass for this season.','League-Pass · 0,99 €':'League pass · €0.99','Länder ansehen':'See nations','Länder':'Nations','Land':'Nation','Pkt/Partie':'Pts/game','Partien':'Games','Spieler':'Players','Punkte':'Points','Beste Spieler':'Top players','Noch keine League-Partien in dieser Saison.':'No league games this season yet.','3 Punkte für einen Sieg, 1 für ein Remis. Länder werden nach Punkten pro Partie gewertet. Neue Spieler (unter 20 Partien) und Spieler unter 1000 Elo zählen für ihr Land halb.':'3 points for a win, 1 for a draw. Nations are ranked by points per game. New players (under 20 games) and players under 1000 Elo count half for their nation.','Meister':'Champions','Titel':'Titles','Ewige Tabelle':'All-time table','Die erste Saison läuft noch. Am Monatsende steht hier der erste Meister.':'The first season is still running. At the end of the month the first champion appears here.','Du spielst diese Saison für':'You play this season for','Meister:':'Champion:',
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
@@ -473,6 +479,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     [/^\((.+) Pkt\/Partie\)$/,m=>'('+m[1]+' pts/game)'],
     [/^Bester Spieler: (.+) \($/,m=>'Best player: '+m[1]+' ('],
     [/^, (\d+) Punkte\)$/,m=>', '+m[1]+' points)'],
+    [/^Gekauft: (.+) · League: (.+)$/,m=>'Bought: '+(m[1]==='nichts'?'nothing':N(m[1]).replace(' · League-Pass',' · league pass'))+' · League: '+({'noch kein Land gewählt':'no nation chosen yet','Pass aktiv':'pass active','nicht dabei':'not in'}[m[2]]||N(m[2]))],
     [/^Elo ([+-]\d+), jetzt (\d+)\.$/,m=>'Elo '+m[1]+', now '+m[2]+'.']
   ];
   function tr(s){
@@ -1846,6 +1853,9 @@ function renderAccount(){
     who.appendChild(b); who.appendChild(document.createTextNode(' · Elo '+on.profile.elo+(on.profile.games<20?'?':'')));
     add('button','Nations League','linkBtn',()=>openAcct('league')); add('button','Rangliste','linkBtn',()=>openAcct('board'));
     add('button','Abmelden','linkBtn',logout); add('button','Konto löschen','linkBtn',deleteAccount);
+    if(on.shop){ const bought=on.shop.owned.filter(k=>NATIONS[k]&&NATIONS[k].price).map(k=>NATIONS[k].name);
+      const lg=on.shop.entry?NATIONS[on.shop.entry.nation].name:on.shop.access?'noch kein Land gewählt':on.shop.pass?'Pass aktiv':'nicht dabei';
+      add('span','Gekauft: '+(bought.length?bought.join(', '):'nichts')+(on.shop.pass?' · League-Pass':'')+' · League: '+lg,'owned'); }
   }else if(isReg(on.user)){
     add('span','Angemeldet','who'); add('button','Spielernamen wählen','linkBtn',()=>openAcct('name')); add('button','Abmelden','linkBtn',logout);
   }else{
@@ -1859,25 +1869,44 @@ function openAcct(v){
   ['login','name','nation','board','league'].forEach(k=>{ $('acct'+k[0].toUpperCase()+k.slice(1)).hidden=k!==v; });
   $('acctTitle').textContent={login:'Anmelden',name:'Spielername',nation:'Gewertete Partie',board:'Rangliste',league:'Nations League'}[v];
   $('acct').hidden=false; pickerOpen=true;
-  if(v==='login'){ $('acctNote').textContent=''; setTimeout(()=>$('acctEmail').focus(),50); }
+  if(v==='login'){ $('acctNote').textContent=''; $('acctCodeRow').hidden=true; $('acctCode').value=''; setTimeout(()=>$('acctEmail').focus(),50); }
   if(v==='name'){ $('acctNameNote').textContent=''; $('acctUser').value=on.profile?on.profile.username:''; setTimeout(()=>$('acctUser').focus(),50); }
   if(v==='board') loadBoard();
   if(v==='nation') renderNatPane();
   if(v==='league') renderLeague('season');
 }
 function closeAcct(){ $('acct').hidden=true; pickerOpen=false; }
+let otp=null; // {email,type} of the last code we sent
 async function sendLink(){
   const email=($('acctEmail').value||'').trim(), note=$('acctNote');
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ note.textContent='Bitte eine gültige E-Mail-Adresse eingeben.'; return; }
   note.textContent='Sende …';
+  try{ await ensureSb(true); }catch(e){ note.textContent='Verbindung zum Server fehlgeschlagen.'; return; }
   const redirect=location.origin+location.pathname;
-  let err='exists';
+  let err='exists', type='email';
   if(on.user&&on.user.is_anonymous){ // the guest becomes a real account and keeps its id
     const r=await on.sb.auth.updateUser({email},{emailRedirectTo:redirect});
     err=r.error?(/already|exists|registered/i.test(r.error.message||'')?'exists':r.error):null;
+    if(!err) type='email_change';
   }
-  if(err==='exists'){ const r=await on.sb.auth.signInWithOtp({email,options:{emailRedirectTo:redirect,shouldCreateUser:true}}); err=r.error; }
-  note.textContent=err?'Das hat nicht geklappt. Versuch es in ein paar Minuten nochmal.':'Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link.';
+  if(err==='exists'){ const r=await on.sb.auth.signInWithOtp({email,options:{emailRedirectTo:redirect,shouldCreateUser:true}}); err=r.error; type='email'; }
+  if(err){ note.textContent='Das hat nicht geklappt. Versuch es in ein paar Minuten nochmal.'; return; }
+  otp={email,type};
+  note.textContent='Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).';
+  $('acctCodeRow').hidden=false; setTimeout(()=>$('acctCode').focus(),50);
+}
+async function verifyCode(){
+  const token=($('acctCode').value||'').replace(/\D/g,''), note=$('acctNote');
+  if(!otp){ note.textContent='Fordere zuerst einen Code an.'; return; }
+  if(token.length<6){ note.textContent='Bitte den Code aus der E-Mail eingeben.'; return; }
+  note.textContent='Prüfe …';
+  let r=await on.sb.auth.verifyOtp({email:otp.email,token,type:otp.type});
+  if(r.error&&otp.type==='email') r=await on.sb.auth.verifyOtp({email:otp.email,token,type:'signup'});
+  if(r.error){ note.textContent='Der Code stimmt nicht oder ist abgelaufen.'; return; }
+  otp=null; on.user=null; on.profile=null;
+  if(r.data&&r.data.user){ on.user=r.data.user; on.me=r.data.user.id; }
+  closeAcct();
+  if(mode!=='online') chooseMode('online'); else { await refreshAccount(); loadShop(); }
 }
 async function saveName(){
   const n=($('acctUser').value||'').trim(), note=$('acctNameNote');
@@ -1919,6 +1948,7 @@ function daysLeft(){ const [y,m]=curSeason().split('-').map(Number); return Math
 function applyShop(st){
   if(!st||st.error||!st.owned) return;
   on.shop=st; OWNED.clear(); st.owned.forEach(k=>OWNED.add(k));
+  if(mode==='online'&&on.sb) renderAccount();
   if(!$('pick').hidden&&lastPick) renderPickButtons(...lastPick);
 }
 async function ensureSb(guest){ // the Supabase client, plus a (guest) session when asked for
@@ -1976,7 +2006,7 @@ async function shopGo(){
   note.textContent='Einen Moment …';
   try{ await ensureSb(true); }catch(e){ note.textContent='Verbindung zum Server fehlgeschlagen.'; return; }
   if(!isReg(on.user)){
-    $('buy').hidden=true; openAcct('login'); $('acctNote').textContent='Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.'; return;
+    $('buy').hidden=true; openAcct('login'); $('acctNote').textContent='Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.'; return;
   }
   const r=await api('checkout',{product:sel.product,nations:[...sel.picks],consent:true,returnUrl:location.origin+location.pathname});
   if(r.error||!r.url){ note.textContent=r.status===409?'Das hast du schon.':'Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.'; return; }
@@ -2344,6 +2374,8 @@ document.querySelectorAll('#acctLeague .tab').forEach(b=>b.addEventListener('cli
 $('buyGo').addEventListener('click',shopGo);
 $('buyCancel').addEventListener('click',()=>{ $('buy').hidden=true; });
 $('acctSend').addEventListener('click',sendLink);
+$('acctVerify').addEventListener('click',verifyCode);
+$('acctCode').addEventListener('keydown',e=>{ if(e.key==='Enter') verifyCode(); });
 $('acctEmail').addEventListener('keydown',e=>{ if(e.key==='Enter') sendLink(); });
 $('acctSave').addEventListener('click',saveName);
 $('acctUser').addEventListener('keydown',e=>{ if(e.key==='Enter') saveName(); });
