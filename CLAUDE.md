@@ -33,7 +33,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   checks each move with chess.js 0.10.3 (same as the client) inside a row-locked transaction. Live updates
   via Realtime postgres_changes plus a 6 s polling fallback. supabase-js is self-hosted in `vendor/` and
   only loaded when online play is chosen. Online only USA and Russia (enforced server-side).
-- Phase 2 (built): e-mail accounts via magic link (a guest is upgraded in place with `updateUser({email})`),
+- Phase 2 (built): e-mail accounts via a 6-digit code (`verifyOtp`, type `email_change` when a guest is upgraded in place with `updateUser({email})`, else `email`; the link in the mail still works; the code must be in the Supabase mail templates, see supabase/README.md),
   player names in `profiles` (public, unique case-insensitive), rated games 15 min + 10 s only via matchmaking (if both picked the same nation, whoever waited longer keeps it)
   (`queue` action, Elo window widens with waiting time, max 3 counted rated games per pair per week; games under 10 moves per side never change Elo), clocks checked by the
   server (first move of each side: 60 s, else aborted, no Elo; early resign also only aborts), flag fall via `claim` (a draw if the side with time left has only K, K+B or K+N)

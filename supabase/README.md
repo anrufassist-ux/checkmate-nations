@@ -44,3 +44,20 @@ ob bezahlt wurde (beim Zurückkommen ins Spiel und bei jedem Öffnen des Kontos)
 
 Preise stehen in der Funktion (`PRICES`): 3 Länder 2,99 €, alle Länder 4,99 €, League-Pass 0,99 € pro Saison,
 ohne Umsatzsteuer (Kleinunternehmer, § 19 UStG).
+
+## Anmeldecode in den E-Mails
+
+Das Spiel meldet per 6-stelligem Code an (der Link in der Mail funktioniert weiterhin). Damit der Code in der Mail steht:
+Supabase → Authentication → Emails → Templates → bei **Magic Link**, **Confirm signup** und **Change Email Address**
+jeweils Betreff und Inhalt ersetzen:
+
+Betreff: `Checkmate Nations: {{ .Token }}`
+
+```html
+<h2>Checkmate Nations</h2>
+<p>Dein Anmeldecode / Your sign-in code:</p>
+<p style="font-size:30px;font-weight:bold;letter-spacing:6px">{{ .Token }}</p>
+<p>Gib ihn im Spiel ein. / Enter it in the game.<br>
+Oder / Or: <a href="{{ .ConfirmationURL }}">Anmelden / Sign in</a></p>
+<p style="color:#888">Wenn du das nicht warst, ignoriere diese Mail. / If this wasn't you, just ignore this e-mail.</p>
+```
