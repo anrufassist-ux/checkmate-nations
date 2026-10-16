@@ -53,12 +53,14 @@ geöffnet wird. Der Code steht im Betreff, damit er schon in der Benachrichtigun
 angemeldet. Supabase → Authentication → Emails → Templates → bei **Magic Link**, **Confirm signup** und
 **Change Email Address** jeweils:
 
-Betreff: `{{ .Token }} ist dein Code · Checkmate Nations`
+Nur Englisch, weil wir die Sprache des Spielers nicht kennen (das Spiel ist standardmäßig auch Englisch).
+
+Betreff: `{{ .Token }} is your Checkmate Nations code`
 
 ```html
 <h2>Checkmate Nations</h2>
-<p>Dein Anmeldecode / Your sign-in code:</p>
+<p>Your sign-in code:</p>
 <p style="font-size:32px;font-weight:bold;letter-spacing:6px;margin:12px 0">{{ .Token }}</p>
-<p style="color:#666">Gib den Code im Spiel ein. / Enter the code in the game.</p>
-<p style="color:#888">Wenn du das nicht warst, ignoriere diese Mail. / If this wasn't you, just ignore this e-mail.</p>
+<p style="color:#666">Enter this code in the game.</p>
+<p style="color:#888">If this wasn't you, just ignore this e-mail.</p>
 ```
