@@ -1,12 +1,16 @@
 """Builds video.html from ../../index.html: a copy of the game with hooks for scripted clip recording.
-Usage: python3 make_video_page.py  ->  writes video.html next to this file."""
+Usage: python3 make_video_page.py  ->  writes video.html next to this file (served by capture.js)."""
 import os
 here=os.path.dirname(os.path.abspath(__file__))
 h=open(os.path.join(here,'../../index.html')).read()
 def rep(a,b):
     global h
     assert a in h, 'patch anchor missing: '+a[:60]; h=h.replace(a,b,1)
-rep("function setNations(w,b){","window.__v=()=>({doMove,setNations,setupPieces,setMode:m=>{mode=m;},setCaric:c=>{caricatures=c;},game,camera,controls,placeCamera});\nfunction setNations(w,b){")
+rep("<head>","<head>\n<base href=\"../../\">")  # vendor/, fonts/, bg/, board/ from the repo root
+rep("function setNations(w,b){","window.__v=()=>({doMove,setNations,setupPieces,setMode:m=>{mode=m;},setCaric:c=>{caricatures=c;},ensureAudio,game,camera,controls,placeCamera});\nfunction setNations(w,b){")
+# sounds are not played but logged (time, key, volume); capture.js writes them to sounds.json for the mix
+rep("function playSample(k,vol){","function playSample(k,vol){\n  if(window.__rec){ if(!(window.SFX&&window.SFX[k])) return false; window.__rec.push([performance.now(),k,vol]); return true; }")
+rep("function boom(big){","function boom(big){\n  if(window.__rec){ window.__rec.push([performance.now(),big?'boomBig':'boom',1]); return; }")
 rep("  if(mode==='pvp'){\n    const n=","  if(mode==='video'){ busy=false; return; }\n  if(mode==='pvp'){\n    const n=")
 rep("setStatus('Wähle einen Spielmodus.','w'); openModeScreen();","setStatus('Wähle einen Spielmodus.','w');")
 rep("shift=new T.Vector3(side*2.6,0,0);","shift=new T.Vector3(side*5.6,0,-.1);")  # portrait: follow the cell
