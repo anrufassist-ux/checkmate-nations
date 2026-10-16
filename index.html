@@ -619,6 +619,29 @@ function face(head,r,dark){
   const smile=mesh(new T.TorusGeometry(r*.32,r*.05,6,16,Math.PI), mat(0x7a2a22,.5),0,-r*.18,r*.9); smile.rotation.z=Math.PI; head.add(smile);
   const nose=mesh(new T.SphereGeometry(r*.13,10,10), mat(0xd49b75,.6),0,-r*.02,r*.98); head.add(nose);
 }
+// crown for the caricature kings: drawn once per nation on a canvas (2x resolution, no soft shadow, premultiplied
+// alpha, so the edges stay crisp instead of a light fringe when the texture is scaled down)
+const CROWN_W=1024, CROWN_H=640, CROWN_LIFT={kw:0,kb:.012}, crownCache={};
+const PEARLS={usa:['#b22234','#ffffff','#3c3b6e'],rus:['#ffffff','#0039a6','#d52b1e'],eu:['#ffcc00','#003399','#ffcc00'],ger:['#000000','#dd0000','#ffce00'],
+  isr:['#ffffff','#0038b8','#ffffff'],irn:['#239f40','#ffffff','#da0000'],chn:['#de2910','#ffde00','#de2910']};
+function crownTex(nk){
+  if(crownCache[nk]) return crownCache[nk];
+  const c=document.createElement('canvas'); c.width=CROWN_W; c.height=CROWN_H; const g=c.getContext('2d');
+  const top=240, base=580, bandTop=470, L=72, R=952, n=7, pts=[];
+  const grd=g.createLinearGradient(0,top,0,base); grd.addColorStop(0,'#fff1a8'); grd.addColorStop(.45,'#e0b12e'); grd.addColorStop(1,'#8a5a12');
+  g.fillStyle=grd; g.strokeStyle='#4a3006'; g.lineWidth=14; g.lineJoin='round';
+  g.beginPath(); g.moveTo(L+28,base);
+  for(let i=0;i<n;i++){ const x=L+(R-L)*i/(n-1), mid=1-Math.abs(i-(n-1)/2)/((n-1)/2), y=top+(1-mid)*60;
+    if(i>0) g.lineTo(L+(R-L)*(i-.5)/(n-1),410); g.lineTo(x,y); pts.push([x,y]); }
+  g.lineTo(R-28,base); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle='#8a5a12'; g.fillRect(L+20,bandTop,R-L-40,base-bandTop); g.strokeRect(L+20,bandTop,R-L-40,base-bandTop);
+  g.fillStyle=grd; g.fillRect(L+32,bandTop+12,R-L-64,(base-bandTop)*.45);
+  const pc=PEARLS[nk]||PEARLS.usa;
+  pts.forEach(([x,y],i)=>{ g.beginPath(); g.arc(x,y,38,0,7); g.fillStyle=pc[i%3]; g.fill(); g.lineWidth=10; g.stroke();
+    g.beginPath(); g.arc(x-12,y-12,12,0,7); g.fillStyle='rgba(255,255,255,.65)'; g.fill(); });
+  const tex=new T.CanvasTexture(c); tex.encoding=T.sRGBEncoding; tex.premultiplyAlpha=true; tex.anisotropy=4;
+  return crownCache[nk]=tex;
+}
 const texCache={};
 function headTex(key,uri){
   if(texCache[key]) return texCache[key];
@@ -1044,11 +1067,10 @@ function makePiece(type,color){
       const plane=new T.Mesh(new T.PlaneGeometry(W,H), new T.MeshBasicMaterial({map:tex,transparent:true,alphaTest:.08,side:T.DoubleSide}));
       // plane sits in front of the body (toward the camera), so the neck overlaps the body instead of hiding behind it
       plane.position.set(0,H/2,.16); head.add(plane);
-      if(king){
-        const cr=new T.Group(); cr.position.set(0,H,.04); cr.rotation.x=.3; // sits on the hair; the head image always faces the camera, so this holds from every angle
-        cr.add(mesh(new T.CylinderGeometry(.13,.15,.09,16,1,true), mat(0xd9b23c,.3,.8)));
-        for(let i=0;i<6;i++){ const a=i/6*Math.PI*2; cr.add(mesh(new T.ConeGeometry(.03,.09,6), mat(0xd9b23c,.3,.8),Math.cos(a)*.13,.08,Math.sin(a)*.13)); }
-        head.add(cr);
+      if(king){ // drawn crown with pearls in the nation's colours, part of the camera-facing head so hair never hides it
+        const nk=sideNation[color], ctex=crownTex(nk), cw=W*.8, ch=cw*CROWN_H/CROWN_W;
+        const crown=new T.Mesh(new T.PlaneGeometry(cw,ch), new T.MeshBasicMaterial({map:ctex,transparent:true,alphaTest:.5,premultipliedAlpha:true,side:T.DoubleSide}));
+        crown.position.set(0,H-ch*.18+(CROWN_LIFT[TEAM[color].head]||0),.165); crown.rotation.z=color==='w'?-.18:.18; head.add(crown);
       }
       g.add(head); ud.head=head; ud.headY=head.position.y; ud.imgHead=true;
       g.userData=ud;
