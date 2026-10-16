@@ -228,6 +228,13 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
           <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
           <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
         </div>
+        <div class="vhead">Brett</div>
+        <div class="vtog" id="boardBtns">
+          <button class="btn" type="button" data-board="wood" aria-pressed="true">Holz</button>
+          <button class="btn" type="button" data-board="marble" aria-pressed="false">Marmor</button>
+          <button class="btn" type="button" data-board="steel" aria-pressed="false">Stahl</button>
+          <button class="btn" type="button" data-board="classic" aria-pressed="false">Klassisch</button>
+        </div>
         <div class="vhead">Hintergrund</div>
         <div class="vtog" id="bgBtns">
           <button class="btn" type="button" data-bg="classic" aria-pressed="true">Klassisch</button>
@@ -398,7 +405,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
   window.LANG=lang; document.documentElement.lang=lang;
   window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
   const D={
-    'Hintergrund':'Background','Klassisch':'Classic','Kommandotisch':'Command table','Kartentisch':'Map table','Erde bei Nacht':'Earth at night',
+    'Hintergrund':'Background','Brett':'Board','Holz':'Wood','Marmor':'Marble','Stahl':'Steel','Klassisch':'Classic','Kommandotisch':'Command table','Kartentisch':'Map table','Erde bei Nacht':'Earth at night',
     'Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link. Danach tippst du das Land einfach nochmal an.':'You need an account to buy. We will e-mail you a sign-in link. Afterwards just tap the nation again.',
     'Link ist unterwegs. Tippe in der E-Mail darauf. Falls du danach nicht angemeldet bist, gib hier den Code aus der E-Mail ein.':'The link is on its way. Tap it in the e-mail. If you are not signed in afterwards, enter the code from the e-mail here.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.',
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
@@ -553,6 +560,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,IS_PHONE?1.5:2));
 renderer.shadowMap.enabled = true; renderer.shadowMap.autoUpdate = false;
 renderer.shadowMap.type = T.PCFSoftShadowMap;
 renderer.outputEncoding = T.sRGBEncoding;
+renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = .95;
 stage.appendChild(renderer.domElement);
 
 const scene = new T.Scene();
@@ -567,15 +575,23 @@ controls.enableDamping = true; controls.enablePan = false;
 controls.minDistance = 7; controls.maxDistance = 24; controls.maxPolarAngle = 1.32;
 controls.target.set(0,0,0.3);
 
-scene.add(new T.HemisphereLight(0xdfe6ff, 0x2a2016, .55));
-const sun = new T.DirectionalLight(0xfff1d6, 1.05);
+scene.add(new T.HemisphereLight(0xdfe6ff, 0x2a2016, .3));
+const sun = new T.DirectionalLight(0xfff1d6, 1.5);
+// soft studio environment: gives the pieces and the board a little gloss and reflection
+(function studio(){
+  const es=new T.Scene(), c=document.createElement('canvas'); c.width=64; c.height=256; const g=c.getContext('2d');
+  const gr=g.createLinearGradient(0,0,0,256); gr.addColorStop(0,'#e8eefc'); gr.addColorStop(.5,'#5a6070'); gr.addColorStop(1,'#141210'); g.fillStyle=gr; g.fillRect(0,0,64,256);
+  es.add(new T.Mesh(new T.SphereGeometry(20,32,16),new T.MeshBasicMaterial({side:T.BackSide,map:new T.CanvasTexture(c)})));
+  [[0,12,0,14,1,14],[10,5,6,1,6,8],[-10,6,-4,1,5,9]].forEach(([x,y,z,a,b,d])=>{ const m=new T.Mesh(new T.BoxGeometry(a,b,d),new T.MeshBasicMaterial({color:0xffffff})); m.position.set(x,y,z); es.add(m); });
+  const pm=new T.PMREMGenerator(renderer); scene.environment=pm.fromScene(es,.03).texture; pm.dispose();
+})();
 sun.position.set(5,11,6); sun.castShadow = true;
 sun.shadow.mapSize.set(IS_PHONE?512:1024,IS_PHONE?512:1024);
 Object.assign(sun.shadow.camera,{left:-7,right:7,top:7,bottom:-7,near:1,far:30});
 scene.add(sun);
 const rim = new T.PointLight(0x7aa0ff,.5,30); rim.position.set(-6,5,-7); scene.add(rim);
 
-function mat(c,r=.65,m=.08){ return new T.MeshStandardMaterial({color:c,roughness:r,metalness:m}); }
+function mat(c,r=.65,m=.08){ return new T.MeshStandardMaterial({color:c,roughness:r,metalness:m,envMapIntensity:.35}); }
 function mesh(geo,material,x=0,y=0,z=0){ const o=new T.Mesh(geo,material); o.position.set(x,y,z); o.castShadow=true; o.receiveShadow=true; return o; }
 
 /* ---------- Floor + board ---------- */
@@ -588,23 +604,28 @@ let FLOOR=null;
   for(let i=32;i<256;i+=32){ g.beginPath(); g.moveTo(i,0); g.lineTo(i,256); g.moveTo(0,i); g.lineTo(256,i); g.stroke(); }
   const tex=new T.CanvasTexture(c); tex.wrapS=tex.wrapT=T.RepeatWrapping; tex.repeat.set(12,12);
   const p=new T.Mesh(new T.PlaneGeometry(80,80), new T.MeshStandardMaterial({map:tex,roughness:1}));
-  p.rotation.x=-Math.PI/2; p.position.y=-.42; p.receiveShadow=true; scene.add(p); FLOOR=p;
+  p.material.envMapIntensity=0; p.rotation.x=-Math.PI/2; p.position.y=-.42; p.receiveShadow=true; scene.add(p); FLOOR=p;
 })();
 
 const frame = mesh(new T.BoxGeometry(9.3,.32,9.3), mat(0x2a2419,.7), 0,-.26,0); scene.add(frame);
-(function labels(){
-  const S=1024, c=document.createElement('canvas'); c.width=c.height=S; const g=c.getContext('2d');
-  g.fillStyle='#2a2419'; g.fillRect(0,0,S,S);
-  const u=S/9.3, off=(9.3-8)/2*u;
-  g.fillStyle='rgba(232,226,210,.75)'; g.font='600 40px "Barlow Condensed", Arial Narrow, sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+// frame top with the coordinates; redrawn for every board style
+const RIM_C=document.createElement('canvas'); RIM_C.width=RIM_C.height=1024;
+const RIM=new T.Mesh(new T.PlaneGeometry(9.3,9.3), new T.MeshStandardMaterial({map:new T.CanvasTexture(RIM_C),roughness:.8,envMapIntensity:.35}));
+RIM.rotation.x=-Math.PI/2; RIM.position.y=-.095; RIM.receiveShadow=true; scene.add(RIM);
+function drawRim(o){
+  const S=1024, g=RIM_C.getContext('2d'), u=S/9.3, off=(9.3-8)/2*u;
+  if(o&&o.rim==='wood'){ g.fillStyle='#2b160a'; g.fillRect(0,0,S,S); for(let y=0;y<S;y+=3){ g.fillStyle=`rgba(0,0,0,${.1+.15*Math.abs(Math.sin(y*.05))})`; g.fillRect(0,y,S,3); } }
+  else { g.fillStyle=o?o.rim:'#2a2419'; g.fillRect(0,0,S,S); }
+  if(o){ g.strokeStyle=o.inlay; g.lineWidth=6; g.strokeRect(off-10,off-10,S-2*off+20,S-2*off+20); g.lineWidth=2; g.strokeRect(off-22,off-22,S-2*off+44,S-2*off+44); }
+  g.fillStyle=o?o.ink:'rgba(232,226,210,.75)'; g.font='600 40px "Barlow Condensed", Arial Narrow, sans-serif'; g.textAlign='center'; g.textBaseline='middle';
   for(let i=0;i<8;i++){
     const p=off+(i+.5)*u;
     g.fillText(FILES[i].toUpperCase(),p,S-off/2); g.fillText(FILES[i].toUpperCase(),p,off/2);
     g.fillText(String(8-i),off/2,p); g.fillText(String(8-i),S-off/2,p);
   }
-  const top=new T.Mesh(new T.PlaneGeometry(9.3,9.3), new T.MeshStandardMaterial({map:new T.CanvasTexture(c),roughness:.8}));
-  top.rotation.x=-Math.PI/2; top.position.y=-.095; top.receiveShadow=true; scene.add(top);
-})();
+  const t=RIM.material.map; t.encoding=o?T.sRGBEncoding:T.LinearEncoding; t.needsUpdate=true;
+  RIM.material.roughness=o?.35:.8; RIM.material.needsUpdate=true;
+}
 
 const squareMeshes=[];
 const LIGHT=mat(0xc9b98f,.75), DARK=mat(0x47513f,.75);
@@ -612,6 +633,43 @@ for(let f=0;f<8;f++) for(let r=0;r<8;r++){
   const m=new T.Mesh(new T.BoxGeometry(1,.2,1),(f+r)%2?LIGHT:DARK);
   m.position.set(f-3.5,-.1,3.5-r); m.receiveShadow=true;
   m.userData.square=FILES[f]+(r+1); scene.add(m); squareMeshes.push(m);
+}
+/* Board styles: wood (default) and marble use AI-generated photo textures from board/ (each square shows a different
+   cut of the picture), steel is drawn, classic is the original flat board. Stored in localStorage wms-board. */
+const BOARDS={
+  wood:{tex:['board/maple.jpg','board/walnut.jpg'],rough:.38,frame:0x22120a,rim:'wood',ink:'#e9c46a',inlay:'#c9a227'},
+  marble:{tex:['board/marble-white.jpg','board/marble-green.jpg'],rough:.18,frame:0x0c0d0d,rim:'#0f1110',ink:'#e9c46a',inlay:'#d4af37'},
+  steel:{rough:.3,metal:.55,frame:0x0a0f15,rim:'#0b1118',ink:'#7fd3ff',inlay:'#2fa8e0'},
+  classic:null};
+let boardKey='wood'; const boardImg={};
+try{ const k=localStorage.getItem('wms-board'); if(k in BOARDS) boardKey=k; }catch(e){}
+function steelTex(base,hi){
+  const c=document.createElement('canvas'); c.width=c.height=256; const g=c.getContext('2d'); let s=7;
+  g.fillStyle=base; g.fillRect(0,0,256,256);
+  for(let y=0;y<256;y++){ s=(s*16807)%2147483647; g.fillStyle=`rgba(${hi},${s/2147483647*.06})`; g.fillRect(0,y,256,1); }
+  g.strokeStyle=`rgba(${hi},.35)`; g.lineWidth=3; g.strokeRect(1.5,1.5,253,253);
+  const t=new T.CanvasTexture(c); t.encoding=T.sRGBEncoding; t.anisotropy=8; return t;
+}
+function setBoard(k){
+  if(!(k in BOARDS)) k='classic'; boardKey=k; try{ localStorage.setItem('wms-board',k); }catch(e){}
+  document.querySelectorAll('[data-board]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.board===k)));
+  const o=BOARDS[k];
+  drawRim(o);
+  if(o){ frame.material.color.set(o.frame); frame.material.roughness=.3; frame.material.metalness=.5; }
+  else { frame.material.color.set(0x2a2419); frame.material.roughness=.7; frame.material.metalness=.08; }
+  const apply=(lt,dk)=>{ if(boardKey!==k) return; let s=11;
+    const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+    squareMeshes.forEach((m,i)=>{ const f=i>>3, r=i&7, light=(f+r)%2===1;
+      if(!o){ m.material=light?LIGHT:DARK; return; }
+      let t=light?lt:dk;
+      if(o.tex){ t=t.clone(); t.needsUpdate=true; t.repeat.set(.22,.39); t.offset.set(rnd()*.78,rnd()*.61); }
+      m.material=new T.MeshStandardMaterial({map:t,roughness:o.rough,metalness:o.metal||0,envMapIntensity:.25}); });
+    wake(800); };
+  if(!o) apply();
+  else if(!o.tex) apply(steelTex('#9aa7b4','255,255,255'),steelTex('#1c2836','140,200,255'));
+  else Promise.all(o.tex.map(u=>boardImg[u]||(boardImg[u]=new Promise(res=>new T.TextureLoader().load(u,t=>{
+      t.encoding=T.sRGBEncoding; t.anisotropy=renderer.capabilities.getMaxAnisotropy(); res(t); },undefined,()=>res(null))))))
+    .then(([a,b])=>{ if(a&&b) apply(a,b); else if(boardKey===k) setBoard('classic'); });
 }
 function sqPos(sq){ return new T.Vector3(FILES.indexOf(sq[0])-3.5, 0, 4.5-Number(sq[1])); }
 
@@ -998,7 +1056,16 @@ function makeFlatPiece(type,color){
   disc.userData.owner=g;
   return g;
 }
-function makePiece(type,color){
+function makePiece(type,color){ return polish(makePieceRaw(type,color)); }
+function polish(g){
+  g.traverse(o=>{ if(!o.material) return; (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{
+    if(m.userData.pol) return; m.userData.pol=1;
+    if(m.isMeshStandardMaterial){ m.roughness=Math.max(.15,m.roughness*.6); m.envMapIntensity=.7;
+      const h={}; m.color.getHSL(h); if(h.s>.2) m.color.setHSL(h.h,Math.min(1,h.s*1.25),h.l*.72); }
+    else if(m.isMeshBasicMaterial||m.isSpriteMaterial) m.toneMapped=false; }); });
+  return g;
+}
+function makePieceRaw(type,color){
   if(flat2d) return makeFlatPiece(type,color);
   const team=TEAM[color], dir=color==='w'?-1:1;
   if(type==='q') return makeQueen(color);
@@ -2525,7 +2592,7 @@ function setBackground(k){
   scene.background.set(col); scene.fog.color.set(col); if(FLOOR) FLOOR.visible=!o;
   if(!o){ if(bgMesh) bgMesh.visible=false; wake(500); return; }
   const show=tex=>{ if(bgKey!==k) return;
-    if(!bgMesh){ const W=34; bgMesh=new T.Mesh(new T.PlaneGeometry(W,W*9/16),new T.MeshBasicMaterial({transparent:true,fog:false,depthWrite:false}));
+    if(!bgMesh){ const W=34; bgMesh=new T.Mesh(new T.PlaneGeometry(W,W*9/16),new T.MeshBasicMaterial({transparent:true,fog:false,depthWrite:false,toneMapped:false}));
       bgMesh.rotation.x=-Math.PI/2; bgMesh.position.set(0,-.41,-1.2); bgMesh.renderOrder=-1; scene.add(bgMesh); }
     bgMesh.material.map=tex; bgMesh.material.needsUpdate=true; bgMesh.visible=true; bgScale(); wake(800); };
   if(bgTex[k]) show(bgTex[k]);
@@ -2535,6 +2602,7 @@ function setBackground(k){
 function bgScale(){ if(bgMesh) bgMesh.scale.setScalar(Math.max(1,.95*innerHeight/innerWidth)); }
 window.addEventListener('resize',bgScale);
 document.querySelectorAll('[data-bg]').forEach(b=>b.addEventListener('click',()=>setBackground(b.dataset.bg)));
+document.querySelectorAll('[data-board]').forEach(b=>b.addEventListener('click',()=>setBoard(b.dataset.board)));
 function setFlat(f){
   if(f===flat2d) return;
   flat2d=f; try{ localStorage.setItem('wms-flat',f?'1':'0'); }catch(e){}
@@ -2551,6 +2619,8 @@ window.addEventListener('resize',()=>setTimeout(refit,50));
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(refit,50)); // header height changes once web fonts arrive
 resize(); placeCamera(); setupPieces(); setStatus('Wähle einen Spielmodus.','w'); openModeScreen();
 if(bgKey!=='classic') setTimeout(()=>setBackground(bgKey),0);
+setBoard(boardKey);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ drawRim(BOARDS[boardKey]); wake(300); });
 
 const clock=new T.Clock(); const camPos=new T.Vector3(), headPos=new T.Vector3();
 let activeUntil=performance.now()+2000, lastRender=0;
