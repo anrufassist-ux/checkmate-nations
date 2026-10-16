@@ -11,6 +11,7 @@ chess.js auf dem Server prüft.
 - `migrations/004_timeout_draw.sql`: Zeitüberschreitung ist Remis, wenn der Gegner gar nicht mehr mattsetzen kann.
 - `migrations/005_fair_rating.sql`: Partien unter 10 Zügen pro Seite zählen nicht für Elo, Rangliste erst ab 5 verschiedenen Gegnern.
 - `migrations/006_league_shop.sql`: Käufe (Stripe), gekaufte Länder, League-Pass, Nations League (Saison = Kalendermonat), Tabellen und Hall of Fame.
+- `migrations/007_abandon.sql`: verlassene gewertete Partien. Die Clients melden sich alle 15 s (`ping`), nach 2 Minuten Funkstille kann der Gegner den Sieg beanspruchen (`abandon`).
 - `functions/game/index.ts`: die Server-Funktion.
 
 ## Einmal einrichten (im Supabase-Dashboard, kein Programm nötig)
