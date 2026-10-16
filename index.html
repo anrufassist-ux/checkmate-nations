@@ -241,6 +241,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
           <button class="btn" type="button" data-bg="command" aria-pressed="false">Kommandotisch</button>
           <button class="btn" type="button" data-bg="maptable" aria-pressed="true">Kartentisch</button>
           <button class="btn" type="button" data-bg="earth" aria-pressed="false">Erde bei Nacht</button>
+          <button class="btn" type="button" data-bg="summit" aria-pressed="false">Gipfeltreffen</button>
         </div>
       </div>
     </div>
@@ -406,7 +407,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
   window.LANG=lang; document.documentElement.lang=lang;
   window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
   const D={
-    'Hintergrund':'Background','Wir schicken dir einen 6-stelligen Code per E-Mail. Kein Passwort nötig, und du bleibst auf diesem Gerät angemeldet.':'We e-mail you a 6-digit code. No password needed, and you stay signed in on this device.','Code senden':'Send code','Code ist unterwegs. Er steht schon im Betreff der E-Mail.':'The code is on its way. It is right in the subject line of the e-mail.','Sieg beanspruchen':'Claim victory','Partie verlassen':'Game abandoned','Dein Gegner ist seit über 2 Minuten weg. Du kannst den Sieg beanspruchen.':'Your opponent has been gone for over 2 minutes. You can claim the victory.','Dein Gegner war gerade noch da. Warte noch etwas.':'Your opponent was here a moment ago. Wait a little longer.','Das hat nicht geklappt. Versuch es gleich nochmal.':'That did not work. Please try again in a moment.','Brett':'Board','Holz':'Wood','Marmor':'Marble','Stahl':'Steel','Klassisch':'Classic','Kommandotisch':'Command table','Kartentisch':'Map table','Erde bei Nacht':'Earth at night',
+    'Hintergrund':'Background','Wir schicken dir einen 6-stelligen Code per E-Mail. Kein Passwort nötig, und du bleibst auf diesem Gerät angemeldet.':'We e-mail you a 6-digit code. No password needed, and you stay signed in on this device.','Code senden':'Send code','Code ist unterwegs. Er steht schon im Betreff der E-Mail.':'The code is on its way. It is right in the subject line of the e-mail.','Sieg beanspruchen':'Claim victory','Partie verlassen':'Game abandoned','Dein Gegner ist seit über 2 Minuten weg. Du kannst den Sieg beanspruchen.':'Your opponent has been gone for over 2 minutes. You can claim the victory.','Dein Gegner war gerade noch da. Warte noch etwas.':'Your opponent was here a moment ago. Wait a little longer.','Das hat nicht geklappt. Versuch es gleich nochmal.':'That did not work. Please try again in a moment.','Brett':'Board','Holz':'Wood','Marmor':'Marble','Stahl':'Steel','Klassisch':'Classic','Kommandotisch':'Command table','Kartentisch':'Map table','Erde bei Nacht':'Earth at night','Gipfeltreffen':'Summit',
     'Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode. Danach tippst du das Land einfach nochmal an.':'You need an account to buy. We will e-mail you a sign-in code. Afterwards just tap the nation again.',
     'Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link. Liest du die Mail auf einem anderen Gerät, zum Beispiel am Handy, gib hier den Code aus der E-Mail ein.':'The link is on its way. Open the e-mail on this device and tap the link. If you read the e-mail on another device, for example your phone, enter the code from the e-mail here.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.',
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
@@ -1251,7 +1252,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 /* ---------- Sound ---------- */
 let actx=null, soundOn=true;
 /* Volume: sounds and music each 0-100 %, saved per device; 0 switches that part off */
-const vol={s:30,m:30};
+const vol={s:30,m:70};
 try{ const v=JSON.parse(localStorage.getItem('wms-vol')||'null'); if(v){ if(v.s>=0&&v.s<=100) vol.s=v.s; if(v.m>=0&&v.m<=100) vol.m=v.m; } }catch(e){}
 soundOn=vol.s>0;
 let sfxOut=null, musicOut=null;
@@ -2620,7 +2621,7 @@ function refit(){ // after resize or when the info panel opens/closes: keep the 
   else fitCamera(viewPhi());
 }
 /* backgrounds: classic grid floor, or an image (bg/*.webp, self-hosted, loaded only when picked) lying under the board */
-const BGS={classic:null,command:{file:'bg/command.webp',col:0x03070c},maptable:{file:'bg/maptable.webp',col:0x0c0805},earth:{file:'bg/earth.webp',col:0x020306}};
+const BGS={classic:null,command:{file:'bg/command.webp',col:0x03070c},maptable:{file:'bg/maptable.webp',col:0x0c0805},earth:{file:'bg/earth.webp',col:0x020306},summit:{file:'bg/summit.webp',col:0x040504}};
 let bgKey='maptable', bgMesh=null; const bgTex={};
 try{ const b=localStorage.getItem('wms-bg'); if(b in BGS) bgKey=b; }catch(e){}
 function setBackground(k){
