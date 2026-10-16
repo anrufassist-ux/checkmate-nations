@@ -138,7 +138,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 .pickBtn[data-n="isr"]:hover,.pickBtn[data-n="isr"]:focus-visible{border-color:#6cc8f2}
 .pickBtn[data-n="irn"]:hover,.pickBtn[data-n="irn"]:focus-visible{border-color:#45b866}
 .pickBtn[data-n="chn"]:hover,.pickBtn[data-n="chn"]:focus-visible{border-color:#e0b23a}
-.pickBtn.locked .flag{filter:grayscale(.6) brightness(.8)}
+.pickBtn.locked .flag{filter:saturate(.85) brightness(.95)}
 .pickBtn.taken{opacity:.35;pointer-events:none}
 .lockPill{position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:4px;font-family:var(--f-label);font-weight:700;font-size:12px;letter-spacing:.06em;color:#1a1810;background:var(--sand);border-radius:999px;padding:2px 8px}
 .lockPill svg{width:10px;height:12px}
@@ -151,7 +151,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 .price{font-family:var(--f-display);font-size:34px;color:var(--sand)}
 .buyBtn{justify-self:center;padding:10px 28px;font-size:16px}
 .testNote{margin:4px 0 0;font-size:12px;line-height:1.45;color:var(--muted)}
-.fchn{background:#de2910;position:relative;overflow:hidden}
+.fchn{background:none;position:relative;overflow:hidden}.fchn svg{display:block}
 .pickBtn{display:grid;justify-items:center;gap:6px;padding:16px 10px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.25);color:var(--fg);cursor:pointer;font:inherit;transition:transform .15s,border-color .15s}
 .pickBtn:hover{transform:translateY(-2px)}
 .pickBtn.usa:hover,.pickBtn.usa:focus-visible{border-color:var(--usa)}
@@ -1659,11 +1659,11 @@ function onPick(sq){
 
 let mode='ai', myColor='w', pickerOpen=false;
 const CNAME={get w(){ return TEAM.w.name; }, get b(){ return TEAM.b.name; }};
-const CHN_STAR='<svg viewBox="0 0 30 20" width="100%" height="100%" aria-hidden="true"><rect width="30" height="20" fill="#de2910"/><g fill="#ffde00"><polygon points="5,2 6.2,5.6 10,5.6 6.9,7.8 8.1,11.4 5,9.2 1.9,11.4 3.1,7.8 0,5.6 3.8,5.6"/><circle cx="10" cy="2" r=".9"/><circle cx="12" cy="4" r=".9"/><circle cx="12" cy="7" r=".9"/><circle cx="10" cy="9" r=".9"/></g></svg>';
-const EU_FLAG='<svg viewBox="0 0 30 20" width="100%" height="100%" aria-hidden="true"><rect width="30" height="20" fill="#003399"/><g fill="#ffcc00">'+Array.from({length:12},(_,i)=>{ const a=i/12*Math.PI*2; return '<circle cx="'+(15+Math.cos(a)*6).toFixed(2)+'" cy="'+(10+Math.sin(a)*6).toFixed(2)+'" r=".9"/>'; }).join('')+'</g></svg>';
-const GER_FLAG='<svg viewBox="0 0 30 18" width="100%" height="100%" aria-hidden="true"><rect width="30" height="6" fill="#000"/><rect y="6" width="30" height="6" fill="#dd0000"/><rect y="12" width="30" height="6" fill="#ffce00"/></svg>';
-const ISR_FLAG='<svg viewBox="0 0 30 22" width="100%" height="100%" aria-hidden="true"><rect width="30" height="22" fill="#fff"/><rect y="2" width="30" height="3" fill="#0038b8"/><rect y="17" width="30" height="3" fill="#0038b8"/><g fill="none" stroke="#0038b8" stroke-width=".9"><polygon points="15,6.6 18.5,12.7 11.5,12.7"/><polygon points="15,15.4 11.5,9.3 18.5,9.3"/></g></svg>';
-const IRN_FLAG='<svg viewBox="0 0 30 18" width="100%" height="100%" aria-hidden="true"><rect width="30" height="6" fill="#239f40"/><rect y="6" width="30" height="6" fill="#fff"/><rect y="12" width="30" height="6" fill="#da0000"/></svg>';
+const CHN_STAR='<svg viewBox="0 0 30 20" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="20" fill="#de2910"/><g fill="#ffde00"><polygon points="5,2 6.2,5.6 10,5.6 6.9,7.8 8.1,11.4 5,9.2 1.9,11.4 3.1,7.8 0,5.6 3.8,5.6"/><circle cx="10" cy="2" r=".9"/><circle cx="12" cy="4" r=".9"/><circle cx="12" cy="7" r=".9"/><circle cx="10" cy="9" r=".9"/></g></svg>';
+const EU_FLAG='<svg viewBox="0 0 30 20" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="20" fill="#003399"/><g fill="#ffcc00">'+Array.from({length:12},(_,i)=>{ const a=i/12*Math.PI*2; return '<circle cx="'+(15+Math.cos(a)*6).toFixed(2)+'" cy="'+(10+Math.sin(a)*6).toFixed(2)+'" r=".9"/>'; }).join('')+'</g></svg>';
+const GER_FLAG='<svg viewBox="0 0 30 18" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="6" fill="#000"/><rect y="6" width="30" height="6" fill="#dd0000"/><rect y="12" width="30" height="6" fill="#ffce00"/></svg>';
+const ISR_FLAG='<svg viewBox="0 0 30 22" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="22" fill="#fff"/><rect y="2" width="30" height="3" fill="#0038b8"/><rect y="17" width="30" height="3" fill="#0038b8"/><g fill="none" stroke="#0038b8" stroke-width=".9"><polygon points="15,6.6 18.5,12.7 11.5,12.7"/><polygon points="15,15.4 11.5,9.3 18.5,9.3"/></g></svg>';
+const IRN_FLAG='<svg viewBox="0 0 30 18" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="6" fill="#239f40"/><rect y="6" width="30" height="6" fill="#fff"/><rect y="12" width="30" height="6" fill="#da0000"/></svg>';
 function flagHTML(k){ if(k==='ger') return '<span class="flag fchn" aria-hidden="true">'+GER_FLAG+'</span>'; if(k==='isr') return '<span class="flag fchn" aria-hidden="true">'+ISR_FLAG+'</span>'; if(k==='irn') return '<span class="flag fchn" aria-hidden="true">'+IRN_FLAG+'</span>'; if(k==='eu') return '<span class="flag fchn" aria-hidden="true">'+EU_FLAG+'</span>'; return k==='chn'?'<span class="flag fchn" aria-hidden="true">'+CHN_STAR+'</span>':'<span class="flag '+(k==='usa'?'fusa':'fru')+'" aria-hidden="true"></span>'; }
 const LOCK='<svg viewBox="0 0 10 12" aria-hidden="true"><rect x="1" y="5" width="8" height="7" rx="1.2" fill="currentColor"/><path d="M3 5V3.5a2 2 0 0 1 4 0V5" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>';
 let lastPick=null;
@@ -1676,7 +1676,7 @@ function renderPickButtons(taken,onChoose){
     if(n.key===taken) b.classList.add('taken');
     b.innerHTML=flagHTML(n.key)+'<span class="pn"></span><span class="ps"></span>'+(isOwned(n.key)?'':'<span class="lockPill">'+LOCK+'</span>');
     b.querySelector('.pn').textContent=n.name; b.querySelector('.pn').style.color=n.css;
-    b.querySelector('.ps').textContent=n.key===taken?'schon gewählt':isOwned(n.key)?'spielbereit':'bald verfügbar';
+    b.querySelector('.ps').textContent=n.key===taken?'schon gewählt':isOwned(n.key)?'spielbereit':'freischalten';
     b.onclick=()=>{ if(!isOwned(n.key)){ openBuy(n.key,()=>renderPickButtons(taken,onChoose)); return; } onChoose(n.key); };
     row.appendChild(b);
   });
