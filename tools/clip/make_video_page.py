@@ -14,7 +14,7 @@ rep("function boom(big){","function boom(big){\n  if(window.__rec){ window.__rec
 rep("  if(mode==='pvp'){\n    const n=","  if(mode==='video'){ busy=false; return; }\n  if(mode==='pvp'){\n    const n=")
 rep("setStatus('Wähle einen Spielmodus.','w'); openModeScreen();","setStatus('Wähle einen Spielmodus.','w');")
 rep("shift=new T.Vector3(side*2.6,0,0);","shift=new T.Vector3(side*5.6,0,-.1);")  # portrait: follow the cell
-rep("  startCrying(king);\n  wake(15000);","  startCrying(king);\n  { const c1=camera.position.clone(), tg=controls.target.clone(); await animate(1.6,t=>{ camera.position.copy(c1).lerp(tg,.55*ease(t)); }); }\n  wake(15000);")
+rep("  startCrying(king);\n  wake(15000);","  startCrying(king);\n  { const c1=camera.position.clone(), tg=controls.target.clone(); await animate(1.6,t=>{ camera.position.copy(c1).lerp(tg,.72*ease(t)); }); }\n  wake(15000);")
 h+=open(os.path.join(here,'overlay.html')).read()
 open(os.path.join(here,'video.html'),'w').write(h)
 print('video.html written')

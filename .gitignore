@@ -8,3 +8,4 @@ tools/clip/sounds.json
 tools/clip/snd/
 tools/clip/full.log
 tools/clip/clip.mp4
+tools/clip/*.png
