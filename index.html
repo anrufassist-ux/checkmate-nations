@@ -237,9 +237,9 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
         </div>
         <div class="vhead">Hintergrund</div>
         <div class="vtog" id="bgBtns">
-          <button class="btn" type="button" data-bg="classic" aria-pressed="true">Klassisch</button>
+          <button class="btn" type="button" data-bg="classic" aria-pressed="false">Klassisch</button>
           <button class="btn" type="button" data-bg="command" aria-pressed="false">Kommandotisch</button>
-          <button class="btn" type="button" data-bg="maptable" aria-pressed="false">Kartentisch</button>
+          <button class="btn" type="button" data-bg="maptable" aria-pressed="true">Kartentisch</button>
           <button class="btn" type="button" data-bg="earth" aria-pressed="false">Erde bei Nacht</button>
         </div>
       </div>
@@ -1251,7 +1251,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 /* ---------- Sound ---------- */
 let actx=null, soundOn=true;
 /* Volume: sounds and music each 0-100 %, saved per device; 0 switches that part off */
-const vol={s:70,m:70};
+const vol={s:30,m:30};
 try{ const v=JSON.parse(localStorage.getItem('wms-vol')||'null'); if(v){ if(v.s>=0&&v.s<=100) vol.s=v.s; if(v.m>=0&&v.m<=100) vol.m=v.m; } }catch(e){}
 soundOn=vol.s>0;
 let sfxOut=null, musicOut=null;
@@ -2621,7 +2621,7 @@ function refit(){ // after resize or when the info panel opens/closes: keep the 
 }
 /* backgrounds: classic grid floor, or an image (bg/*.webp, self-hosted, loaded only when picked) lying under the board */
 const BGS={classic:null,command:{file:'bg/command.webp',col:0x03070c},maptable:{file:'bg/maptable.webp',col:0x0c0805},earth:{file:'bg/earth.webp',col:0x020306}};
-let bgKey='classic', bgMesh=null; const bgTex={};
+let bgKey='maptable', bgMesh=null; const bgTex={};
 try{ const b=localStorage.getItem('wms-bg'); if(b in BGS) bgKey=b; }catch(e){}
 function setBackground(k){
   if(!(k in BGS)) k='classic'; bgKey=k; try{ localStorage.setItem('wms-bg',k); }catch(e){}
