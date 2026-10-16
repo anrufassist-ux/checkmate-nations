@@ -2649,8 +2649,6 @@ window.addEventListener('resize',()=>setTimeout(refit,50));
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(refit,50)); // header height changes once web fonts arrive
 resize(); placeCamera(); setupPieces(); setStatus('Wähle einen Spielmodus.','w'); openModeScreen();
 if(bgKey!=='classic') setTimeout(()=>setBackground(bgKey),0);
-setBoard(boardKey);
-if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ drawRim(BOARDS[boardKey]); wake(300); });
 
 const clock=new T.Clock(); const camPos=new T.Vector3(), headPos=new T.Vector3();
 let activeUntil=performance.now()+2000, lastRender=0;
@@ -2659,6 +2657,9 @@ renderer.domElement.addEventListener('pointerdown',()=>wake(2500));
 renderer.domElement.addEventListener('pointermove',()=>wake(800));
 controls.addEventListener('change',()=>{ wake(600); fogToCamera(); });
 window.addEventListener('resize',()=>wake(1000));
+// after the render-loop state above exists: setBoard() may call wake() right away (steel, classic)
+setBoard(boardKey);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ drawRim(BOARDS[boardKey]); wake(300); });
 function loop(){
   requestAnimationFrame(loop);
   const now=performance.now();
