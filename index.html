@@ -98,6 +98,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 .board{margin:0;padding:0 4px 0 30px;text-align:left;max-height:55vh;overflow:auto;font-size:15px;line-height:1.8}
 .board li span{float:right;color:var(--sand);font-family:var(--f-label);font-weight:700}
 .board li.me{color:var(--sand)}
+#acct{z-index:11}
 .otpRow{display:flex;gap:8px}.otpRow .field{flex:1;letter-spacing:.2em;text-align:center}.owned{flex-basis:100%;font-size:12.5px;color:var(--muted)}
 .buyOpts{display:grid;gap:8px}.buyOpt{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;border:2px solid var(--line);background:rgba(0,0,0,.25);color:var(--fg);font:inherit;cursor:pointer;text-align:left}
 .buyOpt b{font-family:var(--f-display);font-weight:400;color:var(--sand);font-size:20px;white-space:nowrap}.buyOpt.on{border-color:var(--sand)}.buyOpt small{display:block;color:var(--muted);font-size:12.5px}
@@ -390,6 +391,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
   window.LANG=lang; document.documentElement.lang=lang;
   window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
   const D={
+    'Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link. Danach tippst du das Land einfach nochmal an.':'You need an account to buy. We will e-mail you a sign-in link. Afterwards just tap the nation again.',
     'Link ist unterwegs. Tippe in der E-Mail darauf. Falls du danach nicht angemeldet bist, gib hier den Code aus der E-Mail ein.':'The link is on its way. Tap it in the e-mail. If you are not signed in afterwards, enter the code from the e-mail here.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.',
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
     '2,99 €':'€2.99','4,99 €':'€4.99','0,99 €':'€0.99',
@@ -1876,7 +1878,7 @@ function openAcct(v){
   if(v==='nation') renderNatPane();
   if(v==='league') renderLeague('season');
 }
-function closeAcct(){ $('acct').hidden=true; pickerOpen=false; }
+function closeAcct(){ $('acct').hidden=true; pickerOpen=!$('pick').hidden||!$('modeScreen').hidden; }
 let otp=null; // {email,type} of the last code we sent
 async function sendLink(){
   const email=($('acctEmail').value||'').trim(), note=$('acctNote');
@@ -2007,7 +2009,7 @@ async function shopGo(){
   note.textContent='Einen Moment …';
   try{ await ensureSb(true); }catch(e){ note.textContent='Verbindung zum Server fehlgeschlagen.'; return; }
   if(!isReg(on.user)){
-    $('buy').hidden=true; openAcct('login'); $('acctNote').textContent='Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.'; return;
+    $('buy').hidden=true; openAcct('login'); $('acctNote').textContent='Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link. Danach tippst du das Land einfach nochmal an.'; return;
   }
   const r=await api('checkout',{product:sel.product,nations:[...sel.picks],consent:true,returnUrl:location.origin+location.pathname});
   if(r.error||!r.url){ note.textContent=r.status===409?'Das hast du schon.':'Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.'; return; }
