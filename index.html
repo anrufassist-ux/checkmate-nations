@@ -577,15 +577,15 @@ controls.enableDamping = true; controls.enablePan = false;
 controls.minDistance = 7; controls.maxDistance = 24; controls.maxPolarAngle = 1.32;
 controls.target.set(0,0,0.3);
 
-scene.add(new T.HemisphereLight(0xdfe6ff, 0x2a2016, .3));
-const sun = new T.DirectionalLight(0xfff1d6, 1.5);
+scene.add(new T.HemisphereLight(0xdfe6ff, 0x2a2016, .45));
+const sun = new T.DirectionalLight(0xfff1d6, 1.1);
 // soft studio environment: gives the pieces and the board a little gloss and reflection
 (function studio(){
   const es=new T.Scene(), c=document.createElement('canvas'); c.width=64; c.height=256; const g=c.getContext('2d');
   const gr=g.createLinearGradient(0,0,0,256); gr.addColorStop(0,'#e8eefc'); gr.addColorStop(.5,'#5a6070'); gr.addColorStop(1,'#141210'); g.fillStyle=gr; g.fillRect(0,0,64,256);
   es.add(new T.Mesh(new T.SphereGeometry(20,32,16),new T.MeshBasicMaterial({side:T.BackSide,map:new T.CanvasTexture(c)})));
-  [[0,12,0,14,1,14],[10,5,6,1,6,8],[-10,6,-4,1,5,9]].forEach(([x,y,z,a,b,d])=>{ const m=new T.Mesh(new T.BoxGeometry(a,b,d),new T.MeshBasicMaterial({color:0xffffff})); m.position.set(x,y,z); es.add(m); });
-  try{ const pm=new T.PMREMGenerator(renderer); scene.environment=pm.fromScene(es,.03).texture; pm.dispose(); }catch(e){ scene.environment=null; }
+  [[0,12,0,22,1,22],[10,5,6,1,9,14],[-10,6,-4,1,8,14]].forEach(([x,y,z,a,b,d])=>{ const m=new T.Mesh(new T.BoxGeometry(a,b,d),new T.MeshBasicMaterial({color:0x6a6a6a})); m.position.set(x,y,z); es.add(m); });
+  try{ const pm=new T.PMREMGenerator(renderer); scene.environment=pm.fromScene(es,.08).texture; pm.dispose(); }catch(e){ scene.environment=null; }
 })();
 sun.position.set(5,11,6); sun.castShadow = true;
 sun.shadow.mapSize.set(IS_PHONE?512:1024,IS_PHONE?512:1024);
@@ -626,7 +626,7 @@ function drawRim(o){
     g.fillText(String(8-i),off/2,p); g.fillText(String(8-i),S-off/2,p);
   }
   const t=RIM.material.map; t.encoding=o?T.sRGBEncoding:T.LinearEncoding; t.needsUpdate=true;
-  RIM.material.roughness=o?.35:.8; RIM.material.needsUpdate=true;
+  RIM.material.roughness=o?.55:.8; RIM.material.needsUpdate=true;
 }
 
 const squareMeshes=[];
@@ -639,9 +639,9 @@ for(let f=0;f<8;f++) for(let r=0;r<8;r++){
 /* Board styles: wood (default) and marble use AI-generated photo textures from board/ (each square shows a different
    cut of the picture), steel is drawn, classic is the original flat board. Stored in localStorage wms-board. */
 const BOARDS={
-  wood:{tex:['board/maple.jpg','board/walnut.jpg'],rough:.38,frame:0x22120a,rim:'wood',ink:'#e9c46a',inlay:'#c9a227'},
-  marble:{tex:['board/marble-white.jpg','board/marble-green.jpg'],rough:.18,frame:0x0c0d0d,rim:'#0f1110',ink:'#e9c46a',inlay:'#d4af37'},
-  steel:{rough:.3,metal:.55,frame:0x0a0f15,rim:'#0b1118',ink:'#7fd3ff',inlay:'#2fa8e0'},
+  wood:{tex:['board/maple.jpg','board/walnut.jpg'],rough:.45,frame:0x22120a,rim:'wood',ink:'#e9c46a',inlay:'#c9a227'},
+  marble:{tex:['board/marble-white.jpg','board/marble-green.jpg'],rough:.4,frame:0x0c0d0d,rim:'#0f1110',ink:'#e9c46a',inlay:'#d4af37'},
+  steel:{rough:.52,metal:.4,frame:0x0a0f15,rim:'#0b1118',ink:'#7fd3ff',inlay:'#2fa8e0'},
   classic:null};
 let boardKey='wood', boardMats=[], steelTexs=null; const boardImg={};
 try{ const k=localStorage.getItem('wms-board'); if(k in BOARDS) boardKey=k; }catch(e){}
@@ -657,7 +657,7 @@ function setBoard(k){
   document.querySelectorAll('[data-board]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.board===k)));
   const o=BOARDS[k];
   drawRim(o);
-  if(o){ frame.material.color.set(o.frame); frame.material.roughness=.3; frame.material.metalness=.5; }
+  if(o){ frame.material.color.set(o.frame); frame.material.roughness=.45; frame.material.metalness=.4; }
   else { frame.material.color.set(0x2a2419); frame.material.roughness=.7; frame.material.metalness=.08; }
   // one texture and one material per colour; every square shows its own cut of the picture through its UVs
   // (cloning the texture per square would upload it 64 times and can exhaust the GPU memory)
@@ -963,8 +963,8 @@ function makeQueen(color){
   const builders={usa:buildLiberty,rus:buildMatryoshka,eu:buildEuropa,chn:buildPanda,isr:buildHoopoe,ger:buildShepherd,irn:buildPersianCat};
   const {g,head,headY}=(builders[nk]||buildPanda)();
   // scale up to the same overall height as the kings (~1.2 incl. crown)
-  // sized so every queen stands slightly below the king (king ≈1.05); Liberty's torch may reach king height
-  const s={usa:.9,rus:1.12,eu:.87,chn:.975,isr:.925,irn:1.0,ger:1.01}[nk]||1; g.scale.set(s,s,s);
+  // sized so every queen stands slightly below the king (king ≈1.05), head to foot; Liberty's torch rises above that
+  const s={usa:.98,rus:1.12,eu:.87,chn:.975,isr:.925,irn:1.0,ger:1.01}[nk]||1; g.scale.set(s,s,s);
   g.userData={type:'q',color,phase:Math.random()*6.28,head,headY};
   g.traverse(o=>{ if(o.isMesh) o.userData.owner=g; });
   return g;
@@ -1067,7 +1067,7 @@ function makePiece(type,color){ return polish(makePieceRaw(type,color)); }
 function polish(g){
   g.traverse(o=>{ if(!o.material) return; (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{
     if(m.userData.pol) return; m.userData.pol=1;
-    if(m.isMeshStandardMaterial){ m.roughness=Math.max(.15,m.roughness*.6); m.envMapIntensity=.7;
+    if(m.isMeshStandardMaterial){ m.roughness=Math.max(.25,m.roughness*.75); m.envMapIntensity=.5;
       const h={}; m.color.getHSL(h); if(h.s>.2) m.color.setHSL(h.h,Math.min(1,h.s*1.25),h.l*.72); }
     else if(m.isMeshBasicMaterial||m.isSpriteMaterial) m.toneMapped=false; }); });
   return g;

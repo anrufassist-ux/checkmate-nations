@@ -54,7 +54,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   league or buy.
 - Login rule: playing is always free without login; an account is only needed to buy, play rated or join the league.
 - Nation colours must stay distinct: USA navy, Russia red, Europe silver-white, China gold,
-  Germany anthracite, Israel sky blue, Iran green. Queens stand slightly below king height.
+  Germany anthracite, Israel sky blue, Iran green. Queens stand slightly below king height, measured head to foot (Liberty's raised torch does not count).
 
 ## Working rules
 - After editing, syntax-check the main script with node before pushing.
