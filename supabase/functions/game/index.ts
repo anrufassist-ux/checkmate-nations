@@ -16,7 +16,8 @@ const PRICES: Record<string, number> = { bundle3: 299, all: 499, pass: 99 }; // 
 const RETURN_OK = /^https:\/\/((www\.)?checkmatenations\.com|[a-z0-9-]+-anrufassist-uxs-projects\.vercel\.app)\//;
 const CODE_ABC = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const SQ = /^[a-h][1-8]$/;
-const BASE_MS = 900_000, INC_MS = 10_000, FIRST_MOVE_MS = 60_000;
+const BASE_MS = 900_000, INC_MS = 10_000, FIRST_MOVE_MS = 60_000, GONE_MS = 120_000;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PAIR_GAMES_PER_WEEK = 3; // the same two players can't farm Elo off each other
 
 const CORS = {
@@ -183,6 +184,38 @@ function claim(u: User, body: Game) { // "your clock is at zero": the server che
     if (!g) return fail("not found", 404);
     if (!seatOf(g, u.id)) return fail("not your game", 403);
     const [n] = await tx`select * from public.check_clock(${g.id})`;
+    return reply({ game: view(n) });
+  });
+}
+
+// ---------- abandoned games: clients ping while a rated game is open, the opponent can claim after 2 minutes ----------
+async function ping(u: User, body: Game) {
+  const id = String(body.id || "");
+  if (!UUID.test(id)) return fail("bad id", 400);
+  await sql`insert into public.game_seen (game_id, user_id)
+    select id, ${u.id} from public.games where id = ${id} and status = 'active' and ${u.id} in (white_id, black_id)
+    on conflict (game_id, user_id) do update set seen_at = now()`;
+  return reply({ ok: true });
+}
+
+function abandon(u: User, body: Game) {
+  if (!UUID.test(String(body.id || ""))) return fail("bad id", 400);
+  return sql.begin(async (tx) => {
+    const g = await lockGame(tx, body.id);
+    if (!g) return fail("not found", 404);
+    const seat = seatOf(g, u.id);
+    if (!seat) return fail("not your game", 403);
+    if (g.status !== "active" || !g.rated) return fail("game not running", 409, g);
+    const opp = seat === "w" ? g.black_id : g.white_id;
+    // last sign of the opponent: a ping, a move (turn_started_at) or the start of the game
+    const [s] = await tx`select extract(epoch from now() - greatest(
+        coalesce((select seen_at from public.game_seen where game_id = ${g.id} and user_id = ${opp}), '-infinity'),
+        coalesce(turn_started_at, '-infinity'), created_at)) * 1000 as gone
+      from public.games where id = ${g.id}`;
+    if (Number(s.gone) < GONE_MS) return fail("opponent still here", 409, g);
+    const n = g.move_no < 2
+      ? await finish(tx, g.id, null, "aborted")
+      : await finish(tx, g.id, seat === "w" ? "1-0" : "0-1", "abandon");
     return reply({ game: view(n) });
   });
 }
@@ -411,7 +444,7 @@ async function leagueJoin(u: User, body: Game) {
 }
 
 const ACTIONS: Record<string, (u: User, body: Game) => Promise<Response> | Response> = {
-  create, join, move, resign, claim, rematch, profile, queue, unqueue, stats: () => stats(),
+  create, join, move, resign, claim, rematch, profile, queue, unqueue, stats: () => stats(), ping, abandon,
   me, checkout, league, league_join: leagueJoin,
   delete_account: (u) => deleteAccount(u),
 };

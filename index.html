@@ -271,6 +271,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <span class="lab" id="onCodeLab">Spielcode</span><span class="codeShow" id="onCodeShow"></span>
       <button class="btn" id="onCopy" type="button">Kopieren</button>
       <button class="btn" id="onLeave" type="button">Verlassen</button>
+      <button class="btn primary" id="onClaim" type="button" hidden>Sieg beanspruchen</button>
     </div>
     <div class="onmsg" id="onVs"></div>
     <div class="onmsg" id="onMsg">Erstelle ein Spiel und schick den Code deinem Gegner.</div>
@@ -405,7 +406,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
   window.LANG=lang; document.documentElement.lang=lang;
   window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
   const D={
-    'Hintergrund':'Background','Brett':'Board','Holz':'Wood','Marmor':'Marble','Stahl':'Steel','Klassisch':'Classic','Kommandotisch':'Command table','Kartentisch':'Map table','Erde bei Nacht':'Earth at night',
+    'Hintergrund':'Background','Sieg beanspruchen':'Claim victory','Partie verlassen':'Game abandoned','Dein Gegner ist seit über 2 Minuten weg. Du kannst den Sieg beanspruchen.':'Your opponent has been gone for over 2 minutes. You can claim the victory.','Dein Gegner war gerade noch da. Warte noch etwas.':'Your opponent was here a moment ago. Wait a little longer.','Das hat nicht geklappt. Versuch es gleich nochmal.':'That did not work. Please try again in a moment.','Brett':'Board','Holz':'Wood','Marmor':'Marble','Stahl':'Steel','Klassisch':'Classic','Kommandotisch':'Command table','Kartentisch':'Map table','Erde bei Nacht':'Earth at night',
     'Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link. Danach tippst du das Land einfach nochmal an.':'You need an account to buy. We will e-mail you a sign-in link. Afterwards just tap the nation again.',
     'Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link. Liest du die Mail auf einem anderen Gerät, zum Beispiel am Handy, gib hier den Code aus der E-Mail ein.':'The link is on its way. Open the e-mail on this device and tap the link. If you read the e-mail on another device, for example your phone, enter the code from the e-mail here.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.',
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
@@ -487,6 +488,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     [/^(\d+) Spieler online · (\d+) suchen eine gewertete Partie\.$/,m=>m[1]+' online · '+m[2]+' are looking for a rated game.'],
     [/^Eure Bilanz: Du (\d+) · Remis (\d+) · Gegner (\d+)$/,m=>'Your record: you '+m[1]+' · draws '+m[2]+' · opponent '+m[3]],
     [/^Remis: (.+) kann nicht mehr mattsetzen\.$/,m=>'Draw: '+N(m[1])+' cannot checkmate any more.'],
+    [/^(.+) hat die Partie verlassen\. Sieg für (.+)!$/,m=>N(m[1])+' abandoned the game. Victory for '+N(m[2])+'!'],
     [/^(.+) hat keine Zeit mehr\. Sieg für (.+)!$/,m=>N(m[1])+' ran out of time. Victory for '+N(m[2])+'!'],
     [/^(.+) war schon vergeben, du spielst (.+)\.$/,m=>N(m[1])+' was already taken, you play '+N(m[2])+'.'],
     [/^Saison (.+) · noch (\d+) Tage$/,m=>'Season '+m[1]+' · '+m[2]+(m[2]==='1'?' day':' days')+' left'],
@@ -2283,16 +2285,28 @@ function renderClock(){
     chip.appendChild(sp); if(sep) chip.appendChild(document.createTextNode(sep));
   }
   if(running&&clockLeft(d,turn)<=0) claimClock();
+  const gone=running&&on.ready&&!over&&!on.opp&&on.oppGone&&Date.now()-on.oppGone>120000;
+  if(gone&&$('onClaim').hidden) onMsg('Dein Gegner ist seit über 2 Minuten weg. Du kannst den Sieg beanspruchen.',false);
+  $('onClaim').hidden=!gone;
 }
+function claimAbandon(){
+  const id=on.id; if(!id) return; $('onClaim').hidden=true;
+  api('abandon',{id}).then(r=>{ if(on.id!==id) return;
+    if(r.game) onlineSnap(toDoc(r.game));
+    if(r.error==='opponent still here'){ on.oppGone=Date.now(); onMsg('Dein Gegner war gerade noch da. Warte noch etwas.'); }
+    else if(r.error&&!r.game) onMsg('Das hat nicht geklappt. Versuch es gleich nochmal.'); });
+}
+$('onClaim').addEventListener('click',claimAbandon);
 function claimClock(){ // a clock reached zero: the server checks with its own time
   if(Date.now()-on.lastClaim<3000) return; on.lastClaim=Date.now();
   const id=on.id; api('claim',{id}).then(r=>{ if(on.id===id&&r.game) onlineSnap(toDoc(r.game)); });
 }
 function onlineEndCheck(){ // results the board cannot see by itself: time, abort, Elo
   const d=on.doc; if(!d||d.status!=='finished'||d.epoch!==on.epoch||busy) return;
-  if(!over&&(d.reason==='timeout'||d.reason==='timeout-draw'||d.reason==='aborted')){
+  if(!over&&(d.reason==='timeout'||d.reason==='timeout-draw'||d.reason==='aborted'||d.reason==='abandon')){
     over=true; selected=null; targets=[]; clearMarkers();
     if(d.reason==='aborted') banner('Partie abgebrochen','Kein erster Zug innerhalb von 60 Sekunden. Keine Wertung.',true);
+    else if(d.reason==='abandon') banner('Partie verlassen',CNAME[d.result==='1-0'?'b':'w']+' hat die Partie verlassen. Sieg für '+TEAM[d.result==='1-0'?'w':'b'].winner+'!',true);
     else if(d.reason==='timeout-draw') banner('Zeit abgelaufen','Remis: '+CNAME[d.fen.split(' ')[1]==='w'?'b':'w']+' kann nicht mehr mattsetzen.',true);
     else banner('Zeit abgelaufen',CNAME[d.result==='1-0'?'b':'w']+' hat keine Zeit mehr. Sieg für '+TEAM[d.result==='1-0'?'w':'b'].winner+'!',true);
   }
@@ -2371,9 +2385,12 @@ function onlineAttach(g,color){
   // live: the opponent's moves arrive as row updates; presence shows whether they are on the page
   const ch=on.sb.channel('game-'+id,{config:{presence:{key:on.me}}});
   ch.on('postgres_changes',{event:'UPDATE',schema:'public',table:'games',filter:'id=eq.'+id},p=>{ if(on.id===id&&p.new) onlineSnap(toDoc(fromRow(p.new))); })
-    .on('presence',{event:'sync'},()=>{ if(on.id!==id) return; on.opp=Object.keys(ch.presenceState()).some(k=>k!==on.me); onlineStatus(); })
+    .on('presence',{event:'sync'},()=>{ if(on.id!==id) return; on.opp=Object.keys(ch.presenceState()).some(k=>k!==on.me);
+      on.oppGone=on.opp?0:(on.oppGone||Date.now()); onlineStatus(); })
     .subscribe(st=>{ if(st==='SUBSCRIBED'&&on.id===id){ ch.track({color}).catch(()=>{}); onlineFetch(); } });
   on.chan=ch;
+  // rated: tell the server every 15 s that we are still here (an opponent may claim the win after 2 minutes of silence)
+  if(on.rated){ const ping=()=>{ if(on.id===id&&on.doc&&on.doc.status==='active') api('ping',{id}); }; ping(); on.ping=setInterval(ping,15000); }
   // safety net: re-read the game every few seconds in case a live update got lost
   on.poll=setInterval(()=>{
     if(mode!=='online'||!on.id||document.hidden) return;
@@ -2385,6 +2402,7 @@ function onlineDetach(){
   if(on.chan){ try{ on.sb.removeChannel(on.chan); }catch(e){} on.chan=null; }
   if(on.poll){ clearInterval(on.poll); on.poll=null; }
   if(on.clockTimer){ clearInterval(on.clockTimer); on.clockTimer=null; }
+  if(on.ping){ clearInterval(on.ping); on.ping=null; } on.oppGone=0; $('onClaim').hidden=true;
   $('clkChip').hidden=true; $('onVs').textContent='';
   on.doc=null; on.id=null; on.rated=false;
   on.code=null; on.color=null; on.ready=false; on.queue=null; on.opp=false;
@@ -2500,7 +2518,14 @@ $('statusBar').addEventListener('click',()=>setCollapsed(!document.querySelector
 if(matchMedia('(max-width:600px), (max-height:500px)').matches) setCollapsed(true); // phones, also held sideways
 $('onJoin').addEventListener('click',onlineJoin);
 $('onCode').addEventListener('keydown',e=>{ if(e.key==='Enter') onlineJoin(); });
-$('onLeave').addEventListener('click',()=>{ onlineLeave(); resetBoard(); onMsg('Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.'); });
+$('onLeave').addEventListener('click',()=>{
+  if(on.rated&&on.id&&on.ready&&!over&&!busy){ // leaving a running rated game would only bring you back after a reload
+    $('resign').hidden=false;
+    $('resignCancel').onclick=()=>{ $('resign').hidden=true; };
+    $('resignOk').onclick=()=>{ $('resign').hidden=true; onlineResign(); };
+    return;
+  }
+  onlineLeave(); resetBoard(); onMsg('Erstelle ein Spiel und schick den Code deinem Gegner, oder gib seinen Code ein.'); });
 $('onCopy').addEventListener('click',()=>{
   const t=window.T('Spiel mit mir Weltmacht Schach! Code: '+on.code);
   if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>onMsg('Code kopiert.',true)).catch(()=>{});
