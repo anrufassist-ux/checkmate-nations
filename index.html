@@ -2691,10 +2691,10 @@ function loop(){
       // round heads only turn around the vertical axis
       if(u.imgHead) u.head.lookAt(camPos); else u.head.lookAt(camPos.x, headPos.y, camPos.z);
       const nervous=u.panic||(inCheck&&u.type==='k'&&u.color===turn);
-      if(u.imgHead&&!nervous){ u.head.position.y=u.headY; continue; } // image heads stay still unless in check
-      const amp=nervous?(u.imgHead?.12:.35):.09, sp=nervous?14:2.6;
+      // image heads only sway gently at rest (about 2.5°), the round heads a bit more; both shake when in check
+      const amp=nervous?(u.imgHead?.12:.35):(u.imgHead?.045:.09), sp=nervous?14:(u.imgHead?2.1:2.6);
       u.head.rotateZ(Math.sin(t*sp+u.phase)*amp);
-      u.head.position.y=u.headY+Math.sin(t*sp*1.3+u.phase)*(nervous?.04:.012);
+      u.head.position.y=u.headY+Math.sin(t*sp*1.3+u.phase)*(nervous?.04:u.imgHead?.007:.012);
     }
     if(u.sprite){
       const s=u.sprite; p.getWorldPosition(headPos);
