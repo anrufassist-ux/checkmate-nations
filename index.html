@@ -359,9 +359,9 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 <div class="pick" id="resign" hidden role="dialog" aria-modal="true" aria-labelledby="resignTitle">
   <div class="pickCard">
     <div class="pickEyebrow">Online-Partie läuft</div>
-    <h2 id="resignTitle">Partie wirklich aufgeben?</h2>
-    <p class="pickSub">Wenn du jetzt ein neues Spiel startest, verlierst du diese Partie. Dein Gegner gewinnt und du bekommst keine Punkte.</p>
-    <button class="btn primary buyBtn" id="resignOk" type="button">Aufgeben</button>
+    <h2 id="resignTitle">Partie wirklich verlassen?</h2>
+    <p class="pickSub">Wenn du jetzt gehst, hast du diese Partie verloren. Dein Gegner gewinnt sofort.</p>
+    <button class="btn primary buyBtn" id="resignOk" type="button">Verlassen</button>
     <button class="pickBack" id="resignCancel" type="button">Weiterspielen</button>
   </div>
 </div>
@@ -429,8 +429,8 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Revanche':'Rematch','Gleicher Online-Gegner, gleiche Länder':'Same online opponent, same countries','Weiterspielen':'Continue',
     'Spieler 1':'Player 1','Spieler 2':'Player 2','Wähle dein Land':'Choose your country','Wähle dein Land.':'Choose your country.',
     'Die KI übernimmt das andere Land.':'The AI takes the other country.','Zurück':'Back',
-    'Online-Partie läuft':'Online game in progress','Partie wirklich aufgeben?':'Really resign this game?',
-    'Wenn du jetzt ein neues Spiel startest, verlierst du diese Partie. Dein Gegner gewinnt und du bekommst keine Punkte.':'If you start a new game now, you lose this game. Your opponent wins and you get no points.',
+    'Online-Partie läuft':'Online game in progress','Partie wirklich verlassen?':'Really leave this game?','Gegner ist geflüchtet':'Your opponent fled',
+    'Wenn du jetzt gehst, hast du diese Partie verloren. Dein Gegner gewinnt sofort.':'If you leave now, you lose this game. Your opponent wins right away.',
     'Aufgeben':'Resign','Neues Land':'New country','Kaufen':'Buy','Abbrechen':'Cancel',
     'Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen.':'Its own pieces, its own queen, its own flag pattern. Buy once, play forever.',
     'Ab ins Gefängnis!':'Off to jail!','Spielmodus':'Game mode','Spielstärke':'Difficulty','Der besiegte König':'The defeated king',
@@ -2311,7 +2311,7 @@ function onlineEndCheck(){ // results the board cannot see by itself: time, abor
   if(!over&&(d.reason==='timeout'||d.reason==='timeout-draw'||d.reason==='aborted'||d.reason==='abandon')){
     over=true; selected=null; targets=[]; clearMarkers();
     if(d.reason==='aborted') banner('Partie abgebrochen','Kein erster Zug innerhalb von 60 Sekunden. Keine Wertung.',true);
-    else if(d.reason==='abandon') banner('Partie verlassen',CNAME[d.result==='1-0'?'b':'w']+' hat die Partie verlassen. Sieg für '+TEAM[d.result==='1-0'?'w':'b'].winner+'!',true);
+    else if(d.reason==='abandon') banner(on.color===(d.result==='1-0'?'w':'b')?'Gegner ist geflüchtet':'Partie verlassen',CNAME[d.result==='1-0'?'b':'w']+' hat die Partie verlassen. Sieg für '+TEAM[d.result==='1-0'?'w':'b'].winner+'!',true);
     else if(d.reason==='timeout-draw') banner('Zeit abgelaufen','Remis: '+CNAME[d.fen.split(' ')[1]==='w'?'b':'w']+' kann nicht mehr mattsetzen.',true);
     else banner('Zeit abgelaufen',CNAME[d.result==='1-0'?'b':'w']+' hat keine Zeit mehr. Sieg für '+TEAM[d.result==='1-0'?'w':'b'].winner+'!',true);
   }
@@ -2475,14 +2475,14 @@ function onlineResign(){
   over=true; selected=null; targets=[]; clearMarkers();
   const abort=on.rated&&on.moveNo<2; // a rated game is only aborted before both sides moved
   api('resign',{id:on.id}).then(r=>{ if(r.error) onMsg('Aufgabe konnte nicht gesendet werden.'); else onlineSnap(toDoc(r.game)); });
-  if(abort) banner('Partie abgebrochen','Keine Wertung.',true); else banner('Aufgegeben','Sieg für '+TEAM[winner].winner+'.',true);
+  if(abort) banner('Partie abgebrochen','Keine Wertung.',true); else banner('Partie verlassen','Sieg für '+TEAM[winner].winner+'.',true);
   onlineStatus(); setTimeout(openModeScreen,1800);
 }
 function checkResign(d){
   if(over||!d||!d.resigned||d.resignEpoch!==on.epoch) return false;
   over=true; selected=null; targets=[]; clearMarkers();
   const winner=d.resigned==='w'?'b':'w';
-  banner(d.resigned===on.color?'Aufgegeben':'Gegner gibt auf','Sieg für '+TEAM[winner].winner+'!',true);
+  banner(d.resigned===on.color?'Partie verlassen':'Gegner ist geflüchtet','Sieg für '+TEAM[winner].winner+'!',true);
   onlineStatus(); return true;
 }
 async function onlineRematch(){
@@ -2522,9 +2522,10 @@ function setCollapsed(c){
 $('statusBar').addEventListener('click',()=>setCollapsed(!document.querySelector('.console').classList.contains('collapsed')));
 if(matchMedia('(max-width:600px), (max-height:500px)').matches) setCollapsed(true); // phones, also held sideways
 $('onJoin').addEventListener('click',onlineJoin);
+window.addEventListener('beforeunload',e=>{ if(mode==='online'&&on.id&&on.ready&&!over){ e.preventDefault(); e.returnValue=''; } });
 $('onCode').addEventListener('keydown',e=>{ if(e.key==='Enter') onlineJoin(); });
 $('onLeave').addEventListener('click',()=>{
-  if(on.rated&&on.id&&on.ready&&!over&&!busy){ // leaving a running rated game would only bring you back after a reload
+  if(on.id&&on.ready&&!over&&!busy){ // leaving a running online game loses it, the opponent wins right away
     $('resign').hidden=false;
     $('resignCancel').onclick=()=>{ $('resign').hidden=true; };
     $('resignOk').onclick=()=>{ $('resign').hidden=true; onlineResign(); };
