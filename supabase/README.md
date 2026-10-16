@@ -46,17 +46,19 @@ ob bezahlt wurde (beim Zurückkommen ins Spiel und bei jedem Öffnen des Kontos)
 Preise stehen in der Funktion (`PRICES`): 3 Länder 2,99 €, alle Länder 4,99 €, League-Pass 0,99 € pro Saison,
 ohne Umsatzsteuer (Kleinunternehmer, § 19 UStG).
 
-## Anmelde-Mail (Link, Code als Rückfall)
+## Anmelde-Mail (nur Code)
 
-Angemeldet wird per Link. Falls der Link in einem fremden Fenster aufgeht (z. B. im Browser der Gmail-App), kann man im
-Spiel den Code aus der Mail eingeben. Supabase → Authentication → Emails → Templates → bei **Magic Link**,
-**Confirm signup** und **Change Email Address** jeweils:
+Angemeldet wird nur mit dem 6-stelligen Code, ohne Link: Ein Link würde den Code verbrauchen, wenn er auf einem anderen Gerät
+geöffnet wird. Der Code steht im Betreff, damit er schon in der Benachrichtigung zu sehen ist. Danach bleibt man auf dem Gerät
+angemeldet. Supabase → Authentication → Emails → Templates → bei **Magic Link**, **Confirm signup** und
+**Change Email Address** jeweils:
 
-Betreff: `Checkmate Nations: Anmelden / Sign in`
+Betreff: `{{ .Token }} ist dein Code · Checkmate Nations`
 
 ```html
 <h2>Checkmate Nations</h2>
-<p><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background:#c9b98f;color:#14110a;text-decoration:none;font-weight:bold;border-radius:6px">Anmelden / Sign in</a></p>
-<p style="color:#666">Klappt der Link nicht? Code im Spiel eingeben: / Link not working? Enter this code in the game: <b>{{ .Token }}</b></p>
+<p>Dein Anmeldecode / Your sign-in code:</p>
+<p style="font-size:32px;font-weight:bold;letter-spacing:6px;margin:12px 0">{{ .Token }}</p>
+<p style="color:#666">Gib den Code im Spiel ein. / Enter the code in the game.</p>
 <p style="color:#888">Wenn du das nicht warst, ignoriere diese Mail. / If this wasn't you, just ignore this e-mail.</p>
 ```

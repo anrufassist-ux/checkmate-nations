@@ -302,9 +302,9 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     <div class="pickEyebrow">Checkmate Nations</div>
     <h2 id="acctTitle">Anmelden</h2>
     <div class="acctPane" id="acctLogin" hidden>
-      <p class="pickSub">Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.</p>
+      <p class="pickSub">Wir schicken dir einen 6-stelligen Code per E-Mail. Kein Passwort nötig, und du bleibst auf diesem Gerät angemeldet.</p>
       <input class="field" id="acctEmail" type="email" placeholder="E-Mail-Adresse" autocomplete="email" aria-label="E-Mail-Adresse">
-      <button class="btn primary buyBtn" id="acctSend" type="button">Link senden</button>
+      <button class="btn primary buyBtn" id="acctSend" type="button">Code senden</button>
       <div class="otpRow" id="acctCodeRow" hidden>
         <input class="field" id="acctCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="Code aus der E-Mail" aria-label="Code aus der E-Mail">
         <button class="btn primary" id="acctVerify" type="button">Anmelden</button>
@@ -406,8 +406,8 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
   window.LANG=lang; document.documentElement.lang=lang;
   window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
   const D={
-    'Hintergrund':'Background','Sieg beanspruchen':'Claim victory','Partie verlassen':'Game abandoned','Dein Gegner ist seit über 2 Minuten weg. Du kannst den Sieg beanspruchen.':'Your opponent has been gone for over 2 minutes. You can claim the victory.','Dein Gegner war gerade noch da. Warte noch etwas.':'Your opponent was here a moment ago. Wait a little longer.','Das hat nicht geklappt. Versuch es gleich nochmal.':'That did not work. Please try again in a moment.','Brett':'Board','Holz':'Wood','Marmor':'Marble','Stahl':'Steel','Klassisch':'Classic','Kommandotisch':'Command table','Kartentisch':'Map table','Erde bei Nacht':'Earth at night',
-    'Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link. Danach tippst du das Land einfach nochmal an.':'You need an account to buy. We will e-mail you a sign-in link. Afterwards just tap the nation again.',
+    'Hintergrund':'Background','Wir schicken dir einen 6-stelligen Code per E-Mail. Kein Passwort nötig, und du bleibst auf diesem Gerät angemeldet.':'We e-mail you a 6-digit code. No password needed, and you stay signed in on this device.','Code senden':'Send code','Code ist unterwegs. Er steht schon im Betreff der E-Mail.':'The code is on its way. It is right in the subject line of the e-mail.','Sieg beanspruchen':'Claim victory','Partie verlassen':'Game abandoned','Dein Gegner ist seit über 2 Minuten weg. Du kannst den Sieg beanspruchen.':'Your opponent has been gone for over 2 minutes. You can claim the victory.','Dein Gegner war gerade noch da. Warte noch etwas.':'Your opponent was here a moment ago. Wait a little longer.','Das hat nicht geklappt. Versuch es gleich nochmal.':'That did not work. Please try again in a moment.','Brett':'Board','Holz':'Wood','Marmor':'Marble','Stahl':'Steel','Klassisch':'Classic','Kommandotisch':'Command table','Kartentisch':'Map table','Erde bei Nacht':'Earth at night',
+    'Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode. Danach tippst du das Land einfach nochmal an.':'You need an account to buy. We will e-mail you a sign-in code. Afterwards just tap the nation again.',
     'Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link. Liest du die Mail auf einem anderen Gerät, zum Beispiel am Handy, gib hier den Code aus der E-Mail ein.':'The link is on its way. Open the e-mail on this device and tap the link. If you read the e-mail on another device, for example your phone, enter the code from the e-mail here.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.',
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
     '2,99 €':'€2.99','4,99 €':'€4.99','0,99 €':'€0.99',
@@ -2000,10 +2000,15 @@ async function sendLink(){
   if(err==='exists'){ const r=await on.sb.auth.signInWithOtp({email,options:{emailRedirectTo:redirect,shouldCreateUser:true}}); err=r.error; type='email'; }
   if(err){ note.textContent='Das hat nicht geklappt. Versuch es in ein paar Minuten nochmal.'; return; }
   otp={email,type};
-  note.textContent='Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link. Liest du die Mail auf einem anderen Gerät, zum Beispiel am Handy, gib hier den Code aus der E-Mail ein.';
-  $('acctCodeRow').hidden=false;
+  note.textContent='Code ist unterwegs. Er steht schon im Betreff der E-Mail.';
+  $('acctCodeRow').hidden=false; $('acctCode').value=''; setTimeout(()=>$('acctCode').focus(),50);
 }
+let verifying=false;
 async function verifyCode(){
+  if(verifying) return; clearTimeout(codeTimer); verifying=true;
+  try{ await verifyCodeNow(); }finally{ verifying=false; }
+}
+async function verifyCodeNow(){
   const token=($('acctCode').value||'').replace(/\D/g,''), note=$('acctNote');
   if(!otp){ note.textContent='Fordere zuerst einen Code an.'; return; }
   if(token.length<6){ note.textContent='Bitte den Code aus der E-Mail eingeben.'; return; }
@@ -2114,7 +2119,7 @@ async function shopGo(){
   note.textContent='Einen Moment …';
   try{ await ensureSb(true); }catch(e){ note.textContent='Verbindung zum Server fehlgeschlagen.'; return; }
   if(!isReg(on.user)){
-    $('buy').hidden=true; openAcct('login'); $('acctNote').textContent='Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link. Danach tippst du das Land einfach nochmal an.'; return;
+    $('buy').hidden=true; openAcct('login'); $('acctNote').textContent='Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode. Danach tippst du das Land einfach nochmal an.'; return;
   }
   const r=await api('checkout',{product:sel.product,nations:[...sel.picks],consent:true,returnUrl:location.origin+location.pathname});
   if(r.error||!r.url){ note.textContent=r.status===409?'Das hast du schon.':'Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.'; return; }
@@ -2500,6 +2505,8 @@ $('buyCancel').addEventListener('click',()=>{ $('buy').hidden=true; });
 $('acctSend').addEventListener('click',sendLink);
 $('acctVerify').addEventListener('click',verifyCode);
 $('acctCode').addEventListener('keydown',e=>{ if(e.key==='Enter') verifyCode(); });
+let codeTimer=0; // submit by itself once the code looks complete (a short pause, in case the project uses longer codes)
+$('acctCode').addEventListener('input',e=>{ clearTimeout(codeTimer); if(e.target.value.replace(/\D/g,'').length>=6) codeTimer=setTimeout(verifyCode,700); });
 $('acctEmail').addEventListener('keydown',e=>{ if(e.key==='Enter') sendLink(); });
 $('acctSave').addEventListener('click',saveName);
 $('acctUser').addEventListener('keydown',e=>{ if(e.key==='Enter') saveName(); });
