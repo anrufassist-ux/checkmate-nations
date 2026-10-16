@@ -26,6 +26,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   playable offline, online and in the league; the server checks ownership for `create` and `queue`. Terms in `agb.html`.
 - Caricature mode is on by default.
 - View: header button "View" opens camera presets (Free 3D default, Play view, Top view) plus the caricature/flag toggles. Every preset is fitted by `fitCamera()` so the whole board fits between header and info panel (camera view offset); stored in localStorage `wms-view`. The "2D pieces" toggle in that menu swaps every piece for a flat disc with the classic chess symbol in nation colours (`makeFlatPiece()`), forces the top view straight down and is stored in `wms-flat`; choosing another view turns it off.
+- Backgrounds: the View menu also picks the scene background: Classic (grid floor, default), Kommandotisch, Kartentisch, Erde bei Nacht. The non-classic ones are AI-generated WebP images in `bg/` (loaded lazily, lying flat under the board, scaled up on portrait screens), stored in localStorage `wms-bg`.
 - Volume: one header button opens sliders for sounds and music (0-100 %, default 70 %, 0 = off), stored in localStorage `wms-vol`. All sound effects go through `sfxBus()`, music through `musicBus()`.
 - Online 1v1 runs on Supabase (free plan, project `uerlobtrjmgveqeoykwk`, Frankfurt), see `supabase/README.md`.
   Phase 1 (built): anonymous guest sign-in, unrated friendly games by 4-letter code. Clients only read

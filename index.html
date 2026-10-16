@@ -228,6 +228,13 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
           <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
           <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
         </div>
+        <div class="vhead">Hintergrund</div>
+        <div class="vtog" id="bgBtns">
+          <button class="btn" type="button" data-bg="classic" aria-pressed="true">Klassisch</button>
+          <button class="btn" type="button" data-bg="command" aria-pressed="false">Kommandotisch</button>
+          <button class="btn" type="button" data-bg="maptable" aria-pressed="false">Kartentisch</button>
+          <button class="btn" type="button" data-bg="earth" aria-pressed="false">Erde bei Nacht</button>
+        </div>
       </div>
     </div>
     <button class="btn" id="langBtn" type="button" aria-label="Language / Sprache" onclick="setLang(LANG==='en'?'de':'en')">EN · DE</button>
@@ -391,6 +398,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
   window.LANG=lang; document.documentElement.lang=lang;
   window.setLang=l=>{ try{ localStorage.setItem('wms-lang',l); }catch(e){} location.reload(); };
   const D={
+    'Hintergrund':'Background','Klassisch':'Classic','Kommandotisch':'Command table','Kartentisch':'Map table','Erde bei Nacht':'Earth at night',
     'Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link. Danach tippst du das Land einfach nochmal an.':'You need an account to buy. We will e-mail you a sign-in link. Afterwards just tap the nation again.',
     'Link ist unterwegs. Tippe in der E-Mail darauf. Falls du danach nicht angemeldet bist, gib hier den Code aus der E-Mail ein.':'The link is on its way. Tap it in the e-mail. If you are not signed in afterwards, enter the code from the e-mail here.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.',
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
@@ -571,6 +579,7 @@ function mat(c,r=.65,m=.08){ return new T.MeshStandardMaterial({color:c,roughnes
 function mesh(geo,material,x=0,y=0,z=0){ const o=new T.Mesh(geo,material); o.position.set(x,y,z); o.castShadow=true; o.receiveShadow=true; return o; }
 
 /* ---------- Floor + board ---------- */
+let FLOOR=null;
 (function floor(){
   const c=document.createElement('canvas'); c.width=c.height=256; const g=c.getContext('2d');
   g.fillStyle='#141a18'; g.fillRect(0,0,256,256);
@@ -579,7 +588,7 @@ function mesh(geo,material,x=0,y=0,z=0){ const o=new T.Mesh(geo,material); o.pos
   for(let i=32;i<256;i+=32){ g.beginPath(); g.moveTo(i,0); g.lineTo(i,256); g.moveTo(0,i); g.lineTo(256,i); g.stroke(); }
   const tex=new T.CanvasTexture(c); tex.wrapS=tex.wrapT=T.RepeatWrapping; tex.repeat.set(12,12);
   const p=new T.Mesh(new T.PlaneGeometry(80,80), new T.MeshStandardMaterial({map:tex,roughness:1}));
-  p.rotation.x=-Math.PI/2; p.position.y=-.42; p.receiveShadow=true; scene.add(p);
+  p.rotation.x=-Math.PI/2; p.position.y=-.42; p.receiveShadow=true; scene.add(p); FLOOR=p;
 })();
 
 const frame = mesh(new T.BoxGeometry(9.3,.32,9.3), mat(0x2a2419,.7), 0,-.26,0); scene.add(frame);
@@ -2505,6 +2514,27 @@ function refit(){ // after resize or when the info panel opens/closes: keep the 
   if(VIEWS[view].free){ sph.setFromVector3(camera.position.clone().sub(controls.target)); fitCamera(sph.phi); }
   else fitCamera(viewPhi());
 }
+/* backgrounds: classic grid floor, or an image (bg/*.webp, self-hosted, loaded only when picked) lying under the board */
+const BGS={classic:null,command:{file:'bg/command.webp',col:0x03070c},maptable:{file:'bg/maptable.webp',col:0x0c0805},earth:{file:'bg/earth.webp',col:0x020306}};
+let bgKey='classic', bgMesh=null; const bgTex={};
+try{ const b=localStorage.getItem('wms-bg'); if(b in BGS) bgKey=b; }catch(e){}
+function setBackground(k){
+  if(!(k in BGS)) k='classic'; bgKey=k; try{ localStorage.setItem('wms-bg',k); }catch(e){}
+  document.querySelectorAll('[data-bg]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.bg===k)));
+  const o=BGS[k], col=o?o.col:0x0d1110;
+  scene.background.set(col); scene.fog.color.set(col); if(FLOOR) FLOOR.visible=!o;
+  if(!o){ if(bgMesh) bgMesh.visible=false; wake(500); return; }
+  const show=tex=>{ if(bgKey!==k) return;
+    if(!bgMesh){ const W=34; bgMesh=new T.Mesh(new T.PlaneGeometry(W,W*9/16),new T.MeshBasicMaterial({transparent:true,fog:false,depthWrite:false}));
+      bgMesh.rotation.x=-Math.PI/2; bgMesh.position.set(0,-.41,-1.2); bgMesh.renderOrder=-1; scene.add(bgMesh); }
+    bgMesh.material.map=tex; bgMesh.material.needsUpdate=true; bgMesh.visible=true; bgScale(); wake(800); };
+  if(bgTex[k]) show(bgTex[k]);
+  else new T.TextureLoader().load(o.file,tex=>{ tex.encoding=T.sRGBEncoding; tex.anisotropy=renderer.capabilities.getMaxAnisotropy(); bgTex[k]=tex; show(tex); });
+}
+// portrait screens look further into the depth, so the picture grows there
+function bgScale(){ if(bgMesh) bgMesh.scale.setScalar(Math.max(1,.95*innerHeight/innerWidth)); }
+window.addEventListener('resize',bgScale);
+document.querySelectorAll('[data-bg]').forEach(b=>b.addEventListener('click',()=>setBackground(b.dataset.bg)));
 function setFlat(f){
   if(f===flat2d) return;
   flat2d=f; try{ localStorage.setItem('wms-flat',f?'1':'0'); }catch(e){}
@@ -2520,6 +2550,7 @@ window.addEventListener('resize',resize);
 window.addEventListener('resize',()=>setTimeout(refit,50));
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(refit,50)); // header height changes once web fonts arrive
 resize(); placeCamera(); setupPieces(); setStatus('Wähle einen Spielmodus.','w'); openModeScreen();
+if(bgKey!=='classic') setTimeout(()=>setBackground(bgKey),0);
 
 const clock=new T.Clock(); const camPos=new T.Vector3(), headPos=new T.Vector3();
 let activeUntil=performance.now()+2000, lastRender=0;
