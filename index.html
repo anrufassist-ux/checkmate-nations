@@ -585,7 +585,7 @@ const sun = new T.DirectionalLight(0xfff1d6, 1.5);
   const gr=g.createLinearGradient(0,0,0,256); gr.addColorStop(0,'#e8eefc'); gr.addColorStop(.5,'#5a6070'); gr.addColorStop(1,'#141210'); g.fillStyle=gr; g.fillRect(0,0,64,256);
   es.add(new T.Mesh(new T.SphereGeometry(20,32,16),new T.MeshBasicMaterial({side:T.BackSide,map:new T.CanvasTexture(c)})));
   [[0,12,0,14,1,14],[10,5,6,1,6,8],[-10,6,-4,1,5,9]].forEach(([x,y,z,a,b,d])=>{ const m=new T.Mesh(new T.BoxGeometry(a,b,d),new T.MeshBasicMaterial({color:0xffffff})); m.position.set(x,y,z); es.add(m); });
-  const pm=new T.PMREMGenerator(renderer); scene.environment=pm.fromScene(es,.03).texture; pm.dispose();
+  try{ const pm=new T.PMREMGenerator(renderer); scene.environment=pm.fromScene(es,.03).texture; pm.dispose(); }catch(e){ scene.environment=null; }
 })();
 sun.position.set(5,11,6); sun.castShadow = true;
 sun.shadow.mapSize.set(IS_PHONE?512:1024,IS_PHONE?512:1024);
@@ -634,7 +634,7 @@ const LIGHT=mat(0xc9b98f,.75), DARK=mat(0x47513f,.75);
 for(let f=0;f<8;f++) for(let r=0;r<8;r++){
   const m=new T.Mesh(new T.BoxGeometry(1,.2,1),(f+r)%2?LIGHT:DARK);
   m.position.set(f-3.5,-.1,3.5-r); m.receiveShadow=true;
-  m.userData.square=FILES[f]+(r+1); scene.add(m); squareMeshes.push(m);
+  m.userData.square=FILES[f]+(r+1); m.userData.uv0=m.geometry.attributes.uv.array.slice(); scene.add(m); squareMeshes.push(m);
 }
 /* Board styles: wood (default) and marble use AI-generated photo textures from board/ (each square shows a different
    cut of the picture), steel is drawn, classic is the original flat board. Stored in localStorage wms-board. */
@@ -643,7 +643,7 @@ const BOARDS={
   marble:{tex:['board/marble-white.jpg','board/marble-green.jpg'],rough:.18,frame:0x0c0d0d,rim:'#0f1110',ink:'#e9c46a',inlay:'#d4af37'},
   steel:{rough:.3,metal:.55,frame:0x0a0f15,rim:'#0b1118',ink:'#7fd3ff',inlay:'#2fa8e0'},
   classic:null};
-let boardKey='wood'; const boardImg={};
+let boardKey='wood', boardMats=[], steelTexs=null; const boardImg={};
 try{ const k=localStorage.getItem('wms-board'); if(k in BOARDS) boardKey=k; }catch(e){}
 function steelTex(base,hi){
   const c=document.createElement('canvas'); c.width=c.height=256; const g=c.getContext('2d'); let s=7;
@@ -659,16 +659,21 @@ function setBoard(k){
   drawRim(o);
   if(o){ frame.material.color.set(o.frame); frame.material.roughness=.3; frame.material.metalness=.5; }
   else { frame.material.color.set(0x2a2419); frame.material.roughness=.7; frame.material.metalness=.08; }
+  // one texture and one material per colour; every square shows its own cut of the picture through its UVs
+  // (cloning the texture per square would upload it 64 times and can exhaust the GPU memory)
   const apply=(lt,dk)=>{ if(boardKey!==k) return; let s=11;
     const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+    boardMats.forEach(x=>x.dispose());
+    boardMats=o?[lt,dk].map(t=>new T.MeshStandardMaterial({map:t,roughness:o.rough,metalness:o.metal||0,envMapIntensity:.25})):[];
     squareMeshes.forEach((m,i)=>{ const f=i>>3, r=i&7, light=(f+r)%2===1;
-      if(!o){ m.material=light?LIGHT:DARK; return; }
-      let t=light?lt:dk;
-      if(o.tex){ t=t.clone(); t.needsUpdate=true; t.repeat.set(.22,.39); t.offset.set(rnd()*.78,rnd()*.61); }
-      m.material=new T.MeshStandardMaterial({map:t,roughness:o.rough,metalness:o.metal||0,envMapIntensity:.25}); });
+      m.material=o?boardMats[light?0:1]:light?LIGHT:DARK;
+      const cut=o&&o.tex, rx=cut?.22:1, ry=cut?.39:1, ox=cut?rnd()*.78:0, oy=cut?rnd()*.61:0;
+      const uv=m.geometry.attributes.uv, u0=m.userData.uv0;
+      for(let j=0;j<u0.length;j+=2){ uv.array[j]=ox+u0[j]*rx; uv.array[j+1]=oy+u0[j+1]*ry; }
+      uv.needsUpdate=true; });
     wake(800); };
   if(!o) apply();
-  else if(!o.tex) apply(steelTex('#9aa7b4','255,255,255'),steelTex('#1c2836','140,200,255'));
+  else if(!o.tex) apply(...(steelTexs=steelTexs||[steelTex('#9aa7b4','255,255,255'),steelTex('#1c2836','140,200,255')]));
   else Promise.all(o.tex.map(u=>boardImg[u]||(boardImg[u]=new Promise(res=>new T.TextureLoader().load(u,t=>{
       t.encoding=T.sRGBEncoding; t.anisotropy=renderer.capabilities.getMaxAnisotropy(); res(t); },undefined,()=>res(null))))))
     .then(([a,b])=>{ if(a&&b) apply(a,b); else if(boardKey===k) setBoard('classic'); });
