@@ -12,7 +12,7 @@ gern mit Link oder Screenshot der Zahlen), der Rest wird hier eingetragen.
 |---|---|---|
 | Instagram | @checkmatenations | https://checkmatenations.com/?utm_source=instagram |
 | TikTok | @checkmatenations | https://checkmatenations.com/?utm_source=tiktok |
-| YouTube | @checkmatenations | https://checkmatenations.com/?utm_source=youtube |
+| YouTube | @checkmate.nations (youtube.com/@checkmate.nations) | https://checkmatenations.com/?utm_source=youtube |
 | itch.io | checkmate-nations | Knopf führt auf https://checkmatenations.com/?utm_source=itch |
 
 Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel Analytics) zeigt, von welchem Kanal jemand kam.
