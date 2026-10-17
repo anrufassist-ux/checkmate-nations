@@ -4,3 +4,8 @@ tools/clip/frames/
 tools/clip/node_modules
 tools/clip/moves.json
 *.mp4
+tools/clip/sounds.json
+tools/clip/snd/
+tools/clip/full.log
+tools/clip/clip.mp4
+tools/clip/*.png

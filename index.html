@@ -95,6 +95,10 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 .field{box-sizing:border-box;min-width:0;font:inherit;font-size:16px;padding:10px 12px;background:#0d1110;color:var(--fg);border:1px solid var(--line);border-radius:6px;width:100%}
 .acctPane{display:grid;gap:10px}.acctPane[hidden]{display:none}
 .acctBtns{display:flex;gap:8px;justify-content:center}
+.acctWho{margin:0;font-size:17px;color:var(--muted)}.acctWho b{color:var(--fg)}
+.acctOwned{margin:0;font-size:14px;color:var(--muted)}
+.acctMenuList{display:grid;gap:8px;margin-top:4px}
+.acctMenuSmall{display:flex;gap:18px;justify-content:center;margin-top:4px}
 .board{margin:0;padding:0 4px 0 30px;text-align:left;max-height:55vh;overflow:auto;font-size:15px;line-height:1.8}
 .board li span{float:right;color:var(--sand);font-family:var(--f-label);font-weight:700}
 .board li.me{color:var(--sand)}
@@ -192,8 +196,8 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 
 <header class="top">
   <div class="brand">
-    <h1>Weltmacht Schach</h1>
-    <div class="vs"><b id="vsW" style="color:var(--usa)">USA</b> gegen <b id="vsB" style="color:var(--ru)">Russland</b> · Prototyp</div>
+    <h1>Checkmate Nations</h1>
+    <div class="vs"><b id="vsW" style="color:var(--usa)">USA</b> gegen <b id="vsB" style="color:var(--ru)">Russland</b></div>
   </div>
   <div class="controls">
     <select class="sel" id="mode" aria-label="Spielmodus" hidden>
@@ -245,6 +249,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
         </div>
       </div>
     </div>
+    <button class="btn" id="acctBtn" type="button">Konto</button>
     <button class="btn" id="langBtn" type="button" aria-label="Language / Sprache" onclick="setLang(LANG==='en'?'de':'en')">EN · DE</button>
     <button class="btn primary" id="reset" type="button">Neues Spiel</button>
   </div>
@@ -302,6 +307,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
   <div class="pickCard">
     <div class="pickEyebrow">Checkmate Nations</div>
     <h2 id="acctTitle">Anmelden</h2>
+    <div class="acctPane" id="acctMenu" hidden></div>
     <div class="acctPane" id="acctLogin" hidden>
       <p class="pickSub">Wir schicken dir einen 6-stelligen Code per E-Mail. Kein Passwort nötig, und du bleibst auf diesem Gerät angemeldet.</p>
       <input class="field" id="acctEmail" type="email" placeholder="E-Mail-Adresse" autocomplete="email" aria-label="E-Mail-Adresse">
@@ -334,7 +340,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 
 <div class="pick" id="modeScreen" hidden role="dialog" aria-modal="true" aria-labelledby="modeTitle">
   <div class="pickCard">
-    <div class="pickEyebrow">Weltmacht Schach</div>
+    <div class="pickEyebrow">Checkmate Nations</div>
     <h2 id="modeTitle">Wie willst du spielen?</h2>
     <div class="modeList">
       <button class="modeBtn" type="button" data-m="ai"><span class="mt">Gegen KI</span><span class="ms">Du gegen den Computer</span></button>
@@ -414,6 +420,10 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
     '2,99 €':'€2.99','4,99 €':'€4.99','0,99 €':'€0.99',
     'Neue Länder':'New nations','Länder freischalten':'Unlock nations','League-Pass':'League pass','Damit spielst du diese Saison mit USA oder Russland in der Nations League. Wer ein Land kauft, ist ohne Pass in jeder Saison dabei.':'Play this season of the Nations League with the USA or Russia. Anyone who buys a nation is in every season without a pass.','Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen, auch online. Jeder Länderkauf enthält die Nations League für alle Saisons.':'Own pieces, own queen, own flag pattern. Buy once, play forever, online too. Every nation purchase includes the Nations League for all seasons.','3 Länder nach Wahl':'3 nations of your choice','Du wählst gleich aus':'You pick them next','Alle Länder':'All nations','Alle noch gesperrten Länder':'Every nation still locked','Gilt bis zum Monatsende':'Valid until the end of the month','Weiter zur Zahlung':'Continue to payment','Ich möchte, dass die Freischaltung sofort erfolgt, und weiß, dass ich damit mein Widerrufsrecht verliere. Es gelten die':'I want the unlock to happen immediately and understand that I thereby lose my right of withdrawal. The following apply:','AGB':'Terms','Endpreise. Gemäß § 19 UStG wird keine Umsatzsteuer berechnet. Bezahlt wird über Stripe.':'Final prices. No VAT is charged (small business, § 19 UStG). Payment via Stripe.','Du hast schon alle Länder.':'You already own every nation.','Bitte genau 3 Länder wählen.':'Please pick exactly 3 nations.','Bitte bestätige zuerst das Häkchen.':'Please tick the box first.','Einen Moment …':'One moment …','Verbindung zum Server fehlgeschlagen.':'Could not connect to the server.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.','Das hast du schon.':'You already have this.','Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.':'Could not start the purchase. Please try again.','Danke für deinen Kauf!':'Thanks for your purchase!','Die Zahlung wird noch bestätigt …':'Payment is being confirmed …','Freigeschaltet. Viel Spaß!':'Unlocked. Have fun!','Die Zahlung ist noch nicht bestätigt. Lade die Seite gleich nochmal.':'The payment is not confirmed yet. Reload the page in a moment.','Saison':'Season','League konnte nicht geladen werden.':'Could not load the league.','Für die League brauchst du ein Konto und ein gekauftes Land oder den League-Pass.':'For the league you need an account and a bought nation or the league pass.','Wähle zuerst einen Spielernamen.':'Choose a player name first.','Wähle dein Land für diese Saison. Es bleibt bis zum Monatsende fest.':'Choose your nation for this season. It stays fixed until the end of the month.','Dabei bist du mit jedem Länderkauf (gilt für alle Saisons) oder mit dem League-Pass für diese Saison.':'You are in with any nation purchase (valid for all seasons) or with the league pass for this season.','League-Pass · 0,99 €':'League pass · €0.99','Länder ansehen':'See nations','Länder':'Nations','Land':'Nation','Pkt/Partie':'Pts/game','Partien':'Games','Spieler':'Players','Punkte':'Points','Beste Spieler':'Top players','Noch keine League-Partien in dieser Saison.':'No league games this season yet.','3 Punkte für einen Sieg, 1 für ein Remis. Länder werden nach Punkten pro Partie gewertet. Neue Spieler (unter 20 Partien) und Spieler unter 1000 Elo zählen für ihr Land halb.':'3 points for a win, 1 for a draw. Nations are ranked by points per game. New players (under 20 games) and players under 1000 Elo count half for their nation.','Meister':'Champions','Titel':'Titles','Ewige Tabelle':'All-time table','Die erste Saison läuft noch. Am Monatsende steht hier der erste Meister.':'The first season is still running. At the end of the month the first champion appears here.','Du spielst diese Saison für':'You play this season for','Meister:':'Champion:',
+    'Konto':'Account','Konto, Shop, League':'Account, shop, league','freischalten · ab 2,99 €':'unlock · from €2.99','Länder kaufen':'Buy nations','Weitere Länder kaufen':'Buy more nations',
+    'Spielen ist ohne Konto kostenlos. Ein Konto brauchst du nur zum Kaufen, für gewertete Partien und die Nations League.':'Playing is free without an account. You only need one to buy, to play rated games and for the Nations League.',
+    'Angemeldet, noch ohne Spielernamen.':'Signed in, no player name yet.','Deine Länder: ':'Your nations: ','Noch keine Länder gekauft.':'No nations bought yet.','League diese Saison: ':'League this season: ','League: Land noch nicht gewählt.':'League: nation not chosen yet.','League: nicht dabei.':'League: not entered.',
+    'Gekaufte Länder kannst du sofort überall spielen, auch gewertet. Für die League zählen sie ab der nächsten Saison.':'Bought nations are playable everywhere right away, rated games too. For the league they count from next season.',
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
     'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
     'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
@@ -1797,7 +1807,7 @@ function renderPickButtons(taken,onChoose){
     if(n.key===taken) b.classList.add('taken');
     b.innerHTML=flagHTML(n.key)+'<span class="pn"></span><span class="ps"></span>'+(isOwned(n.key)?'':'<span class="lockPill">'+LOCK+'</span>');
     b.querySelector('.pn').textContent=n.name; b.querySelector('.pn').style.color=n.css;
-    b.querySelector('.ps').textContent=n.key===taken?'schon gewählt':isOwned(n.key)?'spielbereit':'freischalten';
+    b.querySelector('.ps').textContent=n.key===taken?'schon gewählt':isOwned(n.key)?'spielbereit':'freischalten · ab 2,99 €';
     b.onclick=()=>{ if(!isOwned(n.key)){ openBuy(n.key,()=>renderPickButtons(taken,onChoose)); return; } onChoose(n.key); };
     row.appendChild(b);
   });
@@ -1975,29 +1985,50 @@ function renderAccount(){
   if(on.profile){
     const who=add('span',null,'who'), b=document.createElement('b'); b.textContent=on.profile.username;
     who.appendChild(b); who.appendChild(document.createTextNode(' · Elo '+on.profile.elo+(on.profile.games<20?'?':'')));
-    add('button','Nations League','linkBtn',()=>openAcct('league')); add('button','Rangliste','linkBtn',()=>openAcct('board'));
-    add('button','Abmelden','linkBtn',logout); add('button','Konto löschen','linkBtn',deleteAccount);
-    if(on.shop){ const bought=on.shop.owned.filter(k=>NATIONS[k]&&NATIONS[k].price).map(k=>NATIONS[k].name);
-      const lg=on.shop.entry?NATIONS[on.shop.entry.nation].name:on.shop.access?'noch kein Land gewählt':on.shop.pass?'Pass aktiv':'nicht dabei';
-      add('span','Gekauft: '+(bought.length?bought.join(', '):'nichts')+(on.shop.pass?' · League-Pass':'')+' · League: '+lg,'owned'); }
   }else if(isReg(on.user)){
-    add('span','Angemeldet','who'); add('button','Spielernamen wählen','linkBtn',()=>openAcct('name')); add('button','Abmelden','linkBtn',logout);
+    add('span','Angemeldet','who'); add('button','Spielernamen wählen','linkBtn',()=>openAcct('name'));
   }else{
-    add('span','Gast · Gewertete Partien brauchen ein Konto.','who');
-    add('button','Anmelden','linkBtn',()=>openAcct('login')); add('button','Nations League','linkBtn',()=>openAcct('league')); add('button','Rangliste','linkBtn',()=>openAcct('board'));
+    add('span','Gast · Gewertete Partien brauchen ein Konto.','who'); add('button','Anmelden','linkBtn',()=>openAcct('login'));
   }
+  add('button','Konto, Shop, League','linkBtn',()=>openAcct('menu'));
   $('onRatedRow').hidden=!on.profile||!!on.id;
   $('onRated').hidden=!!on.search; $('onSearch').hidden=!on.search; $('onSearchStop').hidden=!on.search;
 }
 function openAcct(v){
-  ['login','name','nation','board','league'].forEach(k=>{ $('acct'+k[0].toUpperCase()+k.slice(1)).hidden=k!==v; });
-  $('acctTitle').textContent={login:'Anmelden',name:'Spielername',nation:'Gewertete Partie',board:'Rangliste',league:'Nations League'}[v];
+  ['menu','login','name','nation','board','league'].forEach(k=>{ $('acct'+k[0].toUpperCase()+k.slice(1)).hidden=k!==v; });
+  $('acctTitle').textContent={menu:'Konto',login:'Anmelden',name:'Spielername',nation:'Gewertete Partie',board:'Rangliste',league:'Nations League'}[v];
   $('acct').hidden=false; pickerOpen=true;
   if(v==='login'){ $('acctNote').textContent=''; $('acctCodeRow').hidden=true; $('acctCode').value=''; setTimeout(()=>$('acctEmail').focus(),50); }
   if(v==='name'){ $('acctNameNote').textContent=''; $('acctUser').value=on.profile?on.profile.username:''; setTimeout(()=>$('acctUser').focus(),50); }
   if(v==='board') loadBoard();
   if(v==='nation') renderNatPane();
   if(v==='league') renderLeague('season');
+  if(v==='menu') renderMenu();
+}
+async function renderMenu(){
+  const box=$('acctMenu'); box.textContent=''; el('p','muted',box,'Lade …');
+  try{ await ensureSb(false); if(on.user&&!on.profile&&isReg(on.user)) await refreshAccount(); if(isReg(on.user)&&!on.shop) applyShop(await api('me',{})); }catch(e){}
+  if($('acctMenu').hidden) return;
+  box.textContent=''; const reg=isReg(on.user);
+  const btn=(txt,cls,fn,parent)=>{ const b=el('button',cls,parent||box,txt); b.type='button'; b.onclick=fn; return b; };
+  if(on.profile){ const p=el('p','acctWho',box); el('b',null,p,on.profile.username); p.append(document.createTextNode(' · Elo '+on.profile.elo+(on.profile.games<20?'?':''))); }
+  else if(reg){ el('p','acctWho',box,'Angemeldet, noch ohne Spielernamen.'); btn('Spielernamen wählen','btn',()=>openAcct('name')); }
+  else{ el('p','pickSub',box,'Spielen ist ohne Konto kostenlos. Ein Konto brauchst du nur zum Kaufen, für gewertete Partien und die Nations League.'); btn('Anmelden','btn buyBtn',()=>openAcct('login')); }
+  if(reg&&on.shop){
+    const bought=on.shop.owned.filter(k=>NATIONS[k]&&NATIONS[k].price), d=el('p','acctOwned',box);
+    if(bought.length){ d.append(document.createTextNode('Deine Länder: ')); bought.forEach((k,i)=>{ if(i) d.append(document.createTextNode(', ')); natSpan(k,d); }); }
+    else d.textContent='Noch keine Länder gekauft.';
+    const lg=el('p','acctOwned',box);
+    if(on.shop.entry){ lg.append(document.createTextNode('League diese Saison: ')); natSpan(on.shop.entry.nation,lg); }
+    else lg.textContent=on.shop.access?'League: Land noch nicht gewählt.':'League: nicht dabei.';
+  }
+  const list=el('div','acctMenuList',box);
+  if(PAID.some(k=>!OWNED.has(k))) btn('Länder kaufen','btn primary',()=>{ closeAcct(); openShop('nations',null,()=>{}); },list);
+  btn('Nations League','btn',()=>openAcct('league'),list);
+  btn('Rangliste','btn',()=>openAcct('board'),list);
+  if(reg){ const r=el('div','acctMenuSmall',box);
+    btn('Abmelden','linkBtn',async()=>{ await logout(); renderMenu(); },r);
+    btn('Konto löschen','linkBtn',async()=>{ await deleteAccount(); renderMenu(); },r); }
 }
 function closeAcct(){ $('acct').hidden=true; pickerOpen=!$('pick').hidden||!$('modeScreen').hidden; }
 let otp=null; // {email,type} of the last code we sent
@@ -2189,6 +2220,9 @@ async function renderLeague(tab){
   }else if(sh&&sh.entry){
     const d=el('div',null,box); d.append(document.createTextNode('Du spielst diese Saison für ')); natSpan(sh.entry.nation,d); d.append(document.createTextNode('.'));
     el('div','muted',box,'Es zählen gewertete Partien mit '+NATIONS[sh.entry.nation].name+' gegen andere Länder, höchstens 10 pro Tag.');
+    if(PAID.some(k=>!OWNED.has(k))){
+      el('div','muted',box,'Gekaufte Länder kannst du sofort überall spielen, auch gewertet. Für die League zählen sie ab der nächsten Saison.');
+      const b=el('button','btn',row(),'Weitere Länder kaufen'); b.type='button'; b.onclick=()=>{ closeAcct(); openShop('nations',null,()=>{}); }; }
   }else if(sh&&sh.access){
     el('div',null,box,'Wähle dein Land für diese Saison. Es bleibt bis zum Monatsende fest.');
     const rw=row();
@@ -2527,6 +2561,7 @@ $('acctEmail').addEventListener('keydown',e=>{ if(e.key==='Enter') sendLink(); }
 $('acctSave').addEventListener('click',saveName);
 $('acctUser').addEventListener('keydown',e=>{ if(e.key==='Enter') saveName(); });
 $('acctClose').addEventListener('click',closeAcct);
+$('acctBtn').addEventListener('click',()=>openAcct('menu'));
 // bought nations: ask the server once at start if this browser has an account session; handle the return from Stripe
 { let had=false; try{ had=!!localStorage.getItem('wms-auth'); }catch(e){}
   const paid=new URLSearchParams(location.search).get('paid');
