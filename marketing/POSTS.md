@@ -3,6 +3,9 @@
 Hier steht alles, was gepostet wird oder wurde. Der Marketing-Agent liest diese Datei zuerst und trägt neue Pakete
 unter „Fertige Pakete“ ein; nach dem Posten kommt eine Zeile ins Protokoll, die Zahlen werden nach 2 und 7 Tagen nachgetragen.
 
+**Wer trägt ein:** Claude bzw. der Marketing-Agent, nie Michael. Michael sagt nur kurz Bescheid („Video 2 ist auf TikTok“,
+gern mit Link oder Screenshot der Zahlen), der Rest wird hier eingetragen.
+
 ## Kanäle
 
 | Kanal | Handle | Link in Bio |
@@ -84,4 +87,4 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
 |---|---|---|---|---|---|---|---|---|---|
-| | | | | | | | | | |
+| 2026-10-17 | TikTok | (welches Video? nachfragen) | | | | | | | erster TikTok-Post |
