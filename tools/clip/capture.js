@@ -3,6 +3,21 @@ const fs=require('fs'), http=require('http'), path=require('path');
 const ROOT=path.join(__dirname,'../..');
 const TYPES={'.html':'text/html','.js':'application/javascript','.css':'text/css','.woff2':'font/woff2','.webp':'image/webp','.jpg':'image/jpeg','.png':'image/png'};
 const MODE=process.argv[2]||'test';
+const sub=(p,t)=>p.evaluate(t=>{document.querySelector('#vidTitle .l2').textContent=t;},t);
+const hideTitle=p=>p.evaluate(()=>{document.getElementById('vidTitle').style.display='none';});
+const VS='<span class="u">USA</span> vs. <span class="r">RUSSIA</span>';
+// CLIP=scholar (default) or fool: the scripted games
+const SCRIPTS={
+ scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
+   await mv('e2','e4',1300); await mv('e7','e5',1300);
+   await mv('f1','c4',2200); await sub(p,'Russia is not paying attention …');
+   await mv('b8','c6',2000); await mv('d1','h5',1900); await mv('g8','f6',1700);
+   await hideTitle(p); await mv('h5','f7',13500); }},
+ fool:{title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p)=>{ // Russia mates the USA, Trump cries
+   await mv('f2','f3',1500); await mv('e7','e5',1500);
+   await mv('g2','g4',2200); await sub(p,'Oh no …');
+   await hideTitle(p); await mv('d8','h4',13500); }},
+};
 (async()=>{
  // tiny static server for the repo (WebGL refuses textures from file://)
  const srv=http.createServer((q,r)=>{ const f=path.join(ROOT,decodeURIComponent(q.url.split('?')[0])); if(!f.startsWith(ROOT)||!fs.existsSync(f)||fs.statSync(f).isDirectory()){ r.writeHead(404); return r.end(); } r.writeHead(200,{'content-type':TYPES[path.extname(f)]||'application/octet-stream'}); fs.createReadStream(f).pipe(r); }).listen(0);
@@ -14,7 +29,8 @@ const MODE=process.argv[2]||'test';
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
  await p.clock.runFor(1500);
  await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); v.setNations('usa','rus'); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
- await p.evaluate(()=>{ document.querySelector('#vidTitle .l1').innerHTML='<span class="u">USA</span> vs. <span class="r">RUSSIA</span>'; document.querySelector('#vidTitle .l2').textContent='Checkmate in 4 moves?'; });
+ const SC=SCRIPTS[process.env.CLIP||'scholar'];
+ await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
  await p.clock.runFor(500);
  if(MODE==='test'){ await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
@@ -26,12 +42,7 @@ const MODE=process.argv[2]||'test';
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold); };
  await shoot(1500);
- await mv('e2','e4',1300); await mv('e7','e5',1300);
- await mv('f1','c4',2200); await p.evaluate(()=>{document.querySelector('#vidTitle .l2').textContent='Russia is not paying attention …';});
- await mv('b8','c6',2000);
- await mv('d1','h5',1900); await mv('g8','f6',1700);
- await p.evaluate(()=>{document.getElementById('vidTitle').style.display='none';});
- await mv('h5','f7',13500);
+ await SC.play(mv,p);
  await p.evaluate(()=>{document.getElementById('vidEnd').style.display='flex';});
  await shoot(2500);
  const snd=await p.evaluate(t0=>window.__rec.map(([t,k,v])=>[(t-t0)/1000,k,v]),t0);
