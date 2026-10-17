@@ -1,8 +1,8 @@
 # Checkmate Nations (Weltmacht Schach)
 
 Satirical 3D chess in the browser: countries play each other. Pawns are infantry, rooks tanks,
-knights drones, bishops fighter jets; kings are bobblehead figures (caricature heads for USA and
-Russia), queens are national symbols (Statue of Liberty, Matryoshka, panda, Europa, hoopoe,
+knights drones, bishops fighter jets; kings are bobblehead figures (caricature heads for USA, Russia, China,
+Germany and Europe; Israel and Iran still generic), queens are national symbols (Statue of Liberty, Matryoshka, panda, Europa, hoopoe,
 Persian cat, German shepherd in a dirndl). Checkmate ends with the king arrested and put in a
 jail cell next to the board.
 
@@ -25,7 +25,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   asks Stripe whether a session is paid (`me` action, on return via `?paid=`), no webhook. Ownership lives server-side in
   `owned_nations` / `league_passes`, never in localStorage (client keeps it in memory in `OWNED`). Bought nations are
   playable offline, online and in the league; the server checks ownership for `create` and `queue`. Terms in `agb.html`.
-- Caricature mode is on by default.
+- Caricature mode is on by default. King heads are Grok-made busts (white background) turned into cutouts by `brand/heads-src/make_heads.py` (flood-fills the background, cuts just below the tie knot, keeps only a collar-wide band below the chin, writes aspect and eye positions); `window.HEADS[key]` = normal, `window.CRY[key]` = sad face for the jail, `CRY_EYES[key]` = where the 3D tears start. Head keys: usa `kw`, rus `kb`, chn, ger, eu (no sad image yet).
 - View: header button "View" opens camera presets (Free 3D default, Play view, Top view) plus the caricature/flag toggles. Every preset is fitted by `fitCamera()` so the whole board fits between header and info panel (camera view offset); stored in localStorage `wms-view`. The "2D pieces" toggle in that menu swaps every piece for a flat disc with the classic chess symbol in nation colours (`makeFlatPiece()`), forces the top view straight down and is stored in `wms-flat`; choosing another view turns it off.
 - Backgrounds: the View menu also picks the scene background: Kartentisch (default, goes with the wood board), Classic (grid floor), Kommandotisch (goes with steel), Erde bei Nacht, Gipfeltreffen (summit table, goes with marble). The non-classic ones are AI-generated WebP images in `bg/` (loaded lazily, lying flat under the board, scaled up on portrait screens), stored in localStorage `wms-bg`.
 - Board styles: the View menu also picks the board: Holz (default) and Marmor use AI-generated photo textures in `board/` (each square a different cut, loaded lazily), Stahl is drawn, Klassisch is the original flat board; stored in localStorage `wms-board` (`setBoard()`, `drawRim()` redraws the coordinate rim). Lighting: ACES tone mapping plus a small studio environment map; `polish()` makes every piece a bit glossier and its colours richer, image parts (heads, crowns, sprites, backgrounds) are excluded from tone mapping.
