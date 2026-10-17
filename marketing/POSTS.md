@@ -44,13 +44,13 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: USA checkmates Russia in 4 moves 😳 #shorts #chess
 
 ### V2 · Can the USA survive 2 moves? (Russland gewinnt, Trump weint)
-- Datei: `marketing/fools-mate-in-2.mp4` (23 s)
+- Datei: `marketing/fools-mate-in-2.mp4` (34 s, mit Kamerafahrt)
 - Instagram/TikTok-Text:
   > Can the USA survive 2 moves? 😬 Spoiler: no. Fastest checkmate in chess, and someone ends up crying in jail 🔒
   > Have you ever lost like this? 👇
   > Play free: link in bio
 - Hashtags: #chess #chesstok #satire #checkmate #gaming
-- Titelbild (Cover): Trump traurig hinter Gittern (ca. Sekunde 10)
+- Titelbild (Cover): Trump traurig hinter Gittern (ca. Sekunde 19)
 - Alt-Text: 3D chess game, Russia checkmates the USA in two moves (Fool's Mate), a caricature king is put in a jail cell and cries.
 - Erster eigener Kommentar: Rematch? Who wins next time, USA or Russia? 🇺🇸🇷🇺
 - YouTube-Shorts-Titel: The fastest checkmate in chess 😬 USA vs Russia #shorts #chess
