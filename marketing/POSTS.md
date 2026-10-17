@@ -67,6 +67,19 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Erster eigener Kommentar: Which nation should take revenge for Germany? 🇺🇸🇪🇺🇨🇳
 - YouTube-Shorts-Titel: Two drones and Putin vs Germany 😬 #shorts #chess
 
+### V4 · USA vs China: the flying car (Xi weint) – aktuell zum Roadster-Flip
+- Datei: `marketing/usa-china-flying-car.mp4` (42 s)
+- Instagram/TikTok-Text:
+  > The flying car just joined the army 🚀♟️ Three kickflips, one sacrifice, and China's king is trapped by his own pieces 🔒
+  > Would you have seen this coming? 👇
+  > Play free: link in bio
+- Hashtags: #chess #chesstok #flyingcar #satire #checkmate
+- Titelbild (Cover): das Auto mitten im Salto (ca. Sekunde 13) oder Xi traurig hinter Gittern (ca. Sekunde 26)
+- Alt-Text: 3D chess game, a white flying sports car piece flips through the air and checkmates the Chinese king, who is jailed and cries.
+- Erster eigener Kommentar: Which piece should get an upgrade next? 🚀
+- YouTube-Shorts-Titel: Flying car checkmates China 🚀 #shorts #chess
+- Hinweis: kein Markenname und kein Logo im Bild; „flying car“ im Text ist Satire-Kommentar.
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
