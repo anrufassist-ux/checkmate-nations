@@ -52,7 +52,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   1000 Elo. `league_suspects()` silently drops players with >= 10 games, >= 80 % lost and >= half against one opponent.
   Public `league_table(season)` (nations by weighted points per game, players by points) and `hall_of_fame()` (champion nation
   with >= 10 games and best player with >= 5 games per finished season, titles, all-time table). Guests can never play rated,
-  league or buy.
+  league or buy. League players can search for league opponents only (`queue` with `league:true`, `match_queue.league_only`, migrations/008; after 2 minutes the client offers to allow everyone); every rated game shows whether it counts (`league_status` action: "Liga-Partie: du spielst gerade für …" or why not) and the points afterwards.
 - Login rule: playing is always free without login; an account is only needed to buy, play rated or join the league.
 - Account menu: header button "Konto" (`openAcct('menu')`, `renderMenu()`) in every mode: name/Elo or sign-in, bought nations, league nation, "Länder kaufen" (shop), Nations League, Rangliste, sign out, delete. The online area only shows who you are plus a link into it. Free nations (USA, Russia) carry a green "Kostenlos/Free" sticker and "spielbereit · kostenlos" in the picker, locked ones show "freischalten · ab 2,99 €"; the league pane offers "Weitere Länder kaufen" also after entering. The difficulty select is only shown against the AI. When only one owned nation is left for the opponent (guests: USA/Russia), the picker skips the second step and starts the game.
 - Nation colours must stay distinct: USA navy, Russia red, Europe silver-white, China gold,

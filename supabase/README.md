@@ -12,6 +12,7 @@ chess.js auf dem Server prüft.
 - `migrations/005_fair_rating.sql`: Partien unter 10 Zügen pro Seite zählen nicht für Elo, Rangliste erst ab 5 verschiedenen Gegnern.
 - `migrations/006_league_shop.sql`: Käufe (Stripe), gekaufte Länder, League-Pass, Nations League (Saison = Kalendermonat), Tabellen und Hall of Fame.
 - `migrations/007_abandon.sql`: verlassene gewertete Partien. Die Clients melden sich alle 15 s (`ping`), nach 2 Minuten Funkstille kann der Gegner den Sieg beanspruchen (`abandon`).
+- `migrations/008_league_search.sql`: Spalte `league_only` in `match_queue`. Wer in der Liga ist, kann gezielt einen Liga-Gegner suchen (`queue` mit `league: true`, nur Gegner aus der Liga mit ihrem Liga-Land, andere Nation). Die Aktion `league_status` sagt dem Spiel, ob eine gewertete Partie für die Liga zählt und wie viele Punkte sie gebracht hat.
 - `functions/game/index.ts`: die Server-Funktion.
 
 ## Einmal einrichten (im Supabase-Dashboard, kein Programm nötig)

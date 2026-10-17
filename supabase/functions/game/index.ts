@@ -263,6 +263,12 @@ async function queue(u: User, body: Game) {
   const owned = await ownedNations(sql, u.id);
   const nation = String(body.nation || "usa");
   if (!owned.includes(nation)) return fail("nation not owned", 403);
+  // in the league with this nation: such games can count; league_only = pair only with league opponents
+  const s = await season();
+  const [entry] = await sql`select nation from public.league_entries where season = ${s} and user_id = ${u.id}`;
+  const inLeague = !!entry && entry.nation === nation;
+  const leagueOnly = !!body.league;
+  if (leagueOnly && !inLeague) return fail("not in league with this nation", 403);
   return sql.begin(async (tx) => {
     await tx`select pg_advisory_xact_lock(4711)`; // one matcher at a time
     const [cur] = await tx`select * from public.games where rated and status = 'active'
@@ -271,8 +277,8 @@ async function queue(u: User, body: Game) {
       await tx`delete from public.match_queue where user_id = ${u.id}`;
       return reply({ game: view(cur), seat: seatOf(cur, u.id) });
     }
-    const [me] = await tx`insert into public.match_queue (user_id, elo, nation) values (${u.id}, ${p.elo}, ${nation})
-      on conflict (user_id) do update set seen_at = now(), elo = excluded.elo, nation = excluded.nation returning *`;
+    const [me] = await tx`insert into public.match_queue (user_id, elo, nation, league_only) values (${u.id}, ${p.elo}, ${nation}, ${leagueOnly})
+      on conflict (user_id) do update set seen_at = now(), elo = excluded.elo, nation = excluded.nation, league_only = excluded.league_only returning *`;
     // the Elo window widens the longer both have been waiting
     const [opp] = await tx`select q.* from public.match_queue q
       where q.user_id <> ${u.id} and q.seen_at > now() - interval '12 seconds'
@@ -281,7 +287,11 @@ async function queue(u: User, body: Game) {
              and coalesce((x.elo_change->>'short')::boolean, false) = false
              and ((x.white_id = q.user_id and x.black_id = ${u.id}) or (x.white_id = ${u.id} and x.black_id = q.user_id)))
             < ${PAIR_GAMES_PER_WEEK}
-      order by (q.nation = ${nation}), q.joined_at limit 1`; // prefer an opponent with another nation
+        and ((not ${leagueOnly} and not q.league_only) or (${inLeague} and q.nation <> ${nation} and exists (select 1
+             from public.league_entries e where e.season = ${s} and e.user_id = q.user_id and e.nation = q.nation)))
+      order by (${inLeague} and q.nation <> ${nation} and exists (select 1 from public.league_entries e
+               where e.season = ${s} and e.user_id = q.user_id and e.nation = q.nation)) desc,
+        (q.nation = ${nation}), q.joined_at limit 1`; // prefer a league game, then an opponent with another nation
     if (!opp) return reply({ waiting: true, searching: await countSearching(tx) });
     await tx`delete from public.match_queue where user_id in (${u.id}, ${opp.user_id})`;
     const meWhite = Math.random() < 0.5;
@@ -295,6 +305,25 @@ async function queue(u: User, body: Game) {
       values (${wid}, ${bid}, ${wn}, ${bn}, 'active', true, ${BASE_MS}, ${BASE_MS}, ${INC_MS}, now()) returning *`;
     return reply({ game: view(g), seat: meWhite ? "w" : "b" });
   });
+}
+
+// Does this rated game count for the league, and if not, why? After the end also the points it brought.
+async function leagueStatus(u: User, body: Game) {
+  const [g] = await sql`select * from public.games where id = ${String(body.id || "")}
+    and (white_id = ${u.id} or black_id = ${u.id})`;
+  if (!g || !g.rated) return reply({ league: false, why: "unrated" });
+  const s = await season();
+  const es = await sql`select user_id, nation from public.league_entries where season = ${s}
+    and user_id in (${g.white_id}, ${g.black_id})`;
+  const w = g.white_id === u.id;
+  const [myNation, oppNation] = w ? [g.white_nation, g.black_nation] : [g.black_nation, g.white_nation];
+  const mine = es.find((e: { user_id: string }) => e.user_id === u.id);
+  const theirs = es.find((e: { user_id: string }) => e.user_id === (w ? g.black_id : g.white_id));
+  const why = !mine ? "me" : mine.nation !== myNation ? "my_nation" : !theirs || theirs.nation !== oppNation ? "opp"
+    : myNation === oppNation ? "same" : null;
+  const [lg] = await sql`select * from public.league_games where game_id = ${g.id}`;
+  return reply({ league: !why, why, nation: myNation, entry: mine ? mine.nation : null,
+    counted: lg ? { pts: w ? lg.w_pts : lg.b_pts, ok: w ? lg.w_ok : lg.b_ok } : null });
 }
 
 // how many players are looking for a rated game right now (shown in the lobby)
@@ -445,7 +474,7 @@ async function leagueJoin(u: User, body: Game) {
 
 const ACTIONS: Record<string, (u: User, body: Game) => Promise<Response> | Response> = {
   create, join, move, resign, claim, rematch, profile, queue, unqueue, stats: () => stats(), ping, abandon,
-  me, checkout, league, league_join: leagueJoin,
+  me, checkout, league, league_join: leagueJoin, league_status: leagueStatus,
   delete_account: (u) => deleteAccount(u),
 };
 
