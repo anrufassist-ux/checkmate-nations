@@ -1054,9 +1054,9 @@ function buildLakshmibai(){
   g.add(head);
   return {g,head,headY:.8};
 }
-// UK: Queen Elizabeth II: pastel coat and matching hat, pearls, white curls, handbag on the arm
+// UK: Queen Elizabeth II: royal purple coat and matching hat (team colour), pearls, white curls, handbag on the arm
 function buildElizabeth(){
-  const g=new T.Group(), coat=mat(0x8ec5e8,.55), coatD=mat(0x6aa7d0,.55), white=mat(0xf2f0ec,.55), pearl=mat(0xfaf6ee,.2,.1), bag=mat(0x111111,.35,.2), skin=mat(SKIN,.55), gold=mat(0xe0b440,.25,.8);
+  const g=new T.Group(), coat=mat(NATIONS.gbr.body,.55), coatD=mat(0x8a5cc4,.55), white=mat(0xf2f0ec,.55), pearl=mat(0xfaf6ee,.2,.1), bag=mat(0x111111,.35,.2), skin=mat(SKIN,.55), gold=mat(0xe0b440,.25,.8);
   const prof=[[.22,0],[.215,.06],[.19,.2],[.16,.34],[.135,.45],[.14,.52],[.12,.59],[.06,.63],[0,.64]].map(([r,y])=>new T.Vector2(r,y));
   g.add(mesh(new T.LatheGeometry(prof,48),coat));
   for(let i=0;i<3;i++) g.add(mesh(new T.SphereGeometry(.014,8,6),coatD,0,.32+i*.08,.16-i*.01)); // coat buttons
@@ -1084,9 +1084,9 @@ function buildElizabeth(){
   g.add(head);
   return {g,head,headY:.8};
 }
-// Brazil: Empress Leopoldina: green empire gown with gold trim, yellow sash, tiara, hair in an updo, a folding fan
+// Brazil: Empress Leopoldina: canary yellow empire gown (team colour) with gold trim, green sash, tiara, hair in an updo, a folding fan
 function buildLeopoldina(){
-  const g=new T.Group(), green=mat(0x0f7a35,.45,.1), gold=mat(0xe0b440,.25,.85), yellow=mat(0xffdf00,.45), blue=mat(0x002776,.45), hair=mat(0x8a6a3a,.5), skin=mat(SKIN,.55), lace=mat(0xf6f2ea,.6);
+  const g=new T.Group(), green=mat(NATIONS.bra.body,.45,.1), gold=mat(0xe0b440,.25,.85), yellow=mat(0x009c3b,.45), blue=mat(0x002776,.45), hair=mat(0x8a6a3a,.5), skin=mat(SKIN,.55), lace=mat(0xf6f2ea,.6);
   // empire line: wide flowing skirt up to a high waist just under the bust
   const prof=[[.26,0],[.25,.06],[.21,.2],[.17,.34],[.14,.45],[.125,.5],[.13,.55],[.11,.6],[.05,.63],[0,.64]].map(([r,y])=>new T.Vector2(r,y));
   g.add(mesh(new T.LatheGeometry(prof,48),green));
