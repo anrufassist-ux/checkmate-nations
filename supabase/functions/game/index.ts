@@ -340,6 +340,9 @@ async function unqueue(u: User) {
 // ---------- shop: what a player owns, Stripe Checkout ----------
 // deno-lint-ignore no-explicit-any
 async function ownedNations(q: any, uid: string): Promise<string[]> {
+  // "all nations" includes every nation added later
+  const [all] = await q`select 1 from public.checkouts where user_id = ${uid} and product = 'all' and status = 'paid' limit 1`;
+  if (all) return [...FREE_NATIONS, ...PAID_NATIONS];
   const rows = await q`select nation from public.owned_nations where user_id = ${uid}`;
   return [...FREE_NATIONS, ...rows.map((r: Game) => r.nation)];
 }

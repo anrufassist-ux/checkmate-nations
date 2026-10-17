@@ -20,7 +20,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 
 ## Product decisions
 - International audience: English is the default language for everyone (also German browsers); German only when the player picks it (button in the header, stored in localStorage `wms-lang`). Translations live in the small script before the main game script: exact phrases in `D`, composed sentences as regex patterns in `P`. Any new German UI text needs an English entry there.
-- USA vs Russia is free. Every other nation is paid: 3 nations of your choice 2.99 EUR, all locked nations 4.99 EUR,
+- USA vs Russia is free. Every other nation is paid: 3 nations of your choice 2.99 EUR, all nations 4.99 EUR (includes every nation added later: `ownedNations()` treats a paid `all` checkout as owning all `PAID_NATIONS`),
   league pass 0.99 EUR per season. Owner is a Kleinunternehmer (§ 19 UStG, no VAT). Stripe Checkout created by the
   `checkout` action (inline price_data, consent to immediate unlock required, stored in `checkouts`); the function itself
   asks Stripe whether a session is paid (`me` action, on return via `?paid=`), no webhook. Ownership lives server-side in
@@ -63,7 +63,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 - After editing, syntax-check the main script with node before pushing.
 - Changes go to a branch and a pull request. While the owner is the only player he tests live: merge to `main` right away and tell him the Supabase steps (SQL migrations, function redeploy) needed first.
 - Keep everything a nation needs together: `NATIONS` entry, flag texture branch, queen builder,
-  queen scale, king lapel pin, picker flag SVG and hover CSS.
+  queen scale, king lapel pin, picker flag SVG (`FLAGS`, the real flag from flag-icons 4x3, MIT, see vendor/THIRD_PARTY.md), crown pearls, hover CSS, English name and the server's `PAID_NATIONS`.
 
 ## Marketing clips
 - `tools/clip/` records scripted games as vertical videos (see its README). The game page itself stays untouched; `make_video_page.py` patches a copy.
