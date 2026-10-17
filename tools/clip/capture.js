@@ -29,6 +29,15 @@ const SCRIPTS={
    await mv('f5','g6',1700); await mv('g8','h8',1500); await sub(p,'Germany has nowhere to run');
    await mv('d5','f6',1700); await mv('a7','a6',1400);
    await hideTitle(p); await mv('e5','f7',16000); }},
+ // USA (white) with the flying car: Philidor's legacy, Lady Liberty sacrifices herself, the car mates (smothered mate)
+ car:{nations:['usa','chn'],car:'w',fen:'r4rk1/pp4pp/2p5/q5N1/8/8/5PPP/R2Q2K1 w - - 0 1',
+   title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','The flying car joins the army 🚀'],play:async(mv,p,shoot)=>{
+   await orbit(p,shoot,8400,['f7','g8','h6','g5'],.6);
+   await mv('d1','b3',1600); await mv('g8','h8',1300);
+   await mv('g5','f7',2000); await mv('h8','g8',1300);
+   await mv('f7','h6',2000); await mv('g8','h8',1300); await sub(p,'Lady Liberty sacrifices herself!');
+   await mv('b3','g8',1800); await mv('f8','g8',1600);
+   await hideTitle(p); await mv('h6','f7',16500); }},
  fool:{title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
    await mv('f2','f3',1500); await mv('e7','e5',1500);
@@ -46,7 +55,7 @@ const SCRIPTS={
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
  await p.clock.runFor(1500);
  const SC=SCRIPTS[process.env.CLIP||'scholar'];
- await p.evaluate(sc=>{ window.__sc=sc; },{nations:SC.nations,fen:SC.fen});
+ await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; },{nations:SC.nations,fen:SC.fen,car:SC.car});
  await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
