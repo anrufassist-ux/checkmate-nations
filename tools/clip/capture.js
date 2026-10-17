@@ -16,6 +16,13 @@ const orbit=async(p,shoot,ms,focus,zoom)=>{
     const r0=Math.hypot(o.d.x,o.d.z), th=Math.atan2(o.d.x,o.d.z)-2*Math.PI*.85*(1-e), r=r0*(.32+(o.zoom-.32)*e*e), y=o.d.y*(.25+(o.zoom-.25)*e);
     const tx=o.t.x+(o.f.x-o.t.x)*e, tz=o.t.z+(o.f.z-o.t.z)*e;
     v.controls.target.set(tx,o.t.y+.7*(1-e),tz); v.camera.position.set(tx+r*Math.sin(th),o.t.y+y,tz+r*Math.cos(th)); v.camera.lookAt(v.controls.target); },u)); };
+const look=(p,focus,zoom,ms)=>p.evaluate(([focus,zoom,ms])=>{ const v=window.__v(), o=window.__ob, T3=v.camera.position.constructor;
+  const f=focus.reduce((a,s)=>a.add(v.sqPos(s)),new T3()).multiplyScalar(1/focus.length); f.y=o.t.y;
+  const r0=Math.hypot(o.d.x,o.d.z), th=Math.atan2(o.d.x,o.d.z);
+  const c1=new T3(f.x+r0*zoom*Math.sin(th),o.t.y+o.d.y*zoom,f.z+r0*zoom*Math.cos(th));
+  const c0=v.camera.position.clone(), t0=v.controls.target.clone(), s=performance.now();
+  (function step(){ const u=Math.min(1,(performance.now()-s)/ms), e=(1-Math.cos(Math.PI*u))/2;
+    v.controls.target.lerpVectors(t0,f,e); v.camera.position.lerpVectors(c0,c1,e); v.camera.lookAt(v.controls.target); if(u<1) requestAnimationFrame(step); })(); },[focus,zoom,ms]);
 const SCRIPTS={
  scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
    await mv('e2','e4',1300); await mv('e7','e5',1300);
@@ -30,14 +37,17 @@ const SCRIPTS={
    await mv('d5','f6',1700); await mv('a7','a6',1400);
    await hideTitle(p); await mv('e5','f7',16000); }},
  // USA (white) with the flying car: Philidor's legacy, Lady Liberty sacrifices herself, the car mates (smothered mate)
- car:{nations:['usa','chn'],car:'w',fen:'r4rk1/pp4pp/2p5/q5N1/8/8/5PPP/R2Q2K1 w - - 0 1',
+ car:{nations:['usa','chn'],car:'w',fen:'rqr3k1/pp4pp/2p5/6N1/8/B7/5PPP/R2Q2K1 w - - 0 1',
    title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','The flying car joins the army 🚀'],play:async(mv,p,shoot)=>{
-   await orbit(p,shoot,8400,['f7','g8','h6','g5'],.6);
-   await mv('d1','b3',1600); await mv('g8','h8',1300);
-   await mv('g5','f7',2000); await mv('h8','g8',1300);
-   await mv('f7','h6',2000); await mv('g8','h8',1300); await sub(p,'Lady Liberty sacrifices herself!');
-   await mv('b3','g8',1800); await mv('f8','g8',1600);
-   await hideTitle(p); await mv('h6','f7',16500); }},
+   await orbit(p,shoot,7500,['b3','g8','h6','g5'],.85);
+   await sub(p,'Lady Liberty: CHECK!'); await mv('d1','b3',1700);
+   await look(p,['f7','g8','h6','g5'],.5,1100); await mv('g8','h8',1300);
+   await sub(p,'Flying car: CHECK!'); await mv('g5','f7',1900); await mv('h8','g8',1200);
+   await sub(p,'DOUBLE CHECK!'); await mv('f7','h6',1900); await mv('g8','h8',1200);
+   await look(p,['b3','g8','h6'],.8,1000); await sub(p,'Lady Liberty sacrifices herself!'); await mv('b3','g8',1800);
+   await sub(p,'The tank has to take her …'); await mv('c8','g8',1500);
+   await look(p,['f7','g8','h6'],.45,900); await sub(p,'Smothered mate!'); await mv('h6','f7',1600);
+   await hideTitle(p); await shoot(15000); }},
  fool:{title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
    await mv('f2','f3',1500); await mv('e7','e5',1500);
