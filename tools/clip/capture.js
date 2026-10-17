@@ -28,7 +28,7 @@ const SCRIPTS={
    await orbit(p,shoot,8400,['f6','g6','h8','e5'],.55);
    await mv('f5','g6',1700); await mv('g8','h8',1500); await sub(p,'Germany has nowhere to run');
    await mv('d5','f6',1700); await mv('a7','a6',1400);
-   await hideTitle(p); await mv('e5','f7',13500); }},
+   await hideTitle(p); await mv('e5','f7',16000); }},
  fool:{title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await mv('f2','f3',1500); await mv('e7','e5',1500);
    await mv('g2','g4',1300); await sub(p,'Oh no …'); await shoot(1400);
