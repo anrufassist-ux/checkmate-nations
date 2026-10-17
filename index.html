@@ -1970,12 +1970,13 @@ function renderPickButtons(taken,onChoose){
   const row=$('pickRow'); row.textContent='';
   // compact tiles in two groups: what you can play right now, then what you can unlock
   const keys=Object.keys(NATIONS), ready=keys.filter(isOwned), locked=keys.filter(k=>!isOwned(k));
+  const bought=keys.some(k=>NATIONS[k].price&&OWNED.has(k)); // once you own a paid nation, "free" no longer sets USA/Russia apart
   const tile=(n,grid)=>{
     const b=el('button','pickBtn',grid); b.type='button'; b.dataset.n=n.key;
     if(!isOwned(n.key)) b.classList.add('locked');
-    if(!n.price) b.classList.add('free');
+    if(!n.price&&!bought) b.classList.add('free');
     if(n.key===taken) b.classList.add('taken');
-    b.innerHTML=flagHTML(n.key)+'<span class="pn"></span><span class="ps"></span>'+(!n.price?'<span class="freePill">Kostenlos</span>':'');
+    b.innerHTML=flagHTML(n.key)+'<span class="pn"></span><span class="ps"></span>'+(!n.price&&!bought?'<span class="freePill">Kostenlos</span>':'');
     b.querySelector('.pn').textContent=n.name; b.querySelector('.pn').style.color=n.css;
     const ps=b.querySelector('.ps');
     if(n.key===taken) ps.textContent='gewählt';
