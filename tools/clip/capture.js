@@ -13,9 +13,9 @@ const SCRIPTS={
    await mv('f1','c4',2200); await sub(p,'Russia is not paying attention …');
    await mv('b8','c6',2000); await mv('d1','h5',1900); await mv('g8','f6',1700);
    await hideTitle(p); await mv('h5','f7',13500); }},
- fool:{title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p)=>{ // Russia mates the USA, Trump cries
+ fool:{title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await mv('f2','f3',1500); await mv('e7','e5',1500);
-   await mv('g2','g4',2200); await sub(p,'Oh no …');
+   await mv('g2','g4',1300); await sub(p,'Oh no …'); await shoot(1400);
    await hideTitle(p); await mv('d8','h4',13500); }},
 };
 (async()=>{
@@ -35,17 +35,17 @@ const SCRIPTS={
  await p.clock.runFor(500);
  if(MODE==='test'){ await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
  const FPS=24, dtms=1000/FPS; let n=0; const log=[];
- fs.mkdirSync('frames',{recursive:true});
+ const CL=process.env.CLIP||'scholar', FR='frames-'+CL; fs.mkdirSync(FR,{recursive:true});
  const START=+(process.env.START||0);
  const t0=await p.evaluate(()=>{ window.__rec.length=0; return performance.now(); });
- const shoot=async(ms)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ await p.clock.runFor(dtms); if(n<START){ n++; continue; } await p.evaluate(()=>{ for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`frames/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
+ const shoot=async(ms)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ await p.clock.runFor(dtms); if(n<START){ n++; continue; } await p.evaluate(()=>{ for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold); };
  await shoot(1500);
- await SC.play(mv,p);
+ await SC.play(mv,p,shoot);
  await p.evaluate(()=>{document.getElementById('vidEnd').style.display='flex';});
  await shoot(2500);
  const snd=await p.evaluate(t0=>window.__rec.map(([t,k,v])=>[(t-t0)/1000,k,v]),t0);
- fs.writeFileSync('moves.json',JSON.stringify(log)); fs.writeFileSync('sounds.json',JSON.stringify(snd));
+ fs.writeFileSync(`moves-${CL}.json`,JSON.stringify(log)); fs.writeFileSync(`sounds-${CL}.json`,JSON.stringify(snd));
  console.log('frames',n); await b.close(); srv.close();
 })();
