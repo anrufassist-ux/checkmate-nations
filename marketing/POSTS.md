@@ -3,13 +3,16 @@
 Hier steht alles, was gepostet wird oder wurde. Der Marketing-Agent liest diese Datei zuerst und trägt neue Pakete
 unter „Fertige Pakete“ ein; nach dem Posten kommt eine Zeile ins Protokoll, die Zahlen werden nach 2 und 7 Tagen nachgetragen.
 
+**Wer trägt ein:** Claude bzw. der Marketing-Agent, nie Michael. Michael sagt nur kurz Bescheid („Video 2 ist auf TikTok“,
+gern mit Link oder Screenshot der Zahlen), der Rest wird hier eingetragen.
+
 ## Kanäle
 
 | Kanal | Handle | Link in Bio |
 |---|---|---|
 | Instagram | @checkmatenations | https://checkmatenations.com/?utm_source=instagram |
 | TikTok | @checkmatenations | https://checkmatenations.com/?utm_source=tiktok |
-| YouTube | @checkmatenations | https://checkmatenations.com/?utm_source=youtube |
+| YouTube | @checkmate.nations (youtube.com/@checkmate.nations) | https://checkmatenations.com/?utm_source=youtube |
 | itch.io | checkmate-nations | Knopf führt auf https://checkmatenations.com/?utm_source=itch |
 
 Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel Analytics) zeigt, von welchem Kanal jemand kam.
@@ -17,6 +20,12 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 **Bio (Instagram, YouTube):** ♟️ Satirical 3D chess: nations battle on the board / 🔒 Checkmate = jail / 🆓 Play free in your browser 👇
 **Bio (TikTok, max. 80 Zeichen):** Satirical 3D chess ♟️ Checkmate = jail 🔒 Play free 👇
 **Profilbild:** `marketing/profilbild-1080.png`
+**YouTube-Banner:** `marketing/youtube-banner-2560x1440.jpg` (Logo im sicheren Bereich, passt auf Handy, PC und TV)
+**YouTube-Kanalbeschreibung:**
+> Satirical 3D chess in your browser: nations battle on the board. Pawns are infantry, rooks are tanks, knights are drones,
+> bishops are fighter jets, and the kings are caricature bobbleheads. Get checkmated and your king goes to jail 🔒
+> Short clips of fast checkmates, drone attacks and crying presidents behind bars. Satire, no political statement.
+> Play free, no download: https://checkmatenations.com/?utm_source=youtube
 
 ## Regeln für Posts
 
@@ -84,4 +93,6 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
 |---|---|---|---|---|---|---|---|---|---|
-| | | | | | | | | | |
+| 2026-10-17 | Instagram | V1 Checkmate in 4 | | | | | | | erster Post überhaupt |
+| 2026-10-17 | TikTok | V1 Checkmate in 4 | | | | | | | erster TikTok-Post |
+| 2026-10-17 | YouTube Shorts | V1 Checkmate in 4 | | | | | | | erster Short |
