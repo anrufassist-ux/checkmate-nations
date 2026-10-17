@@ -158,13 +158,25 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 .modeBtn .mt{font-family:var(--f-display);font-size:20px;letter-spacing:.03em;color:var(--sand)}
 .modeBtn .ms{font-size:13px;color:var(--muted)}
 .modeBtn.rematch{border-color:var(--sand)}
-.pickRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.pickRow{display:grid;gap:8px;margin-top:6px}
+.pickHead{font-family:var(--f-label);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;margin-top:6px}
+.pickGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:6px}
+.pickGrid .pickBtn{padding:14px 4px 10px;gap:5px}
+.pickGrid .flag{width:52px;height:34px}
+.pickGrid .pn{font-size:15px}
+.pickGrid .ps{font-size:10px;letter-spacing:.08em;display:flex;align-items:center;gap:3px}
+.pickGrid .ps svg{width:9px;height:11px}
+.pickGrid .freePill{top:-9px;right:-6px;font-size:11px;padding:1px 7px;border-width:1.5px}
+@media (min-width:700px){ #pick .pickCard{width:min(100%,600px)} .pickGrid{grid-template-columns:repeat(4,1fr)} }
 .pickBtn{position:relative}
 .pickBtn[data-n="eu"]:hover,.pickBtn[data-n="eu"]:focus-visible{border-color:#6f8ad6}
 .pickBtn[data-n="ger"]:hover,.pickBtn[data-n="ger"]:focus-visible{border-color:#e8c440}
 .pickBtn[data-n="isr"]:hover,.pickBtn[data-n="isr"]:focus-visible{border-color:#6cc8f2}
 .pickBtn[data-n="irn"]:hover,.pickBtn[data-n="irn"]:focus-visible{border-color:#45b866}
 .pickBtn[data-n="chn"]:hover,.pickBtn[data-n="chn"]:focus-visible{border-color:#e0b23a}
+.pickBtn[data-n="ind"]:hover,.pickBtn[data-n="ind"]:focus-visible{border-color:#f39a3a}
+.pickBtn[data-n="gbr"]:hover,.pickBtn[data-n="gbr"]:focus-visible{border-color:#a77be0}
+.pickBtn[data-n="bra"]:hover,.pickBtn[data-n="bra"]:focus-visible{border-color:#f5e05a}
 .pickBtn.locked .flag{filter:saturate(.85) brightness(.95)}
 .pickBtn.taken{opacity:.35;pointer-events:none}
 .lockPill{position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:4px;font-family:var(--f-label);font-weight:700;font-size:12px;letter-spacing:.06em;color:#1a1810;background:var(--sand);border-radius:999px;padding:2px 8px}
@@ -451,7 +463,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
     '2,99 €':'€2.99','4,99 €':'€4.99','0,99 €':'€0.99',
     'Neue Länder':'New nations','Länder freischalten':'Unlock nations','League-Pass':'League pass','Damit spielst du diese Saison mit USA oder Russland in der Nations League. Wer ein Land kauft, ist ohne Pass in jeder Saison dabei.':'Play this season of the Nations League with the USA or Russia. Anyone who buys a nation is in every season without a pass.','Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen, auch online. Jeder Länderkauf enthält die Nations League für alle Saisons.':'Own pieces, own queen, own flag pattern. Buy once, play forever, online too. Every nation purchase includes the Nations League for all seasons.','3 Länder nach Wahl':'3 nations of your choice','Du wählst gleich aus':'You pick them next','Alle Länder':'All nations','Alle noch gesperrten Länder':'Every nation still locked','Gilt bis zum Monatsende':'Valid until the end of the month','Weiter zur Zahlung':'Continue to payment','Ich möchte, dass die Freischaltung sofort erfolgt, und weiß, dass ich damit mein Widerrufsrecht verliere. Es gelten die':'I want the unlock to happen immediately and understand that I thereby lose my right of withdrawal. The following apply:','AGB':'Terms','Endpreise. Gemäß § 19 UStG wird keine Umsatzsteuer berechnet. Bezahlt wird über Stripe.':'Final prices. No VAT is charged (small business, § 19 UStG). Payment via Stripe.','Du hast schon alle Länder.':'You already own every nation.','Bitte genau 3 Länder wählen.':'Please pick exactly 3 nations.','Bitte bestätige zuerst das Häkchen.':'Please tick the box first.','Einen Moment …':'One moment …','Verbindung zum Server fehlgeschlagen.':'Could not connect to the server.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.','Das hast du schon.':'You already have this.','Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.':'Could not start the purchase. Please try again.','Danke für deinen Kauf!':'Thanks for your purchase!','Die Zahlung wird noch bestätigt …':'Payment is being confirmed …','Freigeschaltet. Viel Spaß!':'Unlocked. Have fun!','Die Zahlung ist noch nicht bestätigt. Lade die Seite gleich nochmal.':'The payment is not confirmed yet. Reload the page in a moment.','Saison':'Season','League konnte nicht geladen werden.':'Could not load the league.','Für die League brauchst du ein Konto und ein gekauftes Land oder den League-Pass.':'For the league you need an account and a bought nation or the league pass.','Wähle zuerst einen Spielernamen.':'Choose a player name first.','Wähle dein Land für diese Saison. Es bleibt bis zum Monatsende fest.':'Choose your nation for this season. It stays fixed until the end of the month.','Dabei bist du mit jedem Länderkauf (gilt für alle Saisons) oder mit dem League-Pass für diese Saison.':'You are in with any nation purchase (valid for all seasons) or with the league pass for this season.','League-Pass · 0,99 €':'League pass · €0.99','Länder ansehen':'See nations','Länder':'Nations','Land':'Nation','Pkt/Partie':'Pts/game','Partien':'Games','Spieler':'Players','Punkte':'Points','Beste Spieler':'Top players','Noch keine League-Partien in dieser Saison.':'No league games this season yet.','3 Punkte für einen Sieg, 1 für ein Remis. Länder werden nach Punkten pro Partie gewertet. Neue Spieler (unter 20 Partien) und Spieler unter 1000 Elo zählen für ihr Land halb.':'3 points for a win, 1 for a draw. Nations are ranked by points per game. New players (under 20 games) and players under 1000 Elo count half for their nation.','Meister':'Champions','Titel':'Titles','Ewige Tabelle':'All-time table','Die erste Saison läuft noch. Am Monatsende steht hier der erste Meister.':'The first season is still running. At the end of the month the first champion appears here.','Du spielst diese Saison für':'You play this season for','Meister:':'Champion:',
-    'Konto':'Account','Konto, Shop, League':'Account, shop, league','freischalten · ab 2,99 €':'unlock · from €2.99','Kostenlos':'Free','spielbereit · kostenlos':'ready to play · free','Länder kaufen':'Buy nations','Weitere Länder kaufen':'Buy more nations',
+    'Konto':'Account','Konto, Shop, League':'Account, shop, league','freischalten · ab 2,99 €':'unlock · from €2.99','Kostenlos':'Free','spielbereit · kostenlos':'ready to play · free','gewählt':'taken','Spielbereit':'Ready to play','Freischalten · 3 Länder 2,99 € · alle 4,99 €':'Unlock · 3 nations €2.99 · all €4.99','2,99 €':'€2.99','Länder kaufen':'Buy nations','Weitere Länder kaufen':'Buy more nations',
     'Spielen ist ohne Konto kostenlos. Ein Konto brauchst du nur zum Kaufen, für gewertete Partien und die Nations League.':'Playing is free without an account. You only need one to buy, to play rated games and for the Nations League.',
     'Angemeldet, noch ohne Spielernamen.':'Signed in, no player name yet.','Deine Länder: ':'Your nations: ','Noch keine Länder gekauft.':'No nations bought yet.','League diese Saison: ':'League this season: ','League: Land noch nicht gewählt.':'League: nation not chosen yet.','League: nicht dabei.':'League: not entered.',
     'Gekaufte Länder kannst du sofort überall spielen, auch gewertet. Für die League zählen sie ab der nächsten Saison.':'Bought nations are playable everywhere right away, rated games too. For the league they count from next season.',
@@ -498,10 +510,10 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Partie vorbei. „Neues Spiel“ startet eine Revanche.':'Game over. "New game" starts a rematch.','Gegner ist am Zug …':"Opponent's turn …",
     'Aufgabe konnte nicht gesendet werden.':'Resignation could not be sent.','Aufgegeben':'Resigned','Gegner gibt auf':'Opponent resigns',
     'Revanche konnte nicht gestartet werden.':'Rematch could not be started.','Code kopiert.':'Code copied.','Wähle einen Spielmodus.':'Choose a game mode.',
-    'Russland':'Russia','Europa':'Europe','Deutschland':'Germany','0,99 €':'€0.99'
+    'Russland':'Russia','Europa':'Europe','Deutschland':'Germany','Indien':'India','Brasilien':'Brazil','0,99 €':'€0.99'
   };
   // nation and king names inside composed sentences (longest first)
-  const NM=[['Der israelische König','The Israeli king'],['Der iranische König','The Iranian king'],['Der deutsche König','The German king'],
+  const NM=[['Der israelische König','The Israeli king'],['Der iranische König','The Iranian king'],['Der deutsche König','The German king'],['Der britische König','The British king'],['Indiens König',"India's king"],['Brasiliens König',"Brazil's king"],['Großbritannien','Britain'],['Indien','India'],['Brasilien','Brazil'],
     ['Der US-König','The US king'],['Russlands König',"Russia's king"],['Europas König',"Europe's king"],['Chinas König',"China's king"],
     ['Deutschland','Germany'],['Russland','Russia'],['Europa','Europe'],['die USA','the USA'],['den Iran','Iran'],['Spieler ','Player ']];
   const N=s=>NM.reduce((a,[k,v])=>a.split(k).join(v),s);
@@ -590,6 +602,9 @@ const NATIONS = {
   ger:{ key:'ger', name:'Deutschland', winner:'Deutschland', king:'Der deutsche König', body:0x34343a, metal:0x1c1c20, accent:0xffce00, suit:0x26262b, css:'#e8c440', head:'ger', price:'0,99 €' },
   isr:{ key:'isr', name:'Israel', winner:'Israel', king:'Der israelische König', body:0x4cbcee, metal:0x2a7fa8, accent:0xffffff, suit:0x2f9fd6, css:'#6cc8f2', head:null, price:'0,99 €' },
   irn:{ key:'irn', name:'Iran', winner:'den Iran', king:'Der iranische König', body:0x2f9e4c, metal:0x1f5e30, accent:0xda0000, suit:0x1f6b36, css:'#45b866', head:null, price:'0,99 €' },
+  ind:{ key:'ind', name:'Indien', winner:'Indien', king:'Indiens König', body:0xe8862a, metal:0x8a4a12, accent:0x138808, suit:0x9a5214, css:'#f39a3a', head:null, price:'0,99 €' },
+  gbr:{ key:'gbr', name:'UK', winner:'Großbritannien', king:'Der britische König', body:0x6a3fa0, metal:0x3a2160, accent:0xc8102e, suit:0x4a2a78, css:'#a77be0', head:null, price:'0,99 €' },
+  bra:{ key:'bra', name:'Brasilien', winner:'Brasilien', king:'Brasiliens König', body:0xf4d52c, metal:0x0f7a35, accent:0x009c3b, suit:0x0b6b2e, css:'#f5e05a', head:null, price:'0,99 €' },
   chn:{ key:'chn', name:'China', winner:'China', king:'Chinas König', body:0xd9a521, metal:0x8a5a12, accent:0xc8202e, suit:0x9c1c22, css:'#e0b23a', head:'chn', price:'0,99 €' }
 };
 const sideNation={w:'usa',b:'rus'};
@@ -746,7 +761,8 @@ function face(head,r,dark){
 // alpha, so the edges stay crisp instead of a light fringe when the texture is scaled down)
 const CROWN_W=1024, CROWN_H=640, CROWN_LIFT={}, crownCache={};
 const PEARLS={usa:['#b22234','#ffffff','#3c3b6e'],rus:['#ffffff','#0039a6','#d52b1e'],eu:['#ffcc00','#003399','#ffcc00'],ger:['#000000','#dd0000','#ffce00'],
-  isr:['#ffffff','#0038b8','#ffffff'],irn:['#239f40','#ffffff','#da0000'],chn:['#de2910','#ffde00','#de2910']};
+  isr:['#ffffff','#0038b8','#ffffff'],irn:['#239f40','#ffffff','#da0000'],chn:['#de2910','#ffde00','#de2910'],
+  ind:['#ff9933','#ffffff','#138808'],gbr:['#c8102e','#ffffff','#012169'],bra:['#009c3b','#ffdf00','#002776']};
 function crownTex(nk){
   if(crownCache[nk]) return crownCache[nk];
   const c=document.createElement('canvas'); c.width=CROWN_W; c.height=CROWN_H; const g=c.getContext('2d');
@@ -1007,13 +1023,104 @@ function buildPersianCat(){
   g.add(head);
   return {g,head,headY:.74};
 }
+// India: Rani Lakshmibai, the warrior queen of Jhansi: saffron anarkali with green hem, white turban, raised sword, round shield
+function buildLakshmibai(){
+  const g=new T.Group(), saff=mat(0xe8862a,.5), green=mat(0x138808,.5), white=mat(0xf4f1ea,.6), gold=mat(0xe0b440,.25,.8), steel=mat(0xc9d0d8,.2,.9), hair=mat(0x1c1410,.5), skin=mat(0xb07a52,.55);
+  const prof=[[.25,0],[.24,.08],[.19,.22],[.14,.36],[.115,.46],[.12,.53],[.1,.59],[.05,.63],[0,.64]].map(([r,y])=>new T.Vector2(r,y));
+  g.add(mesh(new T.LatheGeometry(prof,48),saff));
+  const hem=mesh(new T.TorusGeometry(.243,.02,8,40),green,0,.04,0); hem.rotation.x=Math.PI/2; g.add(hem);
+  const belt=mesh(new T.TorusGeometry(.117,.016,8,32),gold,0,.46,0); belt.rotation.x=Math.PI/2; g.add(belt);
+  const dup=mesh(new T.TorusGeometry(.12,.024,10,36,Math.PI*1.1),green,0,.53,0); dup.rotation.set(Math.PI/2+.5,0,.9); g.add(dup); // dupatta across the chest
+  g.add(mesh(new T.CylinderGeometry(.04,.05,.08,12),skin,0,.66,0));
+  // right arm raised with a curved sword (talwar)
+  const sh=new T.Vector3(.1,.58,0), hand=new T.Vector3(.2,.86,.03);
+  const arm=mesh(new T.CylinderGeometry(.03,.038,1,12),saff); orientBetween(arm,sh,hand); g.add(arm);
+  g.add(mesh(new T.SphereGeometry(.032,10,8),skin,hand.x,hand.y,hand.z));
+  g.add(mesh(new T.BoxGeometry(.09,.016,.02),gold,hand.x,hand.y+.02,hand.z));
+  const blade=mesh(new T.BoxGeometry(.022,.3,.008),steel,hand.x+.02,hand.y+.17,hand.z); blade.rotation.z=-.18; g.add(blade);
+  // left arm holds a round shield
+  const lsh=new T.Vector3(-.1,.58,0), lh=new T.Vector3(-.17,.44,.08);
+  const larm=mesh(new T.CylinderGeometry(.03,.036,1,12),saff); orientBetween(larm,lsh,lh); g.add(larm);
+  const shield=mesh(new T.CylinderGeometry(.1,.1,.02,28),mat(0x5a3a1e,.45,.3),-.19,.45,.12); shield.rotation.set(Math.PI/2,0,.35); g.add(shield);
+  for(let i=0;i<4;i++){ const a=i*Math.PI/2+.4; g.add(mesh(new T.SphereGeometry(.014,8,6),gold,-.19+Math.cos(a)*.055,.45+Math.sin(a)*.055,.135)); }
+  const r=.16, head=new T.Group(); head.position.y=.8;
+  head.add(mesh(new T.SphereGeometry(r,24,18),skin));
+  const back=mesh(new T.SphereGeometry(r*.9,16,12),hair,0,-.06,-.08); back.scale.set(1.1,1.2,.7); head.add(back);
+  // turban: stacked white wraps with a saffron band and a gold jewel
+  for(let i=0;i<3;i++){ const t=mesh(new T.TorusGeometry(r*.93-i*.012,.04,10,28),i===1?saff:white,0,r*.45+i*.045,-.01); t.rotation.x=Math.PI/2; head.add(t); }
+  head.add(mesh(new T.SphereGeometry(r*.85,20,12,0,Math.PI*2,0,Math.PI*.5),white,0,r*.5,-.01));
+  head.add(mesh(new T.OctahedronGeometry(.025),gold,0,r*.62,r*.86));
+  face(head,r);
+  g.add(head);
+  return {g,head,headY:.8};
+}
+// UK: Queen Elizabeth II: pastel coat and matching hat, pearls, white curls, handbag on the arm
+function buildElizabeth(){
+  const g=new T.Group(), coat=mat(0x8ec5e8,.55), coatD=mat(0x6aa7d0,.55), white=mat(0xf2f0ec,.55), pearl=mat(0xfaf6ee,.2,.1), bag=mat(0x111111,.35,.2), skin=mat(SKIN,.55), gold=mat(0xe0b440,.25,.8);
+  const prof=[[.22,0],[.215,.06],[.19,.2],[.16,.34],[.135,.45],[.14,.52],[.12,.59],[.06,.63],[0,.64]].map(([r,y])=>new T.Vector2(r,y));
+  g.add(mesh(new T.LatheGeometry(prof,48),coat));
+  for(let i=0;i<3;i++) g.add(mesh(new T.SphereGeometry(.014,8,6),coatD,0,.32+i*.08,.16-i*.01)); // coat buttons
+  const brooch=mesh(new T.OctahedronGeometry(.02),gold,.07,.53,.11); g.add(brooch);
+  g.add(mesh(new T.CylinderGeometry(.04,.05,.08,12),skin,0,.66,0));
+  for(let i=0;i<14;i++){ const a=-Math.PI*.15+i/13*Math.PI*1.3; g.add(mesh(new T.SphereGeometry(.012,8,6),pearl,Math.sin(a)*.06,.62-Math.sin(i/13*Math.PI)*.025,Math.cos(a)*.06)); } // pearl necklace
+  // arms: left bent with the famous handbag, right at the side
+  const lsh=new T.Vector3(-.11,.58,0), lel=new T.Vector3(-.16,.45,.06), lh=new T.Vector3(-.1,.44,.14);
+  const la=mesh(new T.CylinderGeometry(.03,.036,1,12),coat); orientBetween(la,lsh,lel); g.add(la);
+  const lf=mesh(new T.CylinderGeometry(.028,.03,1,12),coat); orientBetween(lf,lel,lh); g.add(lf);
+  const handle=mesh(new T.TorusGeometry(.035,.007,6,16,Math.PI),bag,-.14,.42,.1); g.add(handle);
+  g.add(mesh(new T.BoxGeometry(.1,.075,.04),bag,-.14,.37,.1));
+  const rsh=new T.Vector3(.11,.58,0), rh=new T.Vector3(.16,.38,.03);
+  const ra=mesh(new T.CylinderGeometry(.03,.036,1,12),coat); orientBetween(ra,rsh,rh); g.add(ra);
+  g.add(mesh(new T.SphereGeometry(.03,10,8),white,rh.x,rh.y,rh.z)); // white glove
+  const r=.16, head=new T.Group(); head.position.y=.8;
+  head.add(mesh(new T.SphereGeometry(r,24,18),skin));
+  for(const [x,y,z] of [[-.13,0,-.03],[.13,0,-.03],[-.1,-.06,-.07],[.1,-.06,-.07],[0,-.04,-.12],[-.06,.06,-.1],[.06,.06,-.1]]) head.add(mesh(new T.SphereGeometry(.05,12,10),white,x,y,z)); // white curls
+  // matching hat: brim + crown with a band and a small flower
+  const brim=mesh(new T.CylinderGeometry(.21,.21,.015,32),coat,0,r*.62,0); brim.rotation.x=-.12; head.add(brim);
+  head.add(mesh(new T.CylinderGeometry(.13,.14,.1,28),coat,0,r*.62+.055,-.01));
+  const hb=mesh(new T.CylinderGeometry(.142,.142,.025,28,1,true),coatD,0,r*.62+.02,-.01); head.add(hb);
+  head.add(mesh(new T.SphereGeometry(.025,10,8),mat(0xf5f0f8,.5),.11,r*.62+.04,.06));
+  face(head,r);
+  g.add(head);
+  return {g,head,headY:.8};
+}
+// Brazil: Empress Leopoldina: green empire gown with gold trim, yellow sash, tiara, hair in an updo, a folding fan
+function buildLeopoldina(){
+  const g=new T.Group(), green=mat(0x0f7a35,.45,.1), gold=mat(0xe0b440,.25,.85), yellow=mat(0xffdf00,.45), blue=mat(0x002776,.45), hair=mat(0x8a6a3a,.5), skin=mat(SKIN,.55), lace=mat(0xf6f2ea,.6);
+  // empire line: wide flowing skirt up to a high waist just under the bust
+  const prof=[[.26,0],[.25,.06],[.21,.2],[.17,.34],[.14,.45],[.125,.5],[.13,.55],[.11,.6],[.05,.63],[0,.64]].map(([r,y])=>new T.Vector2(r,y));
+  g.add(mesh(new T.LatheGeometry(prof,48),green));
+  for(const y of [.03,.09]){ const t=mesh(new T.TorusGeometry(.252-(y-.03)*.6,.01,8,40),gold,0,y,0); t.rotation.x=Math.PI/2; g.add(t); }
+  const waist=mesh(new T.TorusGeometry(.126,.014,8,32),gold,0,.5,0); waist.rotation.x=Math.PI/2; g.add(waist);
+  const sash=mesh(new T.TorusGeometry(.125,.022,10,36,Math.PI*1.1),yellow,0,.5,0); sash.rotation.set(Math.PI/2+.55,0,-.9); g.add(sash);
+  g.add(mesh(new T.SphereGeometry(.018,10,8),blue,-.06,.55,.11)); // order star on the sash
+  for(const s of [-1,1]){ const p=mesh(new T.SphereGeometry(.05,12,10),lace,s*.12,.58,0); p.scale.set(1,.8,1); g.add(p); } // puff sleeves
+  g.add(mesh(new T.CylinderGeometry(.04,.05,.08,12),skin,0,.66,0));
+  // right hand holds a fan, left arm down
+  const rsh=new T.Vector3(.12,.57,0), rh=new T.Vector3(.13,.46,.12);
+  const ra=mesh(new T.CylinderGeometry(.026,.03,1,12),skin); orientBetween(ra,rsh,rh); g.add(ra);
+  const fan=mesh(new T.CircleGeometry(.09,16,0,Math.PI*.8),mat(0xf6f2ea,.5),rh.x,rh.y+.02,rh.z+.01); fan.material.side=T.DoubleSide; fan.rotation.z=.6; g.add(fan);
+  const lsh=new T.Vector3(-.12,.57,0), lh=new T.Vector3(-.17,.38,.04);
+  const la=mesh(new T.CylinderGeometry(.026,.03,1,12),skin); orientBetween(la,lsh,lh); g.add(la);
+  const r=.16, head=new T.Group(); head.position.y=.8;
+  head.add(mesh(new T.SphereGeometry(r,24,18),skin));
+  head.add(mesh(new T.SphereGeometry(r*1.05,22,14,0,Math.PI*2,0,Math.PI*.5),hair,0,.005,-.015));
+  for(const s of [-1,1]) for(let k=0;k<2;k++) head.add(mesh(new T.SphereGeometry(.035,10,8),hair,s*r*.95,-.02-k*.05,.02)); // side curls
+  const bun=mesh(new T.SphereGeometry(.08,14,12),hair,0,r*.75,-.07); head.add(bun);
+  // tiara: gold band with three points and small green gems
+  const tb=mesh(new T.TorusGeometry(r*.8,.012,6,28,Math.PI),gold,0,r*.55,0); tb.rotation.set(-1.3,0,0); head.add(tb);
+  for(const a of [-.5,0,.5]){ const sp=mesh(new T.ConeGeometry(.018,.07,6),gold,Math.sin(a)*r*.8,r*.72,Math.cos(a)*r*.62); head.add(sp); head.add(mesh(new T.SphereGeometry(.012,8,6),mat(0x16a34a,.2,.3),Math.sin(a)*r*.8,r*.66,Math.cos(a)*r*.66)); }
+  face(head,r);
+  g.add(head);
+  return {g,head,headY:.8};
+}
 function makeQueen(color){
   const nk=sideNation[color];
-  const builders={usa:buildLiberty,rus:buildMatryoshka,eu:buildEuropa,chn:buildPanda,isr:buildHoopoe,ger:buildShepherd,irn:buildPersianCat};
+  const builders={usa:buildLiberty,rus:buildMatryoshka,eu:buildEuropa,chn:buildPanda,isr:buildHoopoe,ger:buildShepherd,irn:buildPersianCat,ind:buildLakshmibai,gbr:buildElizabeth,bra:buildLeopoldina};
   const {g,head,headY}=(builders[nk]||buildPanda)();
   // scale up to the same overall height as the kings (~1.2 incl. crown)
   // sized so every queen stands slightly below the king (king ≈1.05), head to foot; Liberty's torch rises above that
-  const s={usa:.98,rus:1.12,eu:.87,chn:.975,isr:.925,irn:1.0,ger:1.01}[nk]||1; g.scale.set(s,s,s);
+  const s={usa:.98,rus:1.12,eu:.87,chn:.975,isr:.925,irn:1.0,ger:1.01,ind:1,gbr:1,bra:1}[nk]||1; g.scale.set(s,s,s);
   g.userData={type:'q',color,phase:Math.random()*6.28,head,headY};
   g.traverse(o=>{ if(o.isMesh) o.userData.owner=g; });
   return g;
@@ -1056,6 +1163,27 @@ function flagTexture(nk){
     [[90,100],[106,118],[106,142],[90,160]].forEach(([x,y])=>star(x,y,8,'#ffde00'));
     star(176,128,26,'#ffde00');
     [[220,100],[236,118],[236,142],[220,160]].forEach(([x,y])=>star(x,y,8,'#ffde00'));
+  } else if(nk==='ind'){
+    // saffron base, white band with the blue wheel, green band
+    g.fillStyle=hex(NATIONS.ind.body); g.fillRect(0,0,256,256);
+    g.fillStyle='#ffffff'; g.fillRect(0,88,256,40);
+    g.fillStyle='#138808'; g.fillRect(0,128,256,40);
+    g.strokeStyle='#000080'; g.lineWidth=3; [64,192].forEach(cx=>{ g.beginPath(); g.arc(cx,108,14,0,Math.PI*2); g.stroke();
+      for(let k=0;k<12;k++){ const a=k*Math.PI/6; g.beginPath(); g.moveTo(cx,108); g.lineTo(cx+Math.cos(a)*14,108+Math.sin(a)*14); g.stroke(); } });
+  } else if(nk==='gbr'){
+    // royal purple base, Union Jack band (blue with the white and red cross)
+    g.fillStyle=hex(NATIONS.gbr.body); g.fillRect(0,0,256,256);
+    g.fillStyle='#012169'; g.fillRect(0,84,256,88);
+    g.strokeStyle='#ffffff'; g.lineWidth=14; [[0,84,256,172],[0,172,256,84]].forEach(([a,b,c,d])=>{ g.beginPath(); g.moveTo(a,b); g.lineTo(c,d); g.stroke(); });
+    g.strokeStyle='#c8102e'; g.lineWidth=5; [[0,84,256,172],[0,172,256,84]].forEach(([a,b,c,d])=>{ g.beginPath(); g.moveTo(a,b); g.lineTo(c,d); g.stroke(); });
+    g.fillStyle='#ffffff'; g.fillRect(0,113,256,30); g.fillRect(113,84,30,88);
+    g.fillStyle='#c8102e'; g.fillRect(0,119,256,18); g.fillRect(119,84,18,88);
+  } else if(nk==='bra'){
+    // canary yellow base (the football shirt), green band with the yellow rhombus and blue globe
+    g.fillStyle=hex(NATIONS.bra.body); g.fillRect(0,0,256,256);
+    g.fillStyle='#009c3b'; g.fillRect(0,84,256,88);
+    [64,192].forEach(cx=>{ g.fillStyle='#ffdf00'; g.beginPath(); g.moveTo(cx-52,128); g.lineTo(cx,92); g.lineTo(cx+52,128); g.lineTo(cx,164); g.closePath(); g.fill();
+      g.fillStyle='#002776'; g.beginPath(); g.arc(cx,128,20,0,Math.PI*2); g.fill(); });
   } else if(nk==='usa'){
     g.fillStyle=hex(NATIONS.usa.body); g.fillRect(0,0,256,256);
     // red-white stripe band across the middle
@@ -1186,6 +1314,9 @@ function makePieceRaw(type,color){
       else if(nk==='isr'){ pin.add(mesh(new T.BoxGeometry(.06,.04,.01),mat(0xffffff,.4))); [.013,-.013].forEach(y=>pin.add(mesh(new T.BoxGeometry(.06,.006,.012),mat(0x0038b8,.4),0,y,.001))); }
       else if(nk==='irn'){ [0x239f40,0xffffff,0xda0000].forEach((c,i)=>pin.add(mesh(new T.BoxGeometry(.06,.0135,.01),mat(c,.4),0,.0135-i*.0135,0))); }
       else if(nk==='eu'){ pin.add(mesh(new T.BoxGeometry(.06,.04,.01),mat(0x003399,.4))); const r=new T.Mesh(new T.TorusGeometry(.012,.003,6,16),mat(0xffcc00,.3)); r.position.z=.006; pin.add(r); }
+      else if(nk==='ind'){ [0xff9933,0xffffff,0x138808].forEach((c,i)=>pin.add(mesh(new T.BoxGeometry(.06,.0135,.01),mat(c,.4),0,.0135-i*.0135,0))); pin.add(mesh(new T.SphereGeometry(.005,6,6),mat(0x000080,.4),0,0,.006)); }
+      else if(nk==='gbr'){ pin.add(mesh(new T.BoxGeometry(.06,.04,.01),mat(0x012169,.4))); pin.add(mesh(new T.BoxGeometry(.06,.01,.012),mat(0xc8102e,.4),0,0,.001)); pin.add(mesh(new T.BoxGeometry(.01,.04,.012),mat(0xc8102e,.4),0,0,.001)); }
+      else if(nk==='bra'){ pin.add(mesh(new T.BoxGeometry(.06,.04,.01),mat(0x009c3b,.4))); const d=mesh(new T.BoxGeometry(.03,.03,.011),mat(0xffdf00,.4),0,0,.001); d.rotation.z=Math.PI/4; d.scale.y=.6; pin.add(d); pin.add(mesh(new T.SphereGeometry(.008,8,6),mat(0x002776,.4),0,0,.006)); }
       else { pin.add(mesh(new T.BoxGeometry(.06,.04,.01),mat(0xde2910,.4))); pin.add(mesh(new T.SphereGeometry(.008,6,6),mat(0xffde00,.3),-.016,.008,.006)); }
       g.add(pin);
     }
@@ -1832,23 +1963,33 @@ const EU_FLAG='<svg viewBox="0 0 30 20" width="100%" height="100%" preserveAspec
 const GER_FLAG='<svg viewBox="0 0 30 18" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="6" fill="#000"/><rect y="6" width="30" height="6" fill="#dd0000"/><rect y="12" width="30" height="6" fill="#ffce00"/></svg>';
 const ISR_FLAG='<svg viewBox="0 0 30 22" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="22" fill="#fff"/><rect y="2" width="30" height="3" fill="#0038b8"/><rect y="17" width="30" height="3" fill="#0038b8"/><g fill="none" stroke="#0038b8" stroke-width=".9"><polygon points="15,6.6 18.5,12.7 11.5,12.7"/><polygon points="15,15.4 11.5,9.3 18.5,9.3"/></g></svg>';
 const IRN_FLAG='<svg viewBox="0 0 30 18" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="6" fill="#239f40"/><rect y="6" width="30" height="6" fill="#fff"/><rect y="12" width="30" height="6" fill="#da0000"/></svg>';
-function flagHTML(k){ if(k==='ger') return '<span class="flag fchn" aria-hidden="true">'+GER_FLAG+'</span>'; if(k==='isr') return '<span class="flag fchn" aria-hidden="true">'+ISR_FLAG+'</span>'; if(k==='irn') return '<span class="flag fchn" aria-hidden="true">'+IRN_FLAG+'</span>'; if(k==='eu') return '<span class="flag fchn" aria-hidden="true">'+EU_FLAG+'</span>'; return k==='chn'?'<span class="flag fchn" aria-hidden="true">'+CHN_STAR+'</span>':'<span class="flag '+(k==='usa'?'fusa':'fru')+'" aria-hidden="true"></span>'; }
+const IND_FLAG='<svg viewBox="0 0 30 18" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="6" fill="#ff9933"/><rect y="6" width="30" height="6" fill="#fff"/><rect y="12" width="30" height="6" fill="#138808"/><circle cx="15" cy="9" r="2.3" fill="none" stroke="#000080" stroke-width=".5"/><circle cx="15" cy="9" r=".5" fill="#000080"/></svg>';
+const GBR_FLAG='<svg viewBox="0 0 60 30" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><clipPath id="gbt"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0 60,30M60,0 0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 60,30M60,0 0,30" clip-path="url(#gbt)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>';
+const BRA_FLAG='<svg viewBox="0 0 30 21" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="30" height="21" fill="#009c3b"/><path d="M15 2.2 27.4 10.5 15 18.8 2.6 10.5z" fill="#ffdf00"/><circle cx="15" cy="10.5" r="4.4" fill="#002776"/><path d="M10.8 9.6q4.5-1 8.6 1.6" stroke="#fff" stroke-width=".7" fill="none"/></svg>';
+function flagHTML(k){ if(k==='ind') return '<span class="flag fchn" aria-hidden="true">'+IND_FLAG+'</span>'; if(k==='gbr') return '<span class="flag fchn" aria-hidden="true">'+GBR_FLAG+'</span>'; if(k==='bra') return '<span class="flag fchn" aria-hidden="true">'+BRA_FLAG+'</span>'; if(k==='ger') return '<span class="flag fchn" aria-hidden="true">'+GER_FLAG+'</span>'; if(k==='isr') return '<span class="flag fchn" aria-hidden="true">'+ISR_FLAG+'</span>'; if(k==='irn') return '<span class="flag fchn" aria-hidden="true">'+IRN_FLAG+'</span>'; if(k==='eu') return '<span class="flag fchn" aria-hidden="true">'+EU_FLAG+'</span>'; return k==='chn'?'<span class="flag fchn" aria-hidden="true">'+CHN_STAR+'</span>':'<span class="flag '+(k==='usa'?'fusa':'fru')+'" aria-hidden="true"></span>'; }
 const LOCK='<svg viewBox="0 0 10 12" aria-hidden="true"><rect x="1" y="5" width="8" height="7" rx="1.2" fill="currentColor"/><path d="M3 5V3.5a2 2 0 0 1 4 0V5" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>';
 let lastPick=null;
 function renderPickButtons(taken,onChoose){
   lastPick=[taken,onChoose];
   const row=$('pickRow'); row.textContent='';
-  Object.values(NATIONS).forEach(n=>{
-    const b=document.createElement('button'); b.type='button'; b.className='pickBtn'; b.dataset.n=n.key;
+  // compact tiles in two groups: what you can play right now, then what you can unlock
+  const keys=Object.keys(NATIONS), ready=keys.filter(isOwned), locked=keys.filter(k=>!isOwned(k));
+  const tile=(n,grid)=>{
+    const b=el('button','pickBtn',grid); b.type='button'; b.dataset.n=n.key;
     if(!isOwned(n.key)) b.classList.add('locked');
     if(!n.price) b.classList.add('free');
     if(n.key===taken) b.classList.add('taken');
-    b.innerHTML=flagHTML(n.key)+'<span class="pn"></span><span class="ps"></span>'+(!n.price?'<span class="freePill">Kostenlos</span>':isOwned(n.key)?'':'<span class="lockPill">'+LOCK+'</span>');
+    b.innerHTML=flagHTML(n.key)+'<span class="pn"></span><span class="ps"></span>'+(!n.price?'<span class="freePill">Kostenlos</span>':'');
     b.querySelector('.pn').textContent=n.name; b.querySelector('.pn').style.color=n.css;
-    b.querySelector('.ps').textContent=n.key===taken?'schon gewählt':!n.price?'spielbereit · kostenlos':isOwned(n.key)?'spielbereit':'freischalten · ab 2,99 €';
+    const ps=b.querySelector('.ps');
+    if(n.key===taken) ps.textContent='gewählt';
+    else if(isOwned(n.key)) ps.textContent='spielbereit';
+    else { ps.innerHTML=LOCK; ps.append(document.createTextNode(' 2,99 €')); }
     b.onclick=()=>{ if(!isOwned(n.key)){ openBuy(n.key,()=>renderPickButtons(taken,onChoose)); return; } onChoose(n.key); };
-    row.appendChild(b);
-  });
+  };
+  const group=(head,list)=>{ if(!list.length) return; if(locked.length) el('div','pickHead',row,head); const g=el('div','pickGrid',row); list.forEach(k=>tile(NATIONS[k],g)); };
+  group('Spielbereit',ready);
+  group('Freischalten · 3 Länder 2,99 € · alle 4,99 €',locked);
   setTimeout(()=>{ const f=row.querySelector('.pickBtn:not(.taken)'); if(f) f.focus(); },50);
 }
 function openPicker(onPick){
