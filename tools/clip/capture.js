@@ -39,7 +39,7 @@ const SCRIPTS={
  // USA (white) with the flying car: Philidor's legacy, Lady Liberty sacrifices herself, the car mates (smothered mate)
  car:{nations:['usa','chn'],car:'w',fen:'rqr3k1/pp4pp/2p5/6N1/8/B7/5PPP/R2Q2K1 w - - 0 1',
    title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','The flying car joins the army 🚀'],play:async(mv,p,shoot)=>{
-   await orbit(p,shoot,7500,['b3','g8','h6','g5'],.85);
+   await orbit(p,shoot,7500,['b3','g8','a1','h8'],1.0);
    await sub(p,'Lady Liberty: CHECK!'); await mv('d1','b3',1700);
    await look(p,['f7','g8','h6','g5'],.5,1100); await mv('g8','h8',1300);
    await sub(p,'Flying car: CHECK!'); await mv('g5','f7',1900); await mv('h8','g8',1200);
