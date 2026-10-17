@@ -54,7 +54,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   with >= 10 games and best player with >= 5 games per finished season, titles, all-time table). Guests can never play rated,
   league or buy.
 - Login rule: playing is always free without login; an account is only needed to buy, play rated or join the league.
-- Account menu: header button "Konto" (`openAcct('menu')`, `renderMenu()`) in every mode: name/Elo or sign-in, bought nations, league nation, "Länder kaufen" (shop), Nations League, Rangliste, sign out, delete. The online area only shows who you are plus a link into it. Locked nations in the picker show "freischalten · ab 2,99 €"; the league pane offers "Weitere Länder kaufen" also after entering. The difficulty select is only shown against the AI.
+- Account menu: header button "Konto" (`openAcct('menu')`, `renderMenu()`) in every mode: name/Elo or sign-in, bought nations, league nation, "Länder kaufen" (shop), Nations League, Rangliste, sign out, delete. The online area only shows who you are plus a link into it. Free nations (USA, Russia) carry a green "Kostenlos/Free" sticker and "spielbereit · kostenlos" in the picker, locked ones show "freischalten · ab 2,99 €"; the league pane offers "Weitere Länder kaufen" also after entering. The difficulty select is only shown against the AI.
 - Nation colours must stay distinct: USA navy, Russia red, Europe silver-white, China gold,
   Germany anthracite, Israel sky blue, Iran green. Queens stand slightly below king height, measured head to foot (Liberty's raised torch does not count).
 
