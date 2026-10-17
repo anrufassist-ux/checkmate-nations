@@ -14,6 +14,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
   `window.SPRITES`. Three.js r128, OrbitControls (three@0.128.0) and chess.js 0.10.3 are self-hosted in `vendor/`,
   fonts (Black Ops One, Barlow, Barlow Condensed) in `fonts/`. No external requests (no Google Fonts, no CDNs), keep it that way (GDPR).
 - `impressum.html`, `datenschutz.html`, `agb.html` (terms + withdrawal, + `legal.css`): legal pages, German binding text plus English. Linked from the mode screen and the info panel. Update the privacy policy before adding accounts, payments, analytics or any third-party service.
+- SEO and app basics: title, description, canonical, Open Graph/Twitter card (`brand/og.jpg`, 1200x630), JSON-LD `VideoGame` in the `<head>` of `index.html`; favicons (`favicon.ico`, `favicon-32.png`, `apple-touch-icon.png`), `manifest.webmanifest` with `icon-192/512.png` and a maskable icon (installable web app, groundwork for a Play Store TWA), `robots.txt`, `sitemap.xml`.
 - No build step. Vercel serves the files statically.
 
 ## Product decisions

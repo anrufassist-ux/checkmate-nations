@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /tools/
+Disallow: /supabase/
+Disallow: /marketing/
+
+Sitemap: https://checkmatenations.com/sitemap.xml
