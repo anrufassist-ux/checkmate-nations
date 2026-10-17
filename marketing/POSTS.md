@@ -87,5 +87,6 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
 |---|---|---|---|---|---|---|---|---|---|
-| vor 2026-10-17 (genaues Datum offen) | Instagram | V1 Checkmate in 4 | | | | | | | erster Post überhaupt |
+| 2026-10-17 | Instagram | V1 Checkmate in 4 | | | | | | | erster Post überhaupt |
 | 2026-10-17 | TikTok | V1 Checkmate in 4 | | | | | | | erster TikTok-Post |
+| 2026-10-17 | YouTube Shorts | V1 Checkmate in 4 | | | | | | | erster Short |
