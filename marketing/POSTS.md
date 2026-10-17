@@ -20,6 +20,12 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 **Bio (Instagram, YouTube):** ♟️ Satirical 3D chess: nations battle on the board / 🔒 Checkmate = jail / 🆓 Play free in your browser 👇
 **Bio (TikTok, max. 80 Zeichen):** Satirical 3D chess ♟️ Checkmate = jail 🔒 Play free 👇
 **Profilbild:** `marketing/profilbild-1080.png`
+**YouTube-Banner:** `marketing/youtube-banner-2560x1440.jpg` (Logo im sicheren Bereich, passt auf Handy, PC und TV)
+**YouTube-Kanalbeschreibung:**
+> Satirical 3D chess in your browser: nations battle on the board. Pawns are infantry, rooks are tanks, knights are drones,
+> bishops are fighter jets, and the kings are caricature bobbleheads. Get checkmated and your king goes to jail 🔒
+> Short clips of fast checkmates, drone attacks and crying presidents behind bars. Satire, no political statement.
+> Play free, no download: https://checkmatenations.com/?utm_source=youtube
 
 ## Regeln für Posts
 
