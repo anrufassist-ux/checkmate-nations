@@ -80,6 +80,11 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);overflow:hid
 .status{display:flex;align-items:center;gap:10px;font-family:var(--f-label);font-weight:600;font-size:17px;letter-spacing:.04em;width:100%;background:none;border:0;padding:0;color:var(--fg);text-align:left;cursor:pointer}
 .status:focus-visible{outline:2px solid var(--sand);outline-offset:4px;border-radius:4px}
 .status #status{flex:1;min-width:0}
+.turnPill{position:fixed;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;font-family:var(--f-display);font-size:15px;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:999px;background:rgba(13,17,16,.82);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.turnPill.mine{font-size:20px;padding:8px 22px;color:#0d1a0c;background:#7fd36a;border-color:#7fd36a;box-shadow:0 0 0 0 rgba(127,211,106,.7);animation:turnGlow 1.8s ease-out infinite}
+.turnPill.urgent{background:#e0533f;border-color:#e0533f;color:#fff;animation:turnGlow 0.9s ease-out infinite}
+@keyframes turnGlow{0%{box-shadow:0 0 0 0 rgba(127,211,106,.6)}100%{box-shadow:0 0 0 14px rgba(127,211,106,0)}}
+@media (prefers-reduced-motion:reduce){.turnPill.mine,.turnPill.urgent{animation:none}}
 .chip{font-family:var(--f-display);font-size:14px;letter-spacing:.15em;color:var(--sand);border:1px solid var(--line);border-radius:5px;padding:2px 6px}
 .chev{width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 4px 4px;transition:transform .2s;flex:none}
 .console.collapsed .chev{transform:rotate(-135deg);margin-bottom:-4px}
@@ -232,6 +237,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 </style>
 
 <div id="stage"></div>
+<div class="turnPill" id="turnPill" hidden aria-live="polite"></div>
 
 <header class="top">
   <div class="brand">
@@ -462,7 +468,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
     '2,99 €':'€2.99','4,99 €':'€4.99','0,99 €':'€0.99',
     'Neue Länder':'New nations','Länder freischalten':'Unlock nations','League-Pass':'League pass','Damit spielst du diese Saison mit USA oder Russland in der Nations League. Wer ein Land kauft, ist ohne Pass in jeder Saison dabei.':'Play this season of the Nations League with the USA or Russia. Anyone who buys a nation is in every season without a pass.','Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen, auch online. Jeder Länderkauf enthält die Nations League für alle Saisons.':'Own pieces, own queen, own flag pattern. Buy once, play forever, online too. Every nation purchase includes the Nations League for all seasons.','3 Länder nach Wahl':'3 nations of your choice','Du wählst gleich aus':'You pick them next','Alle Länder':'All nations','Auch alle, die später dazukommen':'Including every nation added later','Gilt bis zum Monatsende':'Valid until the end of the month','Weiter zur Zahlung':'Continue to payment','Ich möchte, dass die Freischaltung sofort erfolgt, und weiß, dass ich damit mein Widerrufsrecht verliere. Es gelten die':'I want the unlock to happen immediately and understand that I thereby lose my right of withdrawal. The following apply:','AGB':'Terms','Einmalige Zahlung, kein Abo, keine automatische Verlängerung. Endpreise, gemäß § 19 UStG ohne Umsatzsteuer. Bezahlt wird über Stripe.':'One-time payment, no subscription, no automatic renewal. Final prices, no VAT charged (small business, § 19 UStG). Payment via Stripe.','Du hast schon alle Länder.':'You already own every nation.','Bitte genau 3 Länder wählen.':'Please pick exactly 3 nations.','Bitte bestätige zuerst das Häkchen.':'Please tick the box first.','Einen Moment …':'One moment …','Verbindung zum Server fehlgeschlagen.':'Could not connect to the server.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.','Das hast du schon.':'You already have this.','Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.':'Could not start the purchase. Please try again.','Danke für deinen Kauf!':'Thanks for your purchase!','Die Zahlung wird noch bestätigt …':'Payment is being confirmed …','Freigeschaltet. Viel Spaß!':'Unlocked. Have fun!','Die Zahlung ist noch nicht bestätigt. Lade die Seite gleich nochmal.':'The payment is not confirmed yet. Reload the page in a moment.','Saison':'Season','League konnte nicht geladen werden.':'Could not load the league.','Für die League brauchst du ein Konto und ein gekauftes Land oder den League-Pass.':'For the league you need an account and a bought nation or the league pass.','Wähle zuerst einen Spielernamen.':'Choose a player name first.','Wähle dein Land für diese Saison. Es bleibt bis zum Monatsende fest.':'Choose your nation for this season. It stays fixed until the end of the month.','Dabei bist du mit jedem Länderkauf (gilt für alle Saisons) oder mit dem League-Pass für diese Saison.':'You are in with any nation purchase (valid for all seasons) or with the league pass for this season.','League-Pass · 0,99 €':'League pass · €0.99','Länder ansehen':'See nations','Länder':'Nations','Land':'Nation','Pkt/Partie':'Pts/game','Partien':'Games','Spieler':'Players','Punkte':'Points','Beste Spieler':'Top players','Noch keine League-Partien in dieser Saison.':'No league games this season yet.','3 Punkte für einen Sieg, 1 für ein Remis. Länder werden nach Punkten pro Partie gewertet. Neue Spieler (unter 20 Partien) und Spieler unter 1000 Elo zählen für ihr Land halb.':'3 points for a win, 1 for a draw. Nations are ranked by points per game. New players (under 20 games) and players under 1000 Elo count half for their nation.','Meister':'Champions','Titel':'Titles','Ewige Tabelle':'All-time table','Die erste Saison läuft noch. Am Monatsende steht hier der erste Meister.':'The first season is still running. At the end of the month the first champion appears here.','Du spielst diese Saison für':'You play this season for','Meister:':'Champion:',
-    'Konto':'Account','Konto, Shop, League':'Account, shop, league','freischalten · ab 2,99 €':'unlock · from €2.99','Kostenlos':'Free','einmalig · kein Abo':'one-time · no subscription','spielbereit · kostenlos':'ready to play · free','gewählt':'taken','Spielbereit':'Ready to play','Freischalten · 3 Länder 2,99 € · alle 4,99 €':'Unlock · 3 nations €2.99 · all €4.99','2,99 €':'€2.99','Länder kaufen':'Buy nations','Weitere Länder kaufen':'Buy more nations',
+    'Konto':'Account','Konto, Shop, League':'Account, shop, league','freischalten · ab 2,99 €':'unlock · from €2.99','Kostenlos':'Free','Du bist am Zug':'Your move','Schach! Du bist am Zug':'Check! Your move','Gegner ist am Zug':'Opponent to move','einmalig · kein Abo':'one-time · no subscription','spielbereit · kostenlos':'ready to play · free','gewählt':'taken','Spielbereit':'Ready to play','Freischalten · 3 Länder 2,99 € · alle 4,99 €':'Unlock · 3 nations €2.99 · all €4.99','2,99 €':'€2.99','Länder kaufen':'Buy nations','Weitere Länder kaufen':'Buy more nations',
     'Spielen ist ohne Konto kostenlos. Ein Konto brauchst du nur zum Kaufen, für gewertete Partien und die Nations League.':'Playing is free without an account. You only need one to buy, to play rated games and for the Nations League.',
     'Angemeldet, noch ohne Spielernamen.':'Signed in, no player name yet.','Deine Länder: ':'Your nations: ','Noch keine Länder gekauft.':'No nations bought yet.','League diese Saison: ':'League this season: ','League: Land noch nicht gewählt.':'League: nation not chosen yet.','League: nicht dabei.':'League: not entered.',
     'Gekaufte Länder kannst du sofort überall spielen, auch gewertet. Für die League zählen sie ab der nächsten Saison.':'Bought nations are playable everywhere right away, rated games too. For the league they count from next season.',
@@ -536,6 +542,8 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     [/^Spiel mit mir Weltmacht Schach! Code: (.+)$/,m=>'Play Checkmate Nations with me! Code: '+m[1]],
     [/^Suche Gegner … (\d+:\d\d)$/,m=>'Looking for an opponent … '+m[1]],
     [/^Erster Zug: (\d+:\d\d)$/,m=>'First move: '+m[1]],
+    [/^Dein erster Zug: (\d+:\d\d)$/,m=>'Your first move: '+m[1]],
+    [/^Erster Zug des Gegners: (\d+:\d\d)$/,m=>"Opponent's first move: "+m[1]],
     [/^Gegner: (.+)$/,m=>'Opponent: '+m[1]],
     [/^(\d+) Spieler suchen gerade eine gewertete Partie\.$/,m=>m[1]+' players are looking for a rated game right now.'],
     [/^(\d+) Spieler online · niemand sucht gerade eine gewertete Partie\.$/,m=>m[1]+' online · nobody is looking for a rated game.'],
@@ -2521,7 +2529,36 @@ function clockLeft(d,side){
   if(d.status==='active'&&d.moveNo>=2&&d.fen.split(' ')[1]===side) ms-=thinking(d);
   return ms;
 }
+/* online: a big pill under the header says whose turn it is; the first move shows its 60 s countdown there */
+let turnTitle=null;
+function turnPing(){ // short two-note chime when the turn passes to you
+  if(!actx||!soundOn) return;
+  const t0=actx.currentTime;
+  [[660,0],[880,.12]].forEach(([f,dt])=>{ const o=actx.createOscillator(), g=actx.createGain(); o.type='sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(0,t0+dt); g.gain.linearRampToValueAtTime(.35,t0+dt+.02); g.gain.exponentialRampToValueAtTime(.001,t0+dt+.35);
+    o.connect(g).connect(sfxBus()); o.start(t0+dt); o.stop(t0+dt+.4); });
+}
+function renderTurn(){
+  const pill=$('turnPill'), d=on.doc;
+  const show=mode==='online'&&!!on.id&&on.ready&&!!d&&d.status==='active'&&!over;
+  if(turnTitle===null) turnTitle=document.title;
+  if(!show){ pill.hidden=true; on.turnMine=null; document.title=turnTitle; return; }
+  const mine=game.turn()===on.color;
+  let txt=mine?(game.in_check()?'Schach! Du bist am Zug':'Du bist am Zug'):'Gegner ist am Zug', urgent=false;
+  if(on.rated&&d.clock&&d.clock.turnStartedAt&&d.moveNo<2){
+    const left=60000-thinking(d);
+    txt=(mine?'Dein erster Zug: ':'Erster Zug des Gegners: ')+fmtClock(left); urgent=mine&&left<20000;
+  }
+  pill.textContent=window.T?window.T(txt):txt;
+  pill.className='turnPill'+(mine?' mine':'')+(urgent?' urgent':'');
+  const hd=document.querySelector('header.top'); pill.style.top=((hd?hd.getBoundingClientRect().bottom:60)+6)+'px';
+  pill.hidden=false;
+  if(mine&&on.turnMine===false) turnPing();
+  on.turnMine=mine;
+  document.title=mine?'♟ '+(window.T?window.T('Du bist am Zug'):'Du bist am Zug')+' · '+turnTitle:turnTitle;
+}
 function renderClock(){
+  renderTurn();
   const d=on.doc, chip=$('clkChip');
   if(!on.rated||!d||!d.clock||!d.clock.turnStartedAt){ chip.hidden=true; return; }
   chip.hidden=false;
@@ -2675,7 +2712,7 @@ function onlineDetach(){
   if(on.clockTimer){ clearInterval(on.clockTimer); on.clockTimer=null; }
   if(on.ping){ clearInterval(on.ping); on.ping=null; } on.oppGone=0; $('onClaim').hidden=true;
   $('clkChip').hidden=true; $('onVs').textContent=''; $('onLeague').textContent=''; on.league=null;
-  on.doc=null; on.id=null; on.rated=false;
+  on.doc=null; on.id=null; on.rated=false; renderTurn();
   on.code=null; on.color=null; on.ready=false; on.queue=null; on.opp=false;
 }
 function onlineLeave(){ stopSearch(); onlineDetach(); showCode(); lobbyTick(); }
@@ -2722,8 +2759,8 @@ function onlinePush(res){
   });
 }
 function onlineStatus(){
-  if(mode!=='online'||!on.id) return;
-  onlineEndCheck();
+  if(mode!=='online'||!on.id){ renderTurn(); return; }
+  onlineEndCheck(); renderTurn();
   if(!on.rated&&on.ready&&on.doc){ // refresh the record once per game round (and after it ends)
     const key=on.doc.epoch+':'+(on.doc.status==='finished');
     if(on.recordKey!==key){ on.recordKey=key; loadRecord(); }
