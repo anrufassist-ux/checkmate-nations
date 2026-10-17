@@ -6,13 +6,16 @@ const MODE=process.argv[2]||'test';
 const sub=(p,t)=>p.evaluate(t=>{document.querySelector('#vidTitle .l2').textContent=t;},t);
 const hideTitle=p=>p.evaluate(()=>{document.getElementById('vidTitle').style.display='none';});
 const VS='<span class="u">USA</span> vs. <span class="r">RUSSIA</span>';
-// camera flight around the board at the start, close past the kings (their heads turn to the camera), ending in the normal view
-const orbit=async(p,shoot,ms)=>{
-  await p.evaluate(()=>{ const v=window.__v(), t=v.controls.target, c=v.camera.position; window.__ob={t:t.clone(),d:c.clone().sub(t)}; v.controls.minDistance=1; });
+// camera flight around the board at the start, close past the kings (their heads turn to the camera); it ends in a
+// close view of `focus` (squares the action happens on) at `zoom` times the normal distance, seen from the normal side
+const orbit=async(p,shoot,ms,focus,zoom)=>{
+  await p.evaluate(([focus,zoom])=>{ const v=window.__v(), t=v.controls.target, c=v.camera.position, d=c.clone().sub(t);
+    const f=focus?focus.reduce((a,s)=>a.add(v.sqPos(s)),new t.constructor()).multiplyScalar(1/focus.length):t.clone(); f.y=t.y;
+    window.__ob={t:t.clone(),f,d,zoom:zoom||1}; v.controls.minDistance=.5; },[focus,zoom]);
   await shoot(ms,u=>p.evaluate(u=>{ const v=window.__v(), o=window.__ob, e=(1-Math.cos(Math.PI*u))/2;
-    const r0=Math.hypot(o.d.x,o.d.z), th=Math.atan2(o.d.x,o.d.z)-2*Math.PI*.85*(1-e), r=r0*(.5+.5*e*e), y=o.d.y*(.35+.65*e);
-    v.controls.target.set(o.t.x,o.t.y+.7*(1-e),o.t.z); v.camera.position.set(o.t.x+r*Math.sin(th),o.t.y+y,o.t.z+r*Math.cos(th)); v.camera.lookAt(v.controls.target); },u)); };
-// CLIP=scholar (default), fool or drones: the scripted games
+    const r0=Math.hypot(o.d.x,o.d.z), th=Math.atan2(o.d.x,o.d.z)-2*Math.PI*.85*(1-e), r=r0*(.32+(o.zoom-.32)*e*e), y=o.d.y*(.25+(o.zoom-.25)*e);
+    const tx=o.t.x+(o.f.x-o.t.x)*e, tz=o.t.z+(o.f.z-o.t.z)*e;
+    v.controls.target.set(tx,o.t.y+.7*(1-e),tz); v.camera.position.set(tx+r*Math.sin(th),o.t.y+y,tz+r*Math.cos(th)); v.camera.lookAt(v.controls.target); },u)); };
 const SCRIPTS={
  scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
    await mv('e2','e4',1300); await mv('e7','e5',1300);
@@ -22,7 +25,7 @@ const SCRIPTS={
  // Russia (white) mates the lone German king with two drones and Putin: Kg6, Nf6, Nf7#
  drones:{nations:['rus','ger'],fen:'6k1/p7/8/3NNK2/8/8/8/8 w - - 0 1',
    title:['<span class="r">RUSSIA</span> vs. <span style="color:#ffce00">GERMANY</span>','Two drones and Putin …'],play:async(mv,p,shoot)=>{
-   await orbit(p,shoot,4200);
+   await orbit(p,shoot,8400,['f6','g6','h8','e5'],.55);
    await mv('f5','g6',1700); await mv('g8','h8',1500); await sub(p,'Germany has nowhere to run');
    await mv('d5','f6',1700); await mv('a7','a6',1400);
    await hideTitle(p); await mv('e5','f7',13500); }},
