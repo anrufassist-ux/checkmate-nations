@@ -30,9 +30,10 @@ const SCRIPTS={
    await mv('d5','f6',1700); await mv('a7','a6',1400);
    await hideTitle(p); await mv('e5','f7',16000); }},
  fool:{title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
+   await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
    await mv('f2','f3',1500); await mv('e7','e5',1500);
    await mv('g2','g4',1300); await sub(p,'Oh no …'); await shoot(1400);
-   await hideTitle(p); await mv('d8','h4',13500); }},
+   await hideTitle(p); await mv('d8','h4',16000); }},
 };
 (async()=>{
  // tiny static server for the repo (WebGL refuses textures from file://)
