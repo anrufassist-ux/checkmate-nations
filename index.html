@@ -1851,6 +1851,9 @@ function openPicker(onPick){
     renderPickButtons(null,my=>step2(my));
   };
   const step2=my=>{
+    // only one nation left to play against (a guest with just USA and Russia): no second question, start right away
+    const left=Object.keys(NATIONS).filter(k=>k!==my&&isOwned(k));
+    if(left.length===1){ $('pick').hidden=true; pickerOpen=false; ensureAudio(); onPick(my,left[0]); return; }
     $('pickEyebrow').textContent='Du spielst '+NATIONS[my].name;
     $('pickTitle').textContent=mode==='ai'?'Gegen wen spielst du?':mode==='pvp'?'Land für Spieler 2':'Land für deinen Gegner';
     $('pickSub').textContent=mode==='ai'?'Dieses Land spielt die KI.':mode==='pvp'?'Spieler 2 zieht als Zweites.':'Dein Gegner bekommt dieses Land.';

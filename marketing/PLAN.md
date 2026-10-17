@@ -30,11 +30,13 @@ Stand: Oktober 2026. Ziel der ersten 6 Wochen: herausfinden, welche Clips Leute 
 6. **Nations League**: „Welche Nation wird Weltmeister im Oktober?", monatliches Ergebnis-Video.
 7. Reaktionen auf aktuelle Nachrichten (nur wenn es passt, nie zu Krieg/Opfern).
 
+Fertige Texte, Kanäle und das Protokoll aller Posts stehen in `marketing/POSTS.md`.
+
 ## Ablauf pro Woche
 1. Montag: Marketing-Agent liefert 3 Clip-Pakete (Video + Text + Hashtags + Postzeit) in `marketing/woche-JJJJ-WW/`.
 2. Michael schaut sie an, gibt frei oder ändert.
 3. Michael postet Mo/Mi/Fr ca. 18 Uhr MEZ (für US-Publikum später, z. B. 22 Uhr, testen).
-4. Freitag: Michael trägt Views/Likes in `marketing/zahlen.md` ein (oder schickt Screenshots), der Agent wertet aus und
+4. Freitag: Michael trägt Views/Likes ins Protokoll in `marketing/POSTS.md` ein (oder schickt Screenshots), der Agent wertet aus und
    passt die nächste Woche an.
 
 ## Erste Schritte
