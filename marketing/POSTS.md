@@ -55,6 +55,18 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Erster eigener Kommentar: Rematch? Who wins next time, USA or Russia? 🇺🇸🇷🇺
 - YouTube-Shorts-Titel: The fastest checkmate in chess 😬 USA vs Russia #shorts #chess
 
+### V3 · Russia vs Germany: two drones and Putin (Merz weint)
+- Datei: `marketing/russia-germany-drones.mp4` (28 s), mit Kamerafahrt und Nahaufnahmen am Anfang
+- Instagram/TikTok-Text:
+  > Germany has only the king left 😬 Two drones and Putin close in… checkmate 🔒
+  > Could Germany have escaped? 👇
+  > Play free: link in bio
+- Hashtags: #chess #chesstok #satire #checkmate #gaming
+- Titelbild (Cover): Merz traurig hinter Gittern (ca. Sekunde 15)
+- Alt-Text: 3D chess endgame, Russia's king and two drone knights checkmate the lone German king, who is jailed and cries.
+- Erster eigener Kommentar: Which nation should take revenge for Germany? 🇺🇸🇪🇺🇨🇳
+- YouTube-Shorts-Titel: Two drones and Putin vs Germany 😬 #shorts #chess
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
