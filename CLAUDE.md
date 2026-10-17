@@ -66,3 +66,4 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 
 ## Marketing clips
 - `tools/clip/` records scripted games as vertical videos (see its README). The game page itself stays untouched; `make_video_page.py` patches a copy.
+- Owner's wish for every clip: close-ups of the caricature heads, not only in the jail (e.g. an orbit around the board at the start with the heads looking into the camera). Ready texts and the post log live in `marketing/POSTS.md`.

@@ -25,6 +25,9 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - 3–5 Hashtags reichen, keine 30.
 - Keine bezahlte Werbung mit Politiker-Karikaturen (politische Werbung, siehe PLAN.md).
 - Videos im Hochformat 9:16, die Clips aus `tools/clip/` passen direkt.
+- Michaels Wunsch: in jedem Video Nahaufnahmen der Karikaturen, nicht nur im Gefängnis. Zum Beispiel am Anfang eine
+  3D-Kamerafahrt rund ums Brett (leicht von oben), bei der die Köpfe in die Kamera schauen, oder ein kurzer Schwenk
+  auf den König, bevor er matt gesetzt wird.
 
 ## Fertige Pakete
 
