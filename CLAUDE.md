@@ -12,7 +12,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 - `index.html` is the whole game, one self-contained file (~4.5 MB): sounds, music, caricature
   images and sprites are embedded as base64 in `window.SFX`, `window.MUSIC`, `window.HEADS`,
   `window.SPRITES`. Three.js r128, OrbitControls (three@0.128.0) and chess.js 0.10.3 are self-hosted in `vendor/`,
-  fonts (Black Ops One, Barlow, Barlow Condensed) in `fonts/`. No external requests (no Google Fonts, no CDNs), keep it that way (GDPR).
+  fonts (Black Ops One, Barlow, Barlow Condensed) in `fonts/`. No external requests (no Google Fonts, no CDNs), keep it that way (GDPR). Exception on our own domain: Vercel Web Analytics (`/_vercel/insights/script.js`, cookieless, described in the privacy policy); it only counts once enabled in the Vercel project.
 - `impressum.html`, `datenschutz.html`, `agb.html` (terms + withdrawal, + `legal.css`): legal pages, German binding text plus English. Linked from the mode screen and the info panel. Update the privacy policy before adding accounts, payments, analytics or any third-party service.
 - SEO and app basics: title, description, canonical, Open Graph/Twitter card (`brand/og.jpg`, 1200x630), JSON-LD `VideoGame` in the `<head>` of `index.html`; favicons (`favicon.ico`, `favicon-32.png`, `apple-touch-icon.png`), `manifest.webmanifest` with `icon-192/512.png` and a maskable icon (installable web app, groundwork for a Play Store TWA), `robots.txt`, `sitemap.xml`.
 - No build step. Vercel serves the files statically.
