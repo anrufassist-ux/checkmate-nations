@@ -68,7 +68,7 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: Two drones and Putin vs Germany 😬 #shorts #chess
 
 ### V4 · USA vs China: the flying car (Xi weint) – aktuell zum Roadster-Flip
-- Datei: `marketing/usa-china-flying-car.mp4` (42 s)
+- Datei: `marketing/usa-china-flying-car.mp4` (41 s)
 - Instagram/TikTok-Text:
   > The flying car just joined the army 🚀♟️ Three kickflips, one sacrifice, and China's king is trapped by his own pieces 🔒
   > Would you have seen this coming? 👇
