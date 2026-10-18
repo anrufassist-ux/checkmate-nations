@@ -96,3 +96,6 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-17 | Instagram | V1 Checkmate in 4 | | | | | | | erster Post überhaupt |
 | 2026-10-17 | TikTok | V1 Checkmate in 4 | | | | | | | erster TikTok-Post |
 | 2026-10-17 | YouTube Shorts | V1 Checkmate in 4 | | | | | | | erster Short |
+| 2026-10-18 | Instagram | V4 Flying car (mit Hook) | | | | | | | zum Roadster-Flip-Thema |
+| 2026-10-18 | TikTok | V4 Flying car (mit Hook) | | | | | | | |
+| 2026-10-18 | YouTube Shorts | V4 Flying car (mit Hook) | | | | | | | |
