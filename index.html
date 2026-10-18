@@ -964,9 +964,40 @@ function buildShepherd(){
   g.add(mesh(new T.CylinderGeometry(.13,.27,.42,24),dress,0,.21,0));                               // dirndl skirt
   const apron=mesh(new T.CylinderGeometry(.135,.272,.38,24,1,true,-Math.PI*.28,Math.PI*.56),red,0,.2,.005); g.add(apron); // red apron in front
   const hem=mesh(new T.TorusGeometry(.262,.018,8,32),gold,0,.03,0); hem.rotation.x=Math.PI/2; g.add(hem);
-  const bod=mesh(new T.CylinderGeometry(.12,.135,.16,20),dress,0,.48,0); g.add(bod);               // bodice
-  const blouse=mesh(new T.SphereGeometry(.13,18,12,0,Math.PI*2,0,Math.PI*.5),white,0,.55,0); blouse.scale.set(1.05,.6,1); g.add(blouse);
   for(const s of [-1,1]) g.add(mesh(new T.SphereGeometry(.05,12,10),white,s*.13,.55,0));           // puff sleeves
+  const tanA=mat(0xc08a4a,.7);
+  // dirndl torso in one piece (bodice with a modest bust, white blouse above the neckline) and real arms with paws
+  {
+    // one torso piece: the bodice shapes a bust, the white blouse shows above a low round neckline
+    const prof=[[.135,.4],[.125,.46],[.118,.5],[.12,.54],[.115,.58],[.1,.61],[.07,.635],[.03,.648],[0,.65]].map(([r,y])=>new T.Vector3(r,y,0));
+    const tg=new T.LatheGeometry(new T.CatmullRomCurve3(prof).getPoints(90).map(v=>new T.Vector2(Math.max(0,v.x),v.y)),160), tp=tg.attributes.position;
+    const gx=.034, gy=.03, A=.034;
+    for(let i=0;i<tp.count;i++){ let x=tp.getX(i), y=tp.getY(i), z=tp.getZ(i); const r=Math.hypot(x,z);
+      if(z>0&&r>.01){ const b=Math.exp(-((x-.046)**2)/(2*gx*gx)-((y-.548)**2)/(2*gy*gy))+Math.exp(-((x+.046)**2)/(2*gx*gx)-((y-.548)**2)/(2*gy*gy));
+        const d=A*b*(z/r); x+=x/r*d*.3; z+=d; tp.setXYZ(i,x,y,z); } }
+    tg.computeVertexNormals();
+    // bodice colour below a crisp neckline (drawn per pixel): low and round in front, rising to the sides and back
+    const torso=new T.MeshStandardMaterial({color:0xf4f1ea,roughness:.6,metalness:.05});
+    torso.onBeforeCompile=sh=>{ sh.uniforms.uBod={value:dress.color.clone()};
+      sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vP;').replace('#include <begin_vertex>','#include <begin_vertex>\nvP=position;');
+      sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vP;\nuniform vec3 uBod;')
+        .replace('#include <color_fragment>','#include <color_fragment>\nfloat r=length(vP.xz); float nk=.515+.05*min(1.,pow(vP.x/.1,2.))+.06*max(0.,-vP.z/max(r,.001));\nif(vP.y<nk) diffuseColor.rgb=uBod;'); };
+    g.add(mesh(tg,torso));
+    const trim=mesh(new T.TorusGeometry(.124,.006,6,40),red,0,.405,0); trim.rotation.x=Math.PI/2; g.add(trim);
+    const arm=(sh,el,hd)=>{ const u=mesh(new T.CylinderGeometry(.034,.03,1,12),white); orientBetween(u,sh,el); g.add(u);
+      const f=mesh(new T.CylinderGeometry(.028,.026,1,12),tanA); orientBetween(f,el,hd); g.add(f);
+      g.add(mesh(new T.SphereGeometry(.034,12,10),tanA,hd.x,hd.y,hd.z)); };
+    for(const s of [-1,1]){
+      if(s===1){ // right paw lifts a beer stein
+        const sh=new T.Vector3(.13,.55,0), el=new T.Vector3(.24,.47,.05), hd=new T.Vector3(.28,.56,.08); arm(sh,el,hd);
+        const glass=mat(0xe8eef2,.1,.1); glass.transparent=true; glass.opacity=.55;
+        g.add(mesh(new T.CylinderGeometry(.045,.042,.11,16),mat(0xf2b416,.3),.29,.63,.1));
+        g.add(mesh(new T.CylinderGeometry(.05,.047,.13,16),glass,.29,.63,.1));
+        g.add(mesh(new T.SphereGeometry(.05,14,10,0,Math.PI*2,0,Math.PI*.5),mat(0xfffaf0,.6),.29,.69,.1));
+        const handle=mesh(new T.TorusGeometry(.028,.008,6,14,Math.PI),glass,.34,.63,.1); handle.rotation.z=-Math.PI/2; g.add(handle);
+      } else arm(new T.Vector3(s*.13,.55,0),new T.Vector3(s*.21,.45,.02),new T.Vector3(s*.125,.38,.085)); // paws on the hips
+    }
+  }
   for(let i=0;i<3;i++) g.add(mesh(new T.SphereGeometry(.012,8,6),gold,0,.43+i*.04,.125));          // bodice buttons
   // German shepherd head: tan face, black saddle on crown and back, tall pointed ears
   const tan=mat(0xc08a4a,.7), blk=mat(0x24201c,.7);
@@ -976,10 +1007,12 @@ function buildShepherd(){
   const snout=mesh(new T.CylinderGeometry(.045,.07,.16,16),tan,0,-.04,.15); snout.rotation.x=Math.PI/2; head.add(snout);
   const muzzle=mesh(new T.CylinderGeometry(.043,.048,.06,16),blk,0,-.04,.215); muzzle.rotation.x=Math.PI/2; head.add(muzzle);
   head.add(mesh(new T.SphereGeometry(.026,10,8),dark,0,-.025,.25));
+  // ears: same four-sided shape as a cone, only the very tip rounded off
+  const earG=new T.LatheGeometry([[.055,-.09],[.026,.028],[.021,.048],[.015,.062],[.008,.071],[0,.074]].map(([r,y])=>new T.Vector2(r,y)),4);
   for(const s of [-1,1]){
     head.add(mesh(new T.SphereGeometry(.026,12,10),white,s*.055,.035,.11));
     head.add(mesh(new T.SphereGeometry(.016,10,8),dark,s*.055,.035,.128));
-    const ear=mesh(new T.ConeGeometry(.055,.18,4),blk,s*.085,.17,-.02); ear.rotation.set(-.1,Math.PI/4,-s*.3); ear.scale.z=.45; head.add(ear);
+    const ear=mesh(earG,blk,s*.085,.17,-.02); ear.rotation.set(-.1,Math.PI/4,-s*.3); ear.scale.z=.45; head.add(ear);
   }
   const crown=mesh(new T.CylinderGeometry(.045,.055,.04,12),gold,0,.15,.03); head.add(crown);
   head.add(mesh(new T.SphereGeometry(.015,8,6),red,0,.18,.03));

@@ -3,7 +3,7 @@
 Satirical 3D chess in the browser: countries play each other. Pawns are infantry, rooks tanks,
 knights drones, bishops fighter jets; kings are bobblehead figures (caricature heads for USA, Russia, China,
 Germany and Europe; Israel, Iran, India, UK and Brazil still generic), queens are national symbols (Statue of Liberty, Matryoshka, panda, Europa, hoopoe,
-Persian cat, German shepherd in a dirndl) or historic queens (India: Rani Lakshmibai, UK: Queen Elizabeth II, Brazil: Empress Leopoldina; shown with dignity, no caricature). Checkmate ends with the king arrested and put in a
+Persian cat, German shepherd in a dirndl with a raised beer stein) or historic queens (India: Rani Lakshmibai, UK: Queen Elizabeth II, Brazil: Empress Leopoldina; shown with dignity, no caricature). Checkmate ends with the king arrested and put in a
 jail cell next to the board.
 
 Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenations.com (Vercel).
