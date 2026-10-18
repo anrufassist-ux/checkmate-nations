@@ -79,7 +79,7 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 ### V4 · USA vs China: the flying car (Xi weint) – aktuell zum Roadster-Flip
 - Datei: `marketing/usa-china-flying-car.mp4` (42 s), Hook „Is this the game changer?“ am Anfang, Endkarte „Play free now“, Hinweis „video special, not part of the game“
 - Instagram/TikTok-Text:
-  > The flying car just joined the army 🚀♟️ Three kickflips, one sacrifice, and China's king is trapped by his own pieces 🔒
+  > The flying car just joined the Space Force 🚀♟️ Three kickflips, one sacrifice, and China's king is trapped by his own pieces 🔒
   > Would you have seen this coming? 👇
   > Play free: link in bio
 - Hashtags: #chess #chesstok #flyingcar #satire #checkmate
@@ -96,6 +96,6 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-17 | Instagram | V1 Checkmate in 4 | | | | | | | erster Post überhaupt |
 | 2026-10-17 | TikTok | V1 Checkmate in 4 | | | | | | | erster TikTok-Post |
 | 2026-10-17 | YouTube Shorts | V1 Checkmate in 4 | | | | | | | erster Short |
-| 2026-10-18 | Instagram | V4 Flying car (mit Hook) | | | | | | | zum Roadster-Flip-Thema |
+| 2026-10-18 | Instagram | V4 Flying car (mit Hook) | | | | | | | zum Roadster-Flip-Thema, Text „joined the Space Force“ |
 | 2026-10-18 | TikTok | V4 Flying car (mit Hook) | | | | | | | |
 | 2026-10-18 | YouTube Shorts | V4 Flying car (mit Hook) | | | | | | | |
