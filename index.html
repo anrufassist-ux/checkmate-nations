@@ -1248,7 +1248,14 @@ function makeFlatPiece(type,color){
   disc.userData.owner=g;
   return g;
 }
-function makePiece(type,color){ return polish(makePieceRaw(type,color)); }
+// size balance: caricature heads a bit smaller, every other piece a bit bigger (owner's pick "D")
+const HEAD_SCALE=.9, PIECE_SCALE=1.07;
+function makePiece(type,color){
+  const g=polish(makePieceRaw(type,color)), u=g.userData||{};
+  if(flat2d) return g;
+  if(type==='k'&&u.imgHead) u.head.scale.setScalar(HEAD_SCALE); else g.scale.multiplyScalar(PIECE_SCALE);
+  return g;
+}
 function polish(g){
   g.traverse(o=>{ if(!o.material) return; (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{
     if(m.userData.pol) return; m.userData.pol=1;
@@ -1698,12 +1705,12 @@ function attackSound(type){ // true when a recorded sound played (it already con
 }
 
 async function blowUp(victim,quiet){
-  const start=victim.position.clone(), spin=(Math.random()-.5)*14, dx=(Math.random()-.5)*2;
+  const start=victim.position.clone(), v0=victim.scale.clone(), spin=(Math.random()-.5)*14, dx=(Math.random()-.5)*2;
   pow(start); if(!quiet) boom(false);
   await animate(.75,t=>{
     victim.position.set(start.x+dx*t, start.y+Math.sin(t*Math.PI)*1.8+t*.6, start.z);
     victim.rotation.z=spin*t; victim.rotation.x=spin*.5*t;
-    const s=Math.max(.001,1-t*t); victim.scale.set(s,s,s);
+    const s=Math.max(.001,1-t*t); victim.scale.copy(v0).multiplyScalar(s);
   });
   scene.remove(victim);
 }
