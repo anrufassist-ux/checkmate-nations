@@ -999,28 +999,23 @@ function buildShepherd(){
     }
   }
   for(let i=0;i<3;i++) g.add(mesh(new T.SphereGeometry(.012,8,6),gold,0,.43+i*.04,.125));          // bodice buttons
-  // German shepherd head, kept cute: big shiny eyes, short snout, rounded ears, pink cheeks
-  const tan=tanA, blk=mat(0x24201c,.7), pink=mat(0xf29aa6,.6);
+  // German shepherd head: tan face, black saddle on crown and back, tall pointed ears
+  const tan=mat(0xc08a4a,.7), blk=mat(0x24201c,.7);
   const head=new T.Group(); head.position.y=.74;
-  const skull=mesh(new T.SphereGeometry(.13,22,18),tan); skull.scale.set(1.04,.95,1); head.add(skull);
+  const skull=mesh(new T.SphereGeometry(.13,22,18),tan); skull.scale.set(1,.95,1.05); head.add(skull);
   const cap=mesh(new T.SphereGeometry(.135,22,14,0,Math.PI*2,0,Math.PI*.42),blk,0,.01,-.03); head.add(cap);
-  const snout=mesh(new T.SphereGeometry(.07,18,14),tan,0,-.045,.12); snout.scale.set(1,.8,1.05); head.add(snout);
-  head.add(mesh(new T.SphereGeometry(.026,12,10),dark,0,-.02,.19));                               // nose
-  const mask=mesh(new T.SphereGeometry(.048,16,12),blk,0,-.038,.165); mask.scale.set(1,.72,.65); head.add(mask);  // dark muzzle
-  const tongue=mesh(new T.SphereGeometry(.022,10,8),pink,0,-.095,.15); tongue.scale.set(1,.5,.7); head.add(tongue);
-  const earG=new T.LatheGeometry([[.06,0],[.055,.04],[.044,.08],[.03,.11],[.016,.13],[0,.138]].map(([r,y])=>new T.Vector2(r,y)),20);
+  const snout=mesh(new T.CylinderGeometry(.045,.07,.16,16),tan,0,-.04,.15); snout.rotation.x=Math.PI/2; head.add(snout);
+  const muzzle=mesh(new T.CylinderGeometry(.043,.048,.06,16),blk,0,-.04,.215); muzzle.rotation.x=Math.PI/2; head.add(muzzle);
+  head.add(mesh(new T.SphereGeometry(.026,10,8),dark,0,-.025,.25));
+  // ears: same four-sided shape as a cone, only the very tip rounded off
+  const earG=new T.LatheGeometry([[.055,-.09],[.026,.028],[.021,.048],[.015,.062],[.008,.071],[0,.074]].map(([r,y])=>new T.Vector2(r,y)),4);
   for(const s of [-1,1]){
-    const eye=mesh(new T.SphereGeometry(.034,14,12),white,s*.058,.03,.105); eye.scale.z=.7; head.add(eye);
-    head.add(mesh(new T.SphereGeometry(.024,12,10),dark,s*.058,.028,.122));
-    head.add(mesh(new T.SphereGeometry(.007,8,6),white,s*.05,.038,.143));                          // eye shine
-    const cheek=mesh(new T.SphereGeometry(.022,10,8),pink,s*.088,-.04,.085); cheek.scale.z=.4; cheek.rotation.y=s*.6; head.add(cheek);
-    const ear=new T.Group(); ear.position.set(s*.08,.11,-.02); ear.rotation.set(-.1,0,-s*.32);    // triangular ears with soft round tips
-    const outer=mesh(earG,blk); outer.scale.z=.42; ear.add(outer);
-    const inner=mesh(earG,mat(0xc98a7e,.7),0,.008,.012); inner.scale.set(.62,.8,.3); ear.add(inner);
-    head.add(ear);
+    head.add(mesh(new T.SphereGeometry(.026,12,10),white,s*.055,.035,.11));
+    head.add(mesh(new T.SphereGeometry(.016,10,8),dark,s*.055,.035,.128));
+    const ear=mesh(earG,blk,s*.085,.17,-.02); ear.rotation.set(-.1,Math.PI/4,-s*.3); ear.scale.z=.45; head.add(ear);
   }
-  const crown=mesh(new T.CylinderGeometry(.045,.05,.03,14),gold,0,.145,.03); head.add(crown);     // little crown with five points
-  for(let i=0;i<5;i++){ const a=i/5*Math.PI*2; head.add(mesh(new T.ConeGeometry(.011,.03,6),gold,Math.sin(a)*.044,.175,.03+Math.cos(a)*.044)); }
+  const crown=mesh(new T.CylinderGeometry(.045,.055,.04,12),gold,0,.15,.03); head.add(crown);
+  head.add(mesh(new T.SphereGeometry(.015,8,6),red,0,.18,.03));
   g.add(head);
   return {g,head,headY:.74};
 }
