@@ -77,13 +77,13 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: Two drones and Putin vs Germany 😬 #shorts #chess
 
 ### V4 · USA vs China: the flying car (Xi weint) – aktuell zum Roadster-Flip
-- Datei: `marketing/usa-china-flying-car.mp4` (40 s), mit Hinweis „video special, not part of the game“
+- Datei: `marketing/usa-china-flying-car.mp4` (42 s), Hook „Is this the game changer?“ am Anfang, Endkarte „Play free now“, Hinweis „video special, not part of the game“
 - Instagram/TikTok-Text:
   > The flying car just joined the army 🚀♟️ Three kickflips, one sacrifice, and China's king is trapped by his own pieces 🔒
   > Would you have seen this coming? 👇
   > Play free: link in bio
 - Hashtags: #chess #chesstok #flyingcar #satire #checkmate
-- Titelbild (Cover): das Auto mitten im Salto (ca. Sekunde 13) oder Xi traurig hinter Gittern (ca. Sekunde 28)
+- Titelbild (Cover): das Auto mitten im Salto (ca. Sekunde 14) oder Xi traurig hinter Gittern (ca. Sekunde 29)
 - Alt-Text: 3D chess game, a white flying sports car piece flips through the air and checkmates the Chinese king, who is jailed and cries.
 - Erster eigener Kommentar: Which piece should get an upgrade next? 🚀
 - YouTube-Shorts-Titel: Flying car checkmates China 🚀 #shorts #chess
