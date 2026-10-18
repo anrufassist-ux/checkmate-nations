@@ -847,12 +847,13 @@ function buildLiberty(){
   const sashMat=new T.MeshStandardMaterial({map:sTex,roughness:.45,metalness:.1});
   const st=mesh(new T.TorusGeometry(.128,.022,10,40,Math.PI*1.15),sashMat,0,.52,0); st.rotation.set(Math.PI/2+.5,0,-.9); g.add(st);
   // neck
-  g.add(mesh(new T.CylinderGeometry(.04,.05,.09,14),pat,0,.69,0));
+  const skin=mat(SKIN,.55); // face, neck and hands like the other queens; hair, crown and gown stay in the team colour
+  g.add(mesh(new T.CylinderGeometry(.04,.05,.09,14),skin,0,.69,0));
   // raised right arm with torch
   const sh=new T.Vector3(.1,.6,0), hand=new T.Vector3(.17,.98,.02);
   const arm=mesh(new T.CylinderGeometry(.033,.042,1,12),pat); orientBetween(arm,sh,hand); g.add(arm);
   const sleeve=mesh(new T.ConeGeometry(.07,.14,14,1,true),patD); orientBetween(sleeve,new T.Vector3(.12,.66,0),new T.Vector3(.1,.56,0)); sleeve.scale.y=1; g.add(sleeve);
-  g.add(mesh(new T.SphereGeometry(.035,12,10),pat,hand.x,hand.y,hand.z));
+  g.add(mesh(new T.SphereGeometry(.035,12,10),skin,hand.x,hand.y,hand.z));
   g.add(mesh(new T.CylinderGeometry(.022,.016,.12,12),gold,hand.x,hand.y+.07,hand.z));
   g.add(mesh(new T.CylinderGeometry(.045,.026,.04,14),gold,hand.x,hand.y+.14,hand.z));
   const flameMat=new T.MeshStandardMaterial({color:0xffc04a,emissive:0xff8a00,emissiveIntensity:1.6,roughness:.4});
@@ -863,7 +864,7 @@ function buildLiberty(){
   const tab=mesh(new T.BoxGeometry(.09,.16,.025),patD,-.16,.46,.1); tab.rotation.set(-.2,.3,.35); g.add(tab);
   // head (bobblehead proportions like the other figures)
   const r=.17, head=new T.Group(); head.position.y=.84;
-  head.add(mesh(new T.SphereGeometry(r,26,20),pat));
+  head.add(mesh(new T.SphereGeometry(r,26,20),skin));
   // long wavy hair: cap, back volume, side waves down to the shoulders
   head.add(mesh(new T.SphereGeometry(r*1.06,24,16,0,Math.PI*2,0,Math.PI*.52),patD,0,.005,-.015));
   const back=mesh(new T.SphereGeometry(r,18,14),patD,0,-.11,-.08); back.scale.set(1.15,1.45,.7); head.add(back);
@@ -878,7 +879,7 @@ function buildLiberty(){
     head.add(mesh(new T.SphereGeometry(r*.035,6,6),mat(0xffffff,.1),s*r*.33,r*.11,r*1.06));
     const lash=mesh(new T.TorusGeometry(r*.17,r*.025,6,12,Math.PI),mat(0x0a1228,.4),s*r*.36,r*.1,r*.9); lash.rotation.z=0; head.add(lash);
   }
-  head.add(mesh(new T.SphereGeometry(r*.09,10,8),pat,0,-r*.08,r*1.0));
+  head.add(mesh(new T.SphereGeometry(r*.09,10,8),mat(0xd49b75,.6),0,-r*.08,r*1.0));
   const smile=mesh(new T.TorusGeometry(r*.24,r*.05,8,18,Math.PI),mat(0x0a1228,.4),0,-r*.25,r*.92); smile.rotation.z=Math.PI; head.add(smile);
   // crown: band + seven rays fanning out over the front
   const band=mesh(new T.CylinderGeometry(r*.98,r*1.02,.05,28,1,true),pat,0,r*.62,0); band.material=pat; head.add(band);

@@ -38,6 +38,7 @@ const SCRIPTS={
    await hideTitle(p); await mv('e5','f7',16000); }},
  // USA (white) with the flying car: Philidor's legacy, Lady Liberty sacrifices herself, the car mates (smothered mate)
  car:{nations:['usa','chn'],car:'w',fen:'rqr3k1/pp4pp/2p5/6N1/8/B7/5PPP/R2Q2K1 w - - 0 1',
+   hook:'IS THIS THE<br>GAME CHANGER? 🚀',
    title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','The flying car joins the army 🚀'],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,7500,['b3','g8','a1','h8'],1.0);
    await p.evaluate(()=>{document.getElementById('vidNote').style.display='block';});
@@ -75,14 +76,19 @@ const SCRIPTS={
  const FPS=24, dtms=1000/FPS; let n=0; const log=[];
  const CL=process.env.CLIP||'scholar', FR='frames-'+CL; fs.mkdirSync(FR,{recursive:true});
  const START=+(process.env.START||0);
+ const ONLY=+(process.env.ONLY||0); // re-render just the first ONLY frames (e.g. after changing the hook), keep the rest
  const t0=await p.evaluate(()=>{ window.__rec.length=0; return performance.now(); });
- const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START){ n++; continue; } await p.evaluate(()=>{ for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
+ const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)){ n++; continue; } await p.evaluate(()=>{ for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold); };
- await shoot(1500);
+ if(SC.hook){ // big question over the first seconds, the title appears once it is gone
+   await p.evaluate(h=>{ const e=document.getElementById('vidHook'); e.querySelector('span').innerHTML=h; e.style.display='block'; document.getElementById('vidTitle').style.display='none'; },SC.hook);
+   await shoot(2600);
+   await p.evaluate(()=>{ document.getElementById('vidHook').style.display='none'; document.getElementById('vidTitle').style.display=''; });
+ } else await shoot(1500);
  await SC.play(mv,p,shoot);
  await p.evaluate(()=>{document.getElementById('vidEnd').style.display='flex';});
- await shoot(2500);
+ await shoot(3200);
  const snd=await p.evaluate(t0=>window.__rec.map(([t,k,v])=>[(t-t0)/1000,k,v]),t0);
  fs.writeFileSync(`moves-${CL}.json`,JSON.stringify(log)); fs.writeFileSync(`sounds-${CL}.json`,JSON.stringify(snd));
  console.log('frames',n); await b.close(); srv.close();
