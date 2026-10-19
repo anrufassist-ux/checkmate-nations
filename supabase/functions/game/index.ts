@@ -9,7 +9,7 @@ import { Chess } from "npm:chess.js@0.10.3";
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { prepare: false, max: 4, idle_timeout: 20 });
 const AUTH_USER_URL = Deno.env.get("SUPABASE_URL") + "/auth/v1/user";
 const FREE_NATIONS = ["usa", "rus"];
-const PAID_NATIONS = ["eu", "ger", "isr", "irn", "chn", "ind", "gbr", "bra"];
+const PAID_NATIONS = ["eu", "ger", "isr", "irn", "chn", "ind", "gbr", "bra", "fra"];
 const ALL_NATIONS = new Set([...FREE_NATIONS, ...PAID_NATIONS]);
 const STRIPE_API = Deno.env.get("STRIPE_API") || "https://api.stripe.com";
 const PRICES: Record<string, number> = { bundle3: 299, all: 499, pass: 99 }; // cents, no VAT (§ 19 UStG)

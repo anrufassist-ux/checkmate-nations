@@ -2,8 +2,8 @@
 
 Satirical 3D chess in the browser: countries play each other. Pawns are infantry, rooks tanks,
 knights drones, bishops fighter jets; kings are bobblehead figures (caricature heads for USA, Russia, China,
-Germany, Europe, India (Modi) and UK (Andy Burnham); Israel, Iran and Brazil still generic), queens are national symbols (Statue of Liberty, Matryoshka, panda, Europa, hoopoe,
-Persian cat, German shepherd in a dirndl with a raised beer stein) or historic queens (India: Rani Lakshmibai, UK: Queen Elizabeth II, Brazil: Empress Leopoldina; shown with dignity, no caricature). Checkmate ends with the king arrested and put in a
+Germany, Europe, India (Modi) and UK (Andy Burnham); Israel, Iran, Brazil and France still generic), queens are national symbols (Statue of Liberty, Matryoshka, panda, Europa, hoopoe,
+Persian cat, German shepherd in a dirndl with a raised beer stein, France: Marianne with the Phrygian cap and the tricolour) or historic queens (India: Rani Lakshmibai, UK: Queen Elizabeth II, Brazil: Empress Leopoldina; shown with dignity, no caricature). Checkmate ends with the king arrested and put in a
 jail cell next to the board.
 
 Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenations.com (Vercel).
@@ -57,7 +57,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 - Login rule: playing is always free without login; an account is only needed to buy, play rated or join the league.
 - Account menu: header button "Konto" (`openAcct('menu')`, `renderMenu()`) in every mode: name/Elo or sign-in, bought nations, league nation, "Länder kaufen" (shop), Nations League, Rangliste, sign out, delete. The online area only shows who you are plus a link into it. The nation picker shows compact flag tiles in two groups, "Spielbereit" (free + owned) and "Freischalten" (price once in the group heading); free nations carry a green "Kostenlos/Free" sticker until the player owns a paid nation; the league pane offers "Weitere Länder kaufen" also after entering. The difficulty select is only shown against the AI. When only one owned nation is left for the opponent (guests: USA/Russia), the picker skips the second step and starts the game.
 - Nation colours must stay distinct: USA navy, Russia red, Europe silver-white, China gold,
-  Germany anthracite, Israel sky blue, Iran green, India saffron, UK royal purple, Brazil canary yellow with green (helmets/metal, so it never looks like China's gold). Queens stand slightly below king height, measured head to foot (Liberty's raised torch does not count). Size balance in `makePiece()`: caricature heads `HEAD_SCALE` .9, every other piece `PIECE_SCALE` 1.07 (not in 2D mode).
+  Germany anthracite, Israel sky blue, Iran green, India saffron, UK royal purple, Brazil canary yellow with green (helmets/metal, so it never looks like China's gold), France bright royal blue with a tricolour band (lighter than USA navy). Queens stand slightly below king height, measured head to foot (Liberty's raised torch does not count). Size balance in `makePiece()`: caricature heads `HEAD_SCALE` .9, every other piece `PIECE_SCALE` 1.07 (not in 2D mode).
 
 ## Working rules
 - After editing, syntax-check the main script with node before pushing.
