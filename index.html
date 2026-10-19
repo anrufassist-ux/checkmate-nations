@@ -700,6 +700,21 @@ function drawRim(o){
   RIM.material.roughness=o?.55:.8; RIM.material.needsUpdate=true;
 }
 
+// 2D mode: no frame, the board fills the width and the coordinates sit on the edge squares (like chess apps)
+const COORD_C={}, COORD=new T.Mesh(new T.PlaneGeometry(8,8), new T.MeshBasicMaterial({transparent:true,depthWrite:false,toneMapped:false}));
+COORD.rotation.x=-Math.PI/2; COORD.position.y=.002; COORD.visible=false; scene.add(COORD);
+function coordTex(black){ // drawn as seen on screen: rank numbers in the left column, file letters in the bottom row
+  if(COORD_C[black]) return COORD_C[black];
+  const c=document.createElement('canvas'); c.width=c.height=1024; const g=c.getContext('2d'), u=128;
+  g.font='700 40px "Barlow Condensed", Arial Narrow, sans-serif';
+  for(let j=0;j<8;j++){ const fi=black?7-0:0, rank=black?j+1:8-j; g.fillStyle=(fi+rank)%2?'rgba(255,255,255,.85)':'rgba(40,30,20,.8)';
+    g.textAlign='left'; g.textBaseline='top'; g.fillText(String(rank),6,j*u+4); }
+  for(let i=0;i<8;i++){ const fi=black?7-i:i, rank=black?8:1; g.fillStyle=(fi+rank)%2?'rgba(255,255,255,.85)':'rgba(40,30,20,.8)';
+    g.textAlign='right'; g.textBaseline='bottom'; g.fillText(FILES[fi],i*u+u-6,1024-4); }
+  const t=new T.CanvasTexture(c); t.encoding=T.sRGBEncoding; t.anisotropy=4; return COORD_C[black]=t;
+}
+function boardDecor(){ frame.visible=RIM.visible=!flat2d; COORD.visible=flat2d; COORD.userData.black=null; }
+
 const squareMeshes=[];
 const LIGHT=mat(0xc9b98f,.75), DARK=mat(0x47513f,.75);
 for(let f=0;f<8;f++) for(let r=0;r<8;r++){
@@ -2918,6 +2933,7 @@ const viewPhi=()=>view==='top'&&flat2d?.001:VIEWS[view].phi;
 const FIT_PTS=[];
 for(const x of [-4.65,4.65]) for(const z of [-4.65,4.65]) FIT_PTS.push(new T.Vector3(x,-.1,z));
 for(const x of [-3.5,3.5]) for(const z of [-3.5,3.5]) FIT_PTS.push(new T.Vector3(x,1.35,z)); // tall back-rank pieces
+const FIT_FLAT=[]; for(const x of [-4,4]) for(const z of [-4,4]) FIT_FLAT.push(new T.Vector3(x,0,z)); // 2D: just the squares
 const fitP=new T.Vector3();
 function overlayPx(sel,edge){ // how far an overlay reaches into the screen; 0 when it is hidden
   const el=document.querySelector(sel); if(!el) return 0;
@@ -2926,7 +2942,7 @@ function overlayPx(sel,edge){ // how far an overlay reaches into the screen; 0 w
 }
 function fitCamera(phi){
   const w=stage.clientWidth, h=stage.clientHeight; if(!w||!h) return;
-  const top=overlayPx('.top','top')+8, bot=overlayPx('.console','bottom')+8, side=10;
+  const gap=flat2d?4:8, top=overlayPx('.top','top')+gap, bot=overlayPx('.console','bottom')+gap, side=flat2d?0:10, PTS=flat2d?FIT_FLAT:FIT_PTS;
   // shift the picture so the board centre sits in the middle of the free area
   camera.setViewOffset(w,h,0,-(top-bot)/2,w,h); camera.updateProjectionMatrix();
   const yt=1-2*top/h, yb=-1+2*bot/h, xm=1-2*side/w;
@@ -2935,7 +2951,7 @@ function fitCamera(phi){
   const fits=d=>{
     camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(sph.set(d,phi,theta)));
     camera.lookAt(controls.target); camera.updateMatrixWorld();
-    return FIT_PTS.every(p=>{ fitP.copy(p).project(camera); return Math.abs(fitP.x)<=xm&&fitP.y<=yt&&fitP.y>=yb; });
+    return PTS.every(p=>{ fitP.copy(p).project(camera); return Math.abs(fitP.x)<=xm&&fitP.y<=yt&&fitP.y>=yb; });
   };
   let lo=3, hi=80; for(let i=0;i<26;i++){ const m=(lo+hi)/2; if(fits(m)) hi=m; else lo=m; }
   fits(hi);
@@ -2987,6 +3003,7 @@ document.querySelectorAll('[data-board]').forEach(b=>b.addEventListener('click',
 function setFlat(f){
   if(f===flat2d) return;
   flat2d=f; try{ localStorage.setItem('wms-flat',f?'1':'0'); }catch(e){}
+  boardDecor();
   selected=null; targets=[]; clearMarkers(); setupPieces();
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{
@@ -2998,7 +3015,7 @@ $('flatBtn').addEventListener('click',()=>{ if(busy) return; setFlat(!flat2d); s
 window.addEventListener('resize',resize);
 window.addEventListener('resize',()=>setTimeout(refit,50));
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(refit,50)); // header height changes once web fonts arrive
-resize(); placeCamera(); setupPieces(); setStatus('Wähle einen Spielmodus.','w'); openModeScreen();
+boardDecor(); resize(); placeCamera(); setupPieces(); setStatus('Wähle einen Spielmodus.','w'); openModeScreen();
 if(bgKey!=='classic') setTimeout(()=>setBackground(bgKey),0);
 
 const clock=new T.Clock(); const camPos=new T.Vector3(), headPos=new T.Vector3();
@@ -3024,6 +3041,7 @@ function loop(){
   lastTick=performance.now(); stepTweens(dt);
   controls.update();
   camera.getWorldPosition(camPos);
+  if(COORD.visible){ const b=camPos.z<controls.target.z; if(COORD.userData.black!==b){ COORD.userData.black=b; COORD.material.map=coordTex(b); COORD.material.needsUpdate=true; COORD.rotation.z=b?Math.PI:0; } }
   const inCheck=!over&&game.in_check(), turn=game.turn();
   for(const p of Object.values(pieces)){
     const u=p.userData;
