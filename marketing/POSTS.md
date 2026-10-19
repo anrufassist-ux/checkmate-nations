@@ -53,7 +53,7 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: USA checkmates Russia in 4 moves 😳 #shorts #chess
 
 ### V2 · Can the USA survive 2 moves? (Russland gewinnt, Trump weint)
-- Datei: `marketing/fools-mate-in-2.mp4` (34 s, mit Kamerafahrt)
+- Datei: `marketing/fools-mate-in-2.mp4` (36 s, neu gerendert am 19.10. im aktuellen Design), Hook „The fastest checkmate ever?“ am Anfang, Endkarte „Play free now“, mit Kamerafahrt
 - Instagram/TikTok-Text:
   > Can the USA survive 2 moves? 😬 Spoiler: no. Fastest checkmate in chess, and someone ends up crying in jail 🔒
   > Have you ever lost like this? 👇
@@ -65,7 +65,7 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: The fastest checkmate in chess 😬 USA vs Russia #shorts #chess
 
 ### V3 · Russia vs Germany: two drones and Putin (Merz weint)
-- Datei: `marketing/russia-germany-drones.mp4` (35 s), mit Kamerafahrt und Nahaufnahmen am Anfang
+- Datei: `marketing/russia-germany-drones.mp4` (37 s, neu gerendert am 19.10. im aktuellen Design), Hook „Can Germany escape?“ am Anfang, Endkarte „Play free now“, mit Kamerafahrt und Nahaufnahmen
 - Instagram/TikTok-Text:
   > Germany has only the king left 😬 Two drones and Putin close in… checkmate 🔒
   > Could Germany have escaped? 👇

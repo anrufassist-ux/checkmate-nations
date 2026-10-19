@@ -31,6 +31,7 @@ const SCRIPTS={
    await hideTitle(p); await mv('h5','f7',13500); }},
  // Russia (white) mates the lone German king with two drones and Putin: Kg6, Nf6, Nf7#
  drones:{nations:['rus','ger'],fen:'6k1/p7/8/3NNK2/8/8/8/8 w - - 0 1',
+   hook:'CAN GERMANY<br>ESCAPE? 😬',
    title:['<span class="r">RUSSIA</span> vs. <span style="color:#ffce00">GERMANY</span>','Two drones and Putin …'],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,8400,['f6','g6','h8','e5'],.55);
    await mv('f5','g6',1700); await mv('g8','h8',1500); await sub(p,'Germany has nowhere to run');
@@ -50,7 +51,7 @@ const SCRIPTS={
    await sub(p,'The tank has to take her …'); await mv('c8','g8',2700);
    await look(p,['f7','g8','h6'],.45,900); await sub(p,'Smothered mate!'); await mv('h6','f7',1600);
    await hideTitle(p); await p.evaluate(()=>{document.getElementById('vidNote').style.display='none';}); await shoot(13000); }},
- fool:{title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
+ fool:{hook:'THE FASTEST<br>CHECKMATE EVER? 😬',title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
    await mv('f2','f3',1500); await mv('e7','e5',1500);
    await mv('g2','g4',1300); await sub(p,'Oh no …'); await shoot(1400);
