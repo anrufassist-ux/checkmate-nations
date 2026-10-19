@@ -6,7 +6,8 @@ from PIL import Image, ImageFilter, ImageDraw
 here=os.path.dirname(os.path.abspath(__file__)); out=sys.argv[1]
 # eyes in source fractions (x from left, y from top); bottom = where the bust is cut (just below the tie knot)
 SRC={'kb':('rus',(.385,.377),(.65,.377)),'chn':('chn',(.385,.365),(.65,.365)),'ger':('ger',(.40,.38),(.645,.38)),'eu':('eu',(.385,.37),(.648,.37)),
-     'gbr':('gbr',(.388,.334),(.604,.332)),'ind':('ind',(.381,.354),(.619,.352))}
+     'gbr':('gbr',(.388,.334),(.604,.332)),'ind':('ind',(.381,.354),(.619,.352)),
+     'fra':('fra',(.398,.367),(.633,.365))}
 BOTTOM=.87; SHOULDER=.70; HALF=.27; COLLAR=.715  # below SHOULDER keep only a collar-wide band, like the original Trump head
 def cutout(path):
     im=Image.open(path).convert('RGB'); W,H=im.size; px=im.load()
