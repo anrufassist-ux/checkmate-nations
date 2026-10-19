@@ -51,6 +51,14 @@ const SCRIPTS={
    await sub(p,'The tank has to take her …'); await mv('c8','g8',2700);
    await look(p,['f7','g8','h6'],.45,900); await sub(p,'Smothered mate!'); await mv('h6','f7',1600);
    await hideTitle(p); await p.evaluate(()=>{document.getElementById('vidNote').style.display='none';}); await shoot(13000); }},
+ // French farmers (white, video special) march on Macron, his army stands far away on the other wing: h5, h6, h7#
+ farm:{nations:['fra','fra'],farm:'w',fen:'rr4k1/pp4P1/n1p3K1/4P3/3P1PPP/4P3/8/8 w - - 0 1',
+   hook:'CAN MACRON STOP<br>THE FARMERS? 🚜',
+   title:['<span style="color:#7cc46a">FARMERS</span> vs. <span class="u">MACRON</span>','The farmers are coming … 🚜'],play:async(mv,p,shoot)=>{
+   await orbit(p,shoot,8400,['h4','g6','g8','e5'],.6);
+   await mv('h4','h5',1800); await sub(p,'Macron: busy at a concert 🎤'); await mv('c6','c5',1800);
+   await sub(p,'His army? Far away …'); await mv('h5','h6',1700); await mv('c5','c4',1500);
+   await hideTitle(p); await mv('h6','h7',16000); }},
  fool:{hook:'THE FASTEST<br>CHECKMATE EVER? 😬',title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
    await mv('f2','f3',1500); await mv('e7','e5',1500);
@@ -68,7 +76,7 @@ const SCRIPTS={
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
  await p.clock.runFor(1500);
  const SC=SCRIPTS[process.env.CLIP||'scholar'];
- await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; },{nations:SC.nations,fen:SC.fen,car:SC.car});
+ await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,fen:SC.fen,car:SC.car,farm:SC.farm});
  await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
