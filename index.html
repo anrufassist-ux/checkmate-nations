@@ -1205,7 +1205,7 @@ function makeQueen(color){
   const {g,head,headY}=(builders[nk]||buildPanda)();
   // scale up to the same overall height as the kings (~1.2 incl. crown)
   // sized so every queen stands slightly below the king (king ≈1.05), head to foot; Liberty's torch rises above that
-  const s={usa:.98,rus:1.12,eu:.87,chn:.975,isr:.925,irn:1.0,ger:1.01,ind:1,gbr:1,bra:1,fra:1}[nk]||1; g.scale.set(s,s,s);
+  const s={usa:.926,rus:1.067,eu:.822,chn:.921,isr:.913,irn:.988,ger:.925,ind:.911,gbr:.922,bra:.968,fra:.89}[nk]||.92; g.scale.set(s,s,s); // queen's head about 8 % below the king's (after the size balance)
   g.userData={type:'q',color,phase:Math.random()*6.28,head,headY};
   g.traverse(o=>{ if(o.isMesh) o.userData.owner=g; });
   return g;
