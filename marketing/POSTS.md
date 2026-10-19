@@ -99,3 +99,6 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-18 | Instagram | V4 Flying car (mit Hook) | | | | | | | zum Roadster-Flip-Thema, Text „joined the Space Force“ |
 | 2026-10-18 | TikTok | V4 Flying car (mit Hook) | | | | | | | |
 | 2026-10-18 | YouTube Shorts | V4 Flying car (mit Hook) | | | | | | | |
+| 2026-10-19 | Instagram | V3 Drones vs Germany (neu, mit Hook) | | | | | | | Merz weint, Hook „Can Germany escape?“ |
+| 2026-10-19 | TikTok | V3 Drones vs Germany (neu, mit Hook) | | | | | | |  |
+| 2026-10-19 | YouTube Shorts | V3 Drones vs Germany (neu, mit Hook) | | | | | | |  |
