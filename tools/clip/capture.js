@@ -75,7 +75,7 @@ const SCRIPTS={
    const stop=async(text,focus,dist,h,lift,side)=>{ await sub(p,text); await fly(p,focus,dist,h,lift,1300,side); await shoot(2900); };
    // infantry first, seen from the far side (the back rank would hide them from the front), then up and over to the front
    await stop('Infantry 🇫🇷',['c2','d2','e2'],-2.2,.95,.32,.25);
-   await fly(p,['d3'],.6,4.2,0,1100); await shoot(1100);
+   await fly(p,['d3'],2.6,6.2,0,1200); await shoot(1000);
    await stop('Tanks',['a1'],1.75,.85,.3,.35);
    await stop('Drones',['b1'],1.65,.9,.38,.35);
    await stop('Fighter jets',['c1'],1.75,.9,.35,.45);
