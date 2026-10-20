@@ -69,49 +69,6 @@ const SCRIPTS={
    await sub(p,'Queen: Marianne, face of the Republic'); await look(p,['d1'],.2,1200,.55); await shoot(2400);
    await sub(p,'King: Macron, defender of the Élysée'); await look(p,['e1'],.2,1000,.6); await shoot(2400);
    await look(p,['e4','e5','c4','d5'],.62,1300,.1); await sub(p,'France vs. UK · round 1,000? 👇'); await shoot(900);
-   await mv('e2','e4',1300); await mv('e7','e5',1300);
-   await mv('f1','c4',2200); await sub(p,'Russia is not paying attention …');
-   await mv('b8','c6',2000); await mv('d1','h5',1900); await mv('g8','f6',1700);
-   await hideTitle(p); await mv('h5','f7',13500); }},
- // Russia (white) mates the lone German king with two drones and Putin: Kg6, Nf6, Nf7#
- drones:{nations:['rus','ger'],fen:'6k1/p7/8/3NNK2/8/8/8/8 w - - 0 1',
-   hook:'CAN GERMANY<br>ESCAPE? 😬',
-   title:['<span class="r">RUSSIA</span> vs. <span style="color:#ffce00">GERMANY</span>','Two drones and Putin …'],play:async(mv,p,shoot)=>{
-   await orbit(p,shoot,8400,['f6','g6','h8','e5'],.55);
-   await mv('f5','g6',1700); await mv('g8','h8',1500); await sub(p,'Germany has nowhere to run');
-   await mv('d5','f6',1700); await mv('a7','a6',1400);
-   await hideTitle(p); await mv('e5','f7',16000); }},
- // USA (white) with the flying car: Philidor's legacy, Lady Liberty sacrifices herself, the car mates (smothered mate)
- car:{nations:['usa','chn'],car:'w',fen:'rqr3k1/pp4pp/2p5/6N1/8/B7/5PPP/R2Q2K1 w - - 0 1',
-   hook:'IS THIS THE<br>GAME CHANGER? 🚀',
-   title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','The flying car joins the army 🚀'],play:async(mv,p,shoot)=>{
-   await orbit(p,shoot,7500,['b3','g8','a1','h8'],1.0);
-   await p.evaluate(()=>{document.getElementById('vidNote').style.display='block';});
-   await sub(p,'Lady Liberty: CHECK!'); await mv('d1','b3',1700);
-   await look(p,['f7','g8','h6','g5'],.5,1100); await mv('g8','h8',1300);
-   await sub(p,'Flying car: CHECK!'); await mv('g5','f7',1900); await mv('h8','g8',1200);
-   await sub(p,'DOUBLE CHECK!'); await mv('f7','h6',1900); await mv('g8','h8',1200);
-   await look(p,['b3','g8','h6'],.8,1000); await sub(p,'Lady Liberty sacrifices herself!'); await mv('b3','g8',1800);
-   await sub(p,'The tank has to take her …'); await mv('c8','g8',2700);
-   await look(p,['f7','g8','h6'],.45,900); await sub(p,'Smothered mate!'); await mv('h6','f7',1600);
-   await hideTitle(p); await p.evaluate(()=>{document.getElementById('vidNote').style.display='none';}); await shoot(13000); }},
- // French farmers (white, video special) march on Macron, his army stands far away on the other wing: h5, h6, h7#
- farm:{nations:['fra','fra'],farm:'w',fen:'rr4k1/pp4P1/n1p3K1/4P3/3P1PPP/4P3/8/8 w - - 0 1',
-   hook:'CAN MACRON STOP<br>THE FARMERS? 🚜',
-   title:['<span style="color:#7cc46a">FARMERS</span> vs. <span class="u">MACRON</span>','The farmers are coming … 🚜'],play:async(mv,p,shoot)=>{
-   await orbit(p,shoot,8400,['h4','g6','g8','e5'],.6);
-   await mv('h4','h5',1800); await sub(p,'Macron: busy at a concert 🎤'); await mv('c6','c5',1800);
-   await sub(p,'His army? Far away …'); await mv('h5','h6',1700); await mv('c5','c4',1500);
-   await hideTitle(p); await mv('h6','h7',16000); }},
- // "Meet the nations": France joins (camera along the French pieces, queen and king close up, then a first jet flight vs UK)
- welcome_fra:{nations:['fra','gbr'],hook:'FRANCE HAS<br>ENTERED THE CHAT 🇫🇷',
-   title:['<span style="color:#7ea6ff">FRANCE</span> vs. <span style="color:#a77be0">UK</span>','France joins Checkmate Nations'],play:async(mv,p,shoot)=>{
-   await orbit(p,shoot,4200,['a2','h2','d1','e1'],.55);
-   await look(p,['a2','b1','c2'],.38,1200); await shoot(1400);
-   await look(p,['f2','g1','h1'],.38,1600); await shoot(1700);
-   await sub(p,'Queen: Marianne · symbol of the Republic since 1789'); await look(p,['d1'],.3,1200); await shoot(2300);
-   await sub(p,'King: Macron · ready to defend the Élysée?'); await look(p,['e1'],.3,1000); await shoot(2300);
-   await look(p,['e4','e5','c4','d5'],1.0,1300); await sub(p,'France vs. UK · round 1,000? 👇'); await shoot(900);
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
  fool:{hook:'THE FASTEST<br>CHECKMATE EVER? 😬',title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
