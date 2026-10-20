@@ -81,7 +81,7 @@ const SCRIPTS={
    await stop('Fighter jets',['c1'],1.75,.9,.35,.45);
    await stop('Queen: Marianne, face of the Republic',['d1'],1.45,.7,.5,.3);
    await stop('King: Macron, defender of the Élysée',['e1'],1.35,.65,.62,.25);
-   await sub(p,'France vs. UK · round 1,000? 👇'); await fly(p,['d4','e5'],5.2,4.6,0,1600,.05); await shoot(1700);
+   await sub(p,'France vs. UK · round 1,000? 👇'); await fly(p,['d4','e4','d5','e5'],8.2,8.6,0,1600,.02); await shoot(1700);
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
  fool:{hook:'THE FASTEST<br>CHECKMATE EVER? 😬',title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
