@@ -73,10 +73,12 @@ const SCRIPTS={
    title:['<span style="color:#7ea6ff">FRANCE</span> vs. <span style="color:#a77be0">UK</span>','France joins Checkmate Nations'],play:async(mv,p,shoot)=>{
    // one piece type after the other: glide in slowly (1.3 s), hold (1.6 s), name tag as subtitle
    const stop=async(text,focus,dist,h,lift,side)=>{ await sub(p,text); await fly(p,focus,dist,h,lift,1300,side); await shoot(2900); };
-   await stop('Tanks 🇫🇷',['a1'],1.75,.85,.3,.35);
+   // infantry first, seen from the far side (the back rank would hide them from the front), then up and over to the front
+   await stop('Infantry 🇫🇷',['c2','d2','e2'],-2.2,.95,.32,.25);
+   await fly(p,['d3'],.6,4.2,0,1100); await shoot(1100);
+   await stop('Tanks',['a1'],1.75,.85,.3,.35);
    await stop('Drones',['b1'],1.65,.9,.38,.35);
    await stop('Fighter jets',['c1'],1.75,.9,.35,.45);
-   await stop('Infantry',['c2','d2','e2'],1.7,2.1,.3,.1);
    await stop('Queen: Marianne, face of the Republic',['d1'],1.45,.7,.5,.3);
    await stop('King: Macron, defender of the Élysée',['e1'],1.35,.65,.62,.25);
    await sub(p,'France vs. UK · round 1,000? 👇'); await fly(p,['d4','e5'],5.2,4.6,0,1600,.05); await shoot(1700);
