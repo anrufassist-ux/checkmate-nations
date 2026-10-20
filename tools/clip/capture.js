@@ -16,13 +16,14 @@ const orbit=async(p,shoot,ms,focus,zoom)=>{
     const r0=Math.hypot(o.d.x,o.d.z), th=Math.atan2(o.d.x,o.d.z)-2*Math.PI*.85*(1-e), r=r0*(.32+(o.zoom-.32)*e*e), y=o.d.y*(.25+(o.zoom-.25)*e);
     const tx=o.t.x+(o.f.x-o.t.x)*e, tz=o.t.z+(o.f.z-o.t.z)*e;
     v.controls.target.set(tx,o.t.y+.7*(1-e),tz); v.camera.position.set(tx+r*Math.sin(th),o.t.y+y,tz+r*Math.cos(th)); v.camera.lookAt(v.controls.target); },u)); };
-const look=(p,focus,zoom,ms)=>p.evaluate(([focus,zoom,ms])=>{ const v=window.__v(), o=window.__ob, T3=v.camera.position.constructor;
-  const f=focus.reduce((a,s)=>a.add(v.sqPos(s)),new T3()).multiplyScalar(1/focus.length); f.y=o.t.y;
+// lift raises the look-at point (close-ups of tall pieces stay in the middle of the frame instead of at the bottom)
+const look=(p,focus,zoom,ms,lift)=>p.evaluate(([focus,zoom,ms,lift])=>{ const v=window.__v(), o=window.__ob, T3=v.camera.position.constructor;
+  const f=focus.reduce((a,s)=>a.add(v.sqPos(s)),new T3()).multiplyScalar(1/focus.length); f.y=o.t.y+(lift||0);
   const r0=Math.hypot(o.d.x,o.d.z), th=Math.atan2(o.d.x,o.d.z);
-  const c1=new T3(f.x+r0*zoom*Math.sin(th),o.t.y+o.d.y*zoom,f.z+r0*zoom*Math.cos(th));
+  const c1=new T3(f.x+r0*zoom*Math.sin(th),o.t.y+o.d.y*zoom+(lift||0),f.z+r0*zoom*Math.cos(th));
   const c0=v.camera.position.clone(), t0=v.controls.target.clone(), s=performance.now();
   (function step(){ const u=Math.min(1,(performance.now()-s)/ms), e=(1-Math.cos(Math.PI*u))/2;
-    v.controls.target.lerpVectors(t0,f,e); v.camera.position.lerpVectors(c0,c1,e); v.camera.lookAt(v.controls.target); if(u<1) requestAnimationFrame(step); })(); },[focus,zoom,ms]);
+    v.controls.target.lerpVectors(t0,f,e); v.camera.position.lerpVectors(c0,c1,e); v.camera.lookAt(v.controls.target); if(u<1) requestAnimationFrame(step); })(); },[focus,zoom,ms,lift]);
 const SCRIPTS={
  scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
    await mv('e2','e4',1300); await mv('e7','e5',1300);
@@ -59,6 +60,16 @@ const SCRIPTS={
    await mv('h4','h5',1800); await sub(p,'Macron: busy at a concert 🎤'); await mv('c6','c5',1800);
    await sub(p,'His army? Far away …'); await mv('h5','h6',1700); await mv('c5','c4',1500);
    await hideTitle(p); await mv('h6','h7',16000); }},
+ // "Meet the nations": France joins (camera along the French pieces, queen and king close up, then a first jet flight vs UK)
+ welcome_fra:{nations:['fra','gbr'],hook:'FRANCE HAS<br>ENTERED THE CHAT 🇫🇷',
+   title:['<span style="color:#7ea6ff">FRANCE</span> vs. <span style="color:#a77be0">UK</span>','France joins Checkmate Nations'],play:async(mv,p,shoot)=>{
+   await orbit(p,shoot,4200,['a2','h2','d1','e1'],.55);
+   await look(p,['a2','b1','c2'],.26,1200,.45); await shoot(1400);
+   await look(p,['f2','g1','h1'],.26,1600,.45); await shoot(1700);
+   await sub(p,'Queen: Marianne, face of the Republic'); await look(p,['d1'],.2,1200,.55); await shoot(2400);
+   await sub(p,'King: Macron, defender of the Élysée'); await look(p,['e1'],.2,1000,.6); await shoot(2400);
+   await look(p,['e4','e5','c4','d5'],.62,1300,.1); await sub(p,'France vs. UK · round 1,000? 👇'); await shoot(900);
+   await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
  fool:{hook:'THE FASTEST<br>CHECKMATE EVER? 😬',title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
    await mv('f2','f3',1500); await mv('e7','e5',1500);

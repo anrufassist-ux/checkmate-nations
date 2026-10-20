@@ -102,6 +102,18 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: Farmers checkmate Macron 🚜 #shorts #chess
 - Hinweis: Satire über Politik und Spritpreise, keine Gewalt zeigen oder kommentieren (Proteste im Oktober 2026 teils gewalttätig).
 
+### V6 · Welcome, France! (Serie „Meet the nations“)
+- Datei: `marketing/welcome-france.mp4` (24 s), Hook „France has entered the chat 🇫🇷“, Kamerafahrt über Frankreichs Figuren, Nahaufnahmen Marianne und Macron, erste Züge gegen UK, Endkarte
+- Instagram/TikTok-Text:
+  > Bienvenue, France! 🇫🇷 Marianne and Macron just joined Checkmate Nations ♟️
+  > France vs. UK, round 1,000? Who wins? 👇
+  > Play free: link in bio
+- Hashtags: #chess #chesstok #france #satire #gaming
+- Titelbild (Cover): Macron in Nahaufnahme (ca. Sekunde 14) oder Marianne mit Fahne (ca. Sekunde 11)
+- Alt-Text: 3D chess game, close-ups of the new French pieces: Marianne as the queen with a tricolour flag and a Macron caricature as the king.
+- Erster eigener Kommentar: Which nation should join next? 🌍
+- YouTube-Shorts-Titel: France joins Checkmate Nations 🇫🇷 #shorts #chess
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
