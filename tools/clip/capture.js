@@ -59,6 +59,16 @@ const SCRIPTS={
    await mv('h4','h5',1800); await sub(p,'Macron: busy at a concert 🎤'); await mv('c6','c5',1800);
    await sub(p,'His army? Far away …'); await mv('h5','h6',1700); await mv('c5','c4',1500);
    await hideTitle(p); await mv('h6','h7',16000); }},
+ // "Meet the nations": France joins (camera along the French pieces, queen and king close up, then a first jet flight vs UK)
+ welcome_fra:{nations:['fra','gbr'],hook:'FRANCE HAS<br>ENTERED THE CHAT 🇫🇷',
+   title:['<span style="color:#7ea6ff">FRANCE</span> vs. <span style="color:#a77be0">UK</span>','France joins Checkmate Nations'],play:async(mv,p,shoot)=>{
+   await orbit(p,shoot,4200,['a2','h2','d1','e1'],.55);
+   await look(p,['a2','b1','c2'],.38,1200); await shoot(1400);
+   await look(p,['f2','g1','h1'],.38,1600); await shoot(1700);
+   await sub(p,'Queen: Marianne · symbol of the Republic since 1789'); await look(p,['d1'],.3,1200); await shoot(2300);
+   await sub(p,'King: Macron · ready to defend the Élysée?'); await look(p,['e1'],.3,1000); await shoot(2300);
+   await look(p,['e4','e5','c4','d5'],1.0,1300); await sub(p,'France vs. UK · round 1,000? 👇'); await shoot(900);
+   await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',2800); }},
  fool:{hook:'THE FASTEST<br>CHECKMATE EVER? 😬',title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
    await mv('f2','f3',1500); await mv('e7','e5',1500);
