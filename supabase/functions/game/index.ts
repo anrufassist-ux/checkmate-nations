@@ -292,7 +292,16 @@ async function queue(u: User, body: Game) {
       order by (${inLeague} and q.nation <> ${nation} and exists (select 1 from public.league_entries e
                where e.season = ${s} and e.user_id = q.user_id and e.nation = q.nation)) desc,
         (q.nation = ${nation}), q.joined_at limit 1`; // prefer a league game, then an opponent with another nation
-    if (!opp) return reply({ waiting: true, searching: await countSearching(tx) });
+    if (!opp) {
+      // someone else is searching but we already played them often enough this week: say so instead of waiting forever
+      const [lim] = await tx`select 1 from public.match_queue q
+        where q.user_id <> ${u.id} and q.seen_at > now() - interval '12 seconds'
+          and (select count(*) from public.games x where x.rated and x.created_at > now() - interval '7 days' and x.reason is distinct from 'aborted'
+               and coalesce((x.elo_change->>'short')::boolean, false) = false
+               and ((x.white_id = q.user_id and x.black_id = ${u.id}) or (x.white_id = ${u.id} and x.black_id = q.user_id)))
+              >= ${PAIR_GAMES_PER_WEEK} limit 1`;
+      return reply({ waiting: true, searching: await countSearching(tx), pairLimit: !!lim });
+    }
     await tx`delete from public.match_queue where user_id in (${u.id}, ${opp.user_id})`;
     const meWhite = Math.random() < 0.5;
     const [wid, bid] = meWhite ? [u.id, opp.user_id] : [opp.user_id, u.id];
