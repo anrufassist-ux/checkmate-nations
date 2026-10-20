@@ -72,13 +72,13 @@ const SCRIPTS={
  welcome_fra:{nations:['fra','gbr'],hook:'FRANCE HAS<br>ENTERED THE CHAT 🇫🇷',
    title:['<span style="color:#7ea6ff">FRANCE</span> vs. <span style="color:#a77be0">UK</span>','France joins Checkmate Nations'],play:async(mv,p,shoot)=>{
    // one piece type after the other: glide in slowly (1.3 s), hold (1.6 s), name tag as subtitle
-   const stop=async(text,focus,dist,h,lift)=>{ await sub(p,text); await fly(p,focus,dist,h,lift,1300); await shoot(2900); };
-   await stop('Tanks 🇫🇷',['a1'],.95,.42,.28);
-   await stop('Drones',['b1'],.95,.45,.32);
-   await stop('Fighter jets',['c1'],.95,.45,.3);
-   await stop('Infantry',['c2','d2','e2'],1.9,1.05,.35);
-   await stop('Queen: Marianne, face of the Republic',['d1'],.9,.42,.5);
-   await stop('King: Macron, defender of the Élysée',['e1'],.85,.4,.62);
+   const stop=async(text,focus,dist,h,lift,side)=>{ await sub(p,text); await fly(p,focus,dist,h,lift,1300,side); await shoot(2900); };
+   await stop('Tanks 🇫🇷',['a1'],1.75,.85,.3,.35);
+   await stop('Drones',['b1'],1.65,.9,.38,.35);
+   await stop('Fighter jets',['c1'],1.75,.9,.35,.45);
+   await stop('Infantry',['c2','d2','e2'],1.7,2.1,.3,.1);
+   await stop('Queen: Marianne, face of the Republic',['d1'],1.45,.7,.5,.3);
+   await stop('King: Macron, defender of the Élysée',['e1'],1.35,.65,.62,.25);
    await sub(p,'France vs. UK · round 1,000? 👇'); await fly(p,['d4','e5'],5.2,4.6,0,1600,.05); await shoot(1700);
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
  fool:{hook:'THE FASTEST<br>CHECKMATE EVER? 😬',title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
