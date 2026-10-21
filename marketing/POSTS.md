@@ -90,13 +90,13 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Hinweis: kein Markenname und kein Logo im Bild; „flying car“ im Text ist Satire-Kommentar.
 
 ### V5 · Farmers vs Macron (Macron weint) – aktuell zu den Protesten in Frankreich
-- Datei: `marketing/farmers-vs-macron.mp4` (37 s), Hook „Can Macron stop the farmers? 🚜“, Video-Spezial: grüne Bauern mit Strohhut, Bauernkönig auf dem Traktor (nicht Teil des Spiels), Endkarte „Play free now“
+- Datei: `marketing/farmers-vs-macron.mp4` (40 s, Macrons Züge jetzt im Bild), Hook „Can Macron stop the farmers? 🚜“, Video-Spezial: grüne Bauern mit Strohhut, Bauernkönig auf dem Traktor (nicht Teil des Spiels), Endkarte „Play free now“
 - Instagram/TikTok-Text:
   > The farmers are coming 🚜 Macron was busy at a concert, his army far away… checkmate by the farmers 🔒
   > Who should the farmers visit next? 👇
   > Play free: link in bio
 - Hashtags: #chess #chesstok #satire #macron #checkmate
-- Titelbild (Cover): Macron traurig hinter Gittern (ca. Sekunde 21) oder der Traktor-König in der Kamerafahrt (ca. Sekunde 5)
+- Titelbild (Cover): Macron traurig hinter Gittern (ca. Sekunde 25) oder der Traktor-König in der Kamerafahrt (ca. Sekunde 5)
 - Alt-Text: 3D chess satire, farmer pawns in straw hats and a farmer king on a tractor checkmate the French king Macron, who is jailed and cries.
 - Erster eigener Kommentar: Should the farmers get their own team in the game? 🚜♟️
 - YouTube-Shorts-Titel: Farmers checkmate Macron 🚜 #shorts #chess
