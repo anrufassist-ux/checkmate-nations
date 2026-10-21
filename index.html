@@ -1202,7 +1202,7 @@ function buildMarianne(){ // France: Marianne with the red Phrygian cap and the 
   face(head,r); g.add(head); return {g,head,headY:.8};
 }
 function buildSyrenka(){ // Poland: the Warsaw mermaid (Syrenka) with raised sword and round shield
-  const g=new T.Group(), tail=mat(0x3f9c96,.35,.45), fin=mat(0x2f7f86,.4,.35), top=mat(NATIONS.pol.body,.5), skin=mat(SKIN,.55), hair=mat(0xb5793a,.55),
+  const g=new T.Group(), tail=mat(0x3f9c96,.35,.45), fin=mat(0x2f7f86,.4,.35), top=mat(NATIONS.pol.body,.5), skin=mat(SKIN,.55), hair=mat(0x8a4a20,.6),
     steel=mat(0xdfe4ea,.2,.9), gold=mat(0xe0b440,.25,.8);
   // fish tail rising from the coiled end on the ground; fins spread at the back
   g.add(mesh(LP([[.24,0],[.24,.05],[.2,.1],[.15,.18],[.13,.28],[.14,.38],[.135,.46],[.125,.5],[0,.5]]),tail));
@@ -1220,8 +1220,10 @@ function buildSyrenka(){ // Poland: the Warsaw mermaid (Syrenka) with raised swo
   const boss=mesh(new T.SphereGeometry(.03,12,10),gold,-.14,.456,.19); g.add(boss);
   const r=.16, head=new T.Group(); head.position.y=.8;
   head.add(mesh(new T.SphereGeometry(r,24,18),skin));
-  head.add(mesh(new T.SphereGeometry(r*1.06,22,14,0,Math.PI*2,0,Math.PI*.55),hair,0,-.005,-.02));
-  const back=mesh(new T.SphereGeometry(r*1.05,18,14),hair,0,-r*.75,-r*.45); back.scale.set(1,1.35,.6); head.add(back); // long wavy hair down the back
+  // full head of hair: a voluminous dome, a side-swept fringe over the forehead and waves around the face
+  const dome=mesh(new T.SphereGeometry(r*1.12,24,16,0,Math.PI*2,0,Math.PI*.44),hair,0,.012,-.022); dome.scale.set(1.04,1.08,1.04); const nape=mesh(new T.SphereGeometry(r*1.1,22,14,Math.PI*.15,Math.PI*1.7,0,Math.PI*.62),hair,0,0,-.03); nape.rotation.y=Math.PI; head.add(nape); head.add(dome);
+  for(let i=0;i<5;i++){ const a=-.75+i*.37, f=mesh(new T.SphereGeometry(.05,12,10),hair,Math.sin(a)*r*.82,r*.66-Math.abs(a)*.05,Math.cos(a)*r*.8); f.scale.set(1.2,.8,.9); head.add(f); }
+  const back=mesh(new T.SphereGeometry(r*1.1,18,14),hair,0,-r*.75,-r*.45); back.scale.set(1.08,1.4,.62); head.add(back); // long wavy hair down the back
   for(const s of [-1,1]) for(let i=0;i<3;i++) head.add(mesh(new T.SphereGeometry(.042,10,8),hair,s*r*.88,-.04-i*.07,-.01-i*.01));
   const crown=mesh(new T.CylinderGeometry(r*.62,r*.68,.06,20,1,true),gold,0,r*.95,0); head.add(crown); // small gold crown
   for(let i=0;i<5;i++){ const a=i/5*Math.PI*2, t=mesh(new T.ConeGeometry(.018,.05,8),gold,Math.sin(a)*r*.62,r*.95+.05,Math.cos(a)*r*.62); head.add(t); }
