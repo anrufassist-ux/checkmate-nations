@@ -10,5 +10,11 @@ Records a scripted game as a vertical video (720x1280, 24 fps) for TikTok / Reel
 4. `python3 mix.py <clip> [out.mp4]` mixes the frames with the game music (`window.MUSIC`) and every sound the game played
    (`window.SFX` keys, logged with their times in `sounds-<clip>.json`; synth explosions use `audio-extra/boom.wav`).
 
+**Chess check (mandatory):** `node capture.js check` replays every script with chess.js 0.10.3 (same as the game). It fails on an
+illegal move, on a clip that does not end in checkmate (set `end:'open'` for clips that are not meant to end in mate) and
+warns when the king of the defending side is stuck and only a few other moves keep it from stalemate: that move must be on
+camera, otherwise viewers think it is stalemate (happened in the drones clip: the a-pawn move was out of frame). After filming
+it, list the white move before it in `shown` (e.g. `shown:['d5f6']`). `full` runs the same check first and refuses to render.
+
 The moves and titles are set in `SCRIPTS` in `capture.js` (`mv(from,to,holdMs)`, `sub()`, `hideTitle()`).
 Software rendering takes about 20 minutes per 28-second clip.

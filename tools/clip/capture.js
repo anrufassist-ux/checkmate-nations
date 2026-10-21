@@ -32,6 +32,25 @@ const fly=(p,focus,dist,h,lift,ms,side)=>p.evaluate(([focus,dist,h,lift,ms,side]
   v.controls.minDistance=.2;
   (function step(){ const u=Math.min(1,(performance.now()-s)/ms), e=(1-Math.cos(Math.PI*u))/2;
     v.controls.target.lerpVectors(t0,f,e); v.camera.position.lerpVectors(c0,c1,e); v.camera.lookAt(v.controls.target); if(u<1) requestAnimationFrame(step); })(); },[focus,dist,h,lift,ms,side]);
+// Chess check for every script (also run before each render): every move legal, the clip ends in checkmate
+// (unless end:'open'), and a warning when the king is stuck and only one or two other moves (<= 4) avoid stalemate, because
+// viewers who do not see that move think it is stalemate (the drones clip had exactly that: the a-pawn was out of frame)
+function checkScript(name,sc){
+  const src=fs.readFileSync(path.join(ROOT,'vendor/chess-0.10.3.js'),'utf8'), m={exports:{}}; new Function('module','exports',src)(m,m.exports);
+  const Chess=m.exports.Chess||m.exports, c=new Chess(sc.fen||undefined), errs=[], warns=[], shown=new Set(sc.shown||[]);
+  const mv=async(from,to)=>{
+    if(!c.move({from,to,promotion:'q'})){ errs.push('illegal move '+from+to+' in '+c.fen()); return; }
+    if(c.game_over()) return;
+    const king=c.moves({verbose:true}).filter(x=>x.piece==='k');
+    if(!king.length&&!c.in_check()&&c.moves().length<=4&&!shown.has(from+to)) warns.push('after '+from+to+' only non-king moves avoid stalemate ('+c.moves().join(' ')+'): film that move, then add "'+from+to+'" to shown');
+  };
+  const p={evaluate:async()=>{}}, shoot=async()=>{};
+  return sc.play(mv,p,shoot).then(()=>{
+    if(c.in_stalemate()) errs.push('ends in STALEMATE, not checkmate');
+    else if(sc.end!=='open'&&!c.in_checkmate()) errs.push('does not end in checkmate ('+c.fen()+')');
+    return {name,errs,warns};
+  });
+}
 const SCRIPTS={
  scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
    await mv('e2','e4',1300); await mv('e7','e5',1300);
@@ -39,12 +58,15 @@ const SCRIPTS={
    await mv('b8','c6',2000); await mv('d1','h5',1900); await mv('g8','f6',1700);
    await hideTitle(p); await mv('h5','f7',13500); }},
  // Russia (white) mates the lone German king with two drones and Putin: Kg6, Nf6, Nf7#
- drones:{nations:['rus','ger'],fen:'6k1/p7/8/3NNK2/8/8/8/8 w - - 0 1',
+ drones:{nations:['rus','ger'],shown:['d5f6'],fen:'6k1/p7/8/3NNK2/8/8/8/8 w - - 0 1',
    hook:'CAN GERMANY<br>ESCAPE? 😬',
    title:['<span class="r">RUSSIA</span> vs. <span style="color:#ffce00">GERMANY</span>','Two drones and Putin …'],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,8400,['f6','g6','h8','e5'],.55);
    await mv('f5','g6',1700); await mv('g8','h8',1500); await sub(p,'Germany has nowhere to run');
-   await mv('d5','f6',1700); await mv('a7','a6',1400);
+   await mv('d5','f6',1700);
+   // the German king is stuck now; only the a-pawn can still move, so it must be in the picture (else it looks like stalemate)
+   await sub(p,'Only one German pawn can still move …'); await look(p,['a7','a6'],.6,1200); await shoot(1300);
+   await mv('a7','a6',1500); await look(p,['f6','g6','h8','e5'],.55,1200); await shoot(1300);
    await hideTitle(p); await mv('e5','f7',16000); }},
  // USA (white) with the flying car: Philidor's legacy, Lady Liberty sacrifices herself, the car mates (smothered mate)
  car:{nations:['usa','chn'],car:'w',fen:'rqr3k1/pp4pp/2p5/6N1/8/B7/5PPP/R2Q2K1 w - - 0 1',
@@ -69,7 +91,7 @@ const SCRIPTS={
    await sub(p,'His army? Far away …'); await mv('h5','h6',1700); await mv('c5','c4',1500);
    await hideTitle(p); await mv('h6','h7',16000); }},
  // "Meet the nations": France joins (camera along the French pieces, queen and king close up, then a first jet flight vs UK)
- welcome_fra:{nations:['fra','gbr'],hook:'FRANCE HAS<br>ENTERED THE CHAT 🇫🇷',
+ welcome_fra:{nations:['fra','gbr'],end:'open',hook:'FRANCE HAS<br>ENTERED THE CHAT 🇫🇷',
    title:['<span style="color:#7ea6ff">FRANCE</span> vs. <span style="color:#a77be0">UK</span>','France joins Checkmate Nations'],play:async(mv,p,shoot)=>{
    // one piece type after the other: glide in slowly (1.3 s), hold (1.6 s), name tag as subtitle
    const stop=async(text,focus,dist,h,lift,side)=>{ await sub(p,text); await fly(p,focus,dist,h,lift,1300,side); await shoot(2900); };
@@ -90,6 +112,12 @@ const SCRIPTS={
    await hideTitle(p); await mv('d8','h4',16000); }},
 };
 (async()=>{
+ if(MODE==='check'||MODE==='full'){ // never render a clip whose chess is wrong or looks wrong
+   const names=MODE==='check'?Object.keys(SCRIPTS):[process.env.CLIP||'scholar']; let bad=false;
+   for(const k of names){ const r=await checkScript(k,SCRIPTS[k]); console.log(k+': '+(r.errs.length||r.warns.length?'':'ok'));
+     r.errs.forEach(e=>console.log('  ERROR '+e)); r.warns.forEach(w=>console.log('  WARN  '+w)); if(r.errs.length||r.warns.length) bad=true; }
+   if(MODE==='check'||bad){ if(bad) process.exitCode=1; return; }
+ }
  // tiny static server for the repo (WebGL refuses textures from file://)
  const srv=http.createServer((q,r)=>{ const f=path.join(ROOT,decodeURIComponent(q.url.split('?')[0])); if(!f.startsWith(ROOT)||!fs.existsSync(f)||fs.statSync(f).isDirectory()){ r.writeHead(404); return r.end(); } r.writeHead(200,{'content-type':TYPES[path.extname(f)]||'application/octet-stream'}); fs.createReadStream(f).pipe(r); }).listen(0);
  const port=srv.address().port;
