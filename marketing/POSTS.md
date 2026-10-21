@@ -114,6 +114,18 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Erster eigener Kommentar: Which nation should join next? 🌍
 - YouTube-Shorts-Titel: France joins Checkmate Nations 🇫🇷 #shorts #chess
 
+### V7 · Trump's trade war in 2 moves (USA vs China, Fool's Mate, Trump weint)
+- Datei: `marketing/trade-war-in-2.mp4`, Hook „Trump's trade war in 2 moves 😬“, Untertitel „Tariffs! 💰“ (f3), „MORE tariffs! 💰💰“ (g4), „China: thanks 🐼“, die Panda-Dame setzt matt (Qh4#), Endkarte
+- Instagram/TikTok-Text:
+  > Trump's trade war in 2 moves 😬 Tariffs, more tariffs… and the panda says thanks 🐼 Checkmate 🔒
+  > Who wins the next round? 👇
+  > Play free: link in bio
+- Hashtags: #chess #chesstok #satire #trump #tradewar
+- Titelbild (Cover): Trump traurig hinter Gittern
+- Erster eigener Kommentar: Should the USA get a rematch? 🇺🇸🇨🇳
+- YouTube-Shorts-Titel: Trump's trade war in 2 moves 😬 USA vs China #shorts #chess
+- Hinweis: Reels haben keinen eigenen Alt-Text (nur Foto-Posts), daher keiner.
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |

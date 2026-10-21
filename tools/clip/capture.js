@@ -108,6 +108,12 @@ const SCRIPTS={
    await stop('King: Macron, defender of the Élysée',['e1'],1.35,.65,.62,.25);
    await sub(p,'France vs. UK · round 1,000? 👇'); await fly(p,['d4','e4','d5','e5'],8.2,8.6,0,1600,.02); await shoot(1700);
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
+ // Fool's Mate as Trump's trade war: the USA ruins itself with two tariff moves, the panda queen only has to collect
+ tariff:{nations:['usa','chn'],hook:"TRUMP'S TRADE WAR<br>IN 2 MOVES 😬",title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','Trade war, round 1 …'],play:async(mv,p,shoot)=>{
+   await orbit(p,shoot,8400,['e1','h4','e5','g4','d8'],.75);
+   await sub(p,'Tariffs! 💰'); await mv('f2','f3',1700); await mv('e7','e5',1500);
+   await sub(p,'MORE tariffs! 💰💰'); await mv('g2','g4',1600); await sub(p,'China: thanks 🐼'); await shoot(1500);
+   await hideTitle(p); await mv('d8','h4',16000); }},
  fool:{hook:'THE FASTEST<br>CHECKMATE EVER? 😬',title:[VS,'Can the USA survive 2 moves?'],play:async(mv,p,shoot)=>{ // Russia mates the USA, Trump cries
    await orbit(p,shoot,8400,['e1','h4','e5','g4'],.7);
    await mv('f2','f3',1500); await mv('e7','e5',1500);
