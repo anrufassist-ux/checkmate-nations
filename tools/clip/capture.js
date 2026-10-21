@@ -87,8 +87,11 @@ const SCRIPTS={
    hook:'CAN MACRON STOP<br>THE FARMERS? 🚜',
    title:['<span style="color:#7cc46a">FARMERS</span> vs. <span class="u">MACRON</span>','The farmers are coming … 🚜'],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,8400,['h4','g6','g8','e5'],.6);
-   await mv('h4','h5',1800); await sub(p,'Macron: busy at a concert 🎤'); await mv('c6','c5',1800);
-   await sub(p,'His army? Far away …'); await mv('h5','h6',1700); await mv('c5','c4',1500);
+   await mv('h4','h5',1800);
+   // Macron's side moves far away on the queenside: pull back so his army and every move of it is in the picture
+   await sub(p,'Macron: busy at a concert 🎤'); await look(p,['d6','e6'],1.05,1300); await shoot(1400); await mv('c6','c5',1900);
+   await sub(p,'His army? Far away …'); await mv('h5','h6',1900); await mv('c5','c4',1900);
+   await look(p,['h7','g6','g8','e5'],.6,1300); await shoot(1300);
    await hideTitle(p); await mv('h6','h7',16000); }},
  // "Meet the nations": France joins (camera along the French pieces, queen and king close up, then a first jet flight vs UK)
  welcome_fra:{nations:['fra','gbr'],end:'open',hook:'FRANCE HAS<br>ENTERED THE CHAT 🇫🇷',
