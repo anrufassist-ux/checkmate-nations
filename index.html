@@ -215,7 +215,10 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 .flag{width:64px;height:42px;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,.4)}
 .jail{position:fixed;inset:0;z-index:8;display:grid;place-items:center;align-content:center;gap:18px;background:rgba(6,8,8,.72);pointer-events:none}
 .jail .cell{position:relative;width:min(64vw,320px);aspect-ratio:3/4;display:grid;place-items:center;overflow:hidden;border-radius:10px;background:radial-gradient(circle at 50% 40%,#3a3f3c,#141816)}
-.jail img{width:88%;height:88%;object-fit:contain;transform:scale(.3);opacity:0}
+.jail .jface{position:relative;height:76%;max-width:88%;transform:scale(.3);opacity:0}
+.jail .jface #jailImg{display:block;width:100%;height:100%}
+/* same crown as on the board: 80 % of the head width, its centre just below the top of the head, tilted like the 3D king */
+.jail .jcrown{position:absolute;left:10%;top:0;width:80%;margin-top:-16%;transform:rotate(var(--tilt,10deg))}
 .jail .glyph{font-size:180px;line-height:1;color:var(--sand);transform:scale(.3);opacity:0}
 .jail .bars{position:absolute;inset:0;transform:translateY(-110%);
   background:
@@ -224,7 +227,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     repeating-linear-gradient(90deg,transparent 0 10%,#3b3f43 10% 11%,#1c1e20 11% 14.5%,#4a4f54 14.5% 15.5%,transparent 15.5% 20%);
   filter:drop-shadow(0 6px 10px rgba(0,0,0,.7))}
 .jailText{font-family:var(--f-display);font-size:clamp(30px,8vw,56px);color:#ffd447;-webkit-text-stroke:2px #1a1208;text-shadow:3px 3px 0 #c83a1e;opacity:0;transform:scale(.5) rotate(-6deg)}
-.jail.run img,.jail.run .glyph{animation:faceIn .55s cubic-bezier(.2,1.6,.4,1) forwards}
+.jail.run .jface,.jail.run .glyph{animation:faceIn .55s cubic-bezier(.2,1.6,.4,1) forwards}
 .jail.run .bars{animation:barsDown .5s cubic-bezier(.6,0,.9,.4) .55s forwards}
 .jail.run .jailText{animation:jailTxt .4s cubic-bezier(.2,1.6,.4,1) 1.1s forwards}
 .jail.run .cell{animation:cellShake .3s linear 1.05s}
@@ -440,7 +443,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 
 <div class="jail" id="jail" hidden>
   <div class="cell">
-    <img id="jailImg" alt="Der besiegte König" hidden>
+    <div class="jface" id="jailFace" hidden><img id="jailImg" alt="Der besiegte König"><img class="jcrown" id="jailCrown" alt=""></div>
     <div class="glyph" id="jailGlyph" hidden></div>
     <div class="bars" aria-hidden="true"></div>
   </div>
@@ -2061,8 +2064,11 @@ function clang(){ // recorded cell door once per checkmate, the synth clang for 
 function showJail(loser){
   // close-up behind the bars: the sad face with tears when there is one
   const el=$('jail'), img=$('jailImg'), key=TEAM[loser].head, h=caricatures&&window.HEADS&&key&&window.HEADS[key];
-  if(h){ img.src=(window.CRY&&window.CRY[key])||h.uri||h; img.hidden=false; $('jailGlyph').hidden=true; }
-  else { img.hidden=true; $('jailGlyph').hidden=false; $('jailGlyph').textContent=loser==='w'?'♔':'♚'; }
+  const face=$('jailFace');
+  if(h){ img.src=(window.CRY&&window.CRY[key])||h.uri||h; face.style.aspectRatio=String(h.aspect||.67); face.hidden=false; $('jailGlyph').hidden=true;
+    // he keeps his crown behind the bars too, like on the board and when he is carried off
+    const cr=$('jailCrown'); cr.src=crownTex(sideNation[loser]).image.toDataURL(); cr.style.setProperty('--tilt',loser==='w'?'10deg':'-10deg'); }
+  else { face.hidden=true; $('jailGlyph').hidden=false; $('jailGlyph').textContent=loser==='w'?'♔':'♚'; }
   el.hidden=false; el.classList.remove('run'); void el.offsetWidth; el.classList.add('run');
   setTimeout(()=>clang(),reduceMotion?50:1050);
   return wait(reduceMotion?1200:3000).then(()=>{ el.classList.add('out'); return wait(400); }).then(()=>{ el.hidden=true; el.classList.remove('out','run'); });
