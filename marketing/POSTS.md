@@ -127,3 +127,6 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-19 | Instagram | V3 Drones vs Germany (neu, mit Hook) | | | | | | | Merz weint, Hook „Can Germany escape?“ |
 | 2026-10-19 | TikTok | V3 Drones vs Germany (neu, mit Hook) | | | | | | |  |
 | 2026-10-19 | YouTube Shorts | V3 Drones vs Germany (neu, mit Hook) | | | | | | |  |
+| 2026-10-21 | Instagram | V5 Farmers vs Macron (40 s) | | | | | | | Text mit „Diesel doubled.“, zu den Spritpreis-Protesten |
+| 2026-10-21 | TikTok | V5 Farmers vs Macron (40 s) | | | | | | | |
+| 2026-10-21 | YouTube Shorts | V5 Farmers vs Macron (40 s) | | | | | | | |
