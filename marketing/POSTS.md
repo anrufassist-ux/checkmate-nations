@@ -127,7 +127,7 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Hinweis: Reels haben keinen eigenen Alt-Text (nur Foto-Posts), daher keiner.
 
 ### V8 · Puzzle: Morphy's mate in 2 (neues Format: Schach-Rätsel)
-- Datei: `marketing/puzzle-morphy-mate-in-2.mp4` (48 s), Hook „Mate in 2 🧩 Can you find it?“, Aufgabe + „Comment your move 👇“, Countdown 5–1, Lösung 1.Ra6!! bxa6 2.b7# mit Erklär-Untertiteln, Putin im Gefängnis, Endkarte
+- Datei: `marketing/puzzle-morphy-mate-in-2.mp4` (51 s), Hook „Mate in 2 🧩 Can you find it?“, Legende (Panzer = Turm, Drohne = Springer, Jet = Läufer), klassische Schachsymbole über den Figuren während der Aufgabe, Aufgabe + „Comment your move 👇“, Countdown 5–1, Lösung 1.Ra6!! bxa6 2.b7# mit Erklär-Untertiteln, Putin im Gefängnis, Endkarte
 - Instagram/TikTok-Text:
   > Mate in 2 🧩 Paul Morphy's famous puzzle. Most players get it wrong. Can you find it before the timer runs out? ⏳
   > Comment your move 👇 (no spoilers!)
