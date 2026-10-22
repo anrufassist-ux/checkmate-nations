@@ -78,7 +78,8 @@ const legend=(p,on)=>p.evaluate(on=>{ const el=document.getElementById('vidLegen
 // chase: camera behind the moving piece (seen from its own side), low and slightly to the side, looking where it drives;
 // `ease` blends in from the current camera over the first part of the move so it never jumps
 const chase=(p,{back=2.2,h=1.1,side=.5,ahead=2.6,ease=.25}={})=>(u,to)=>p.evaluate(([u,to,back,h,side,ahead,ease])=>{
-  const v=window.__v(), m=window.__mover; if(!m) return; // the game re-files the piece only after the move const T3=v.camera.position.constructor;
+  const v=window.__v(), m=window.__mover; if(!m) return; // the game re-files the piece only after the move
+  const T3=v.camera.position.constructor;
   const w=m.getWorldPosition(new T3()), dir=m.userData.color==='w'?-1:1; // white drives toward -z
   const cam=new T3(w.x+side,w.y+h,w.z-dir*back), tgt=new T3(w.x,w.y+.35,w.z+dir*ahead);
   if(!window.__ch||u===0){ window.__ch={c0:v.camera.position.clone(),t0:v.controls.target.clone()}; }
