@@ -154,3 +154,6 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-21 | Instagram | V5 Farmers vs Macron (40 s) | | | | | | | Text mit „Diesel doubled.“, zu den Spritpreis-Protesten |
 | 2026-10-21 | TikTok | V5 Farmers vs Macron (40 s) | | | | | | | |
 | 2026-10-21 | YouTube Shorts | V5 Farmers vs Macron (40 s) | | | | | | | |
+| 2026-10-22 | Instagram | V7 Trump's trade war in 2 moves | | ca. 40 kurz nach dem Posten | | | | | neue gelbe Untertitel; Reichweite deutlich schwächer, Verdacht: Politik-Inhalte werden gebremst |
+| 2026-10-22 | TikTok | V7 Trump's trade war in 2 moves | | | | | | | |
+| 2026-10-22 | YouTube Shorts | V7 Trump's trade war in 2 moves | | | | | | | |
