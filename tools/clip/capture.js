@@ -51,6 +51,25 @@ function checkScript(name,sc){
     return {name,errs,warns};
   });
 }
+// puzzle helpers: classic symbols (cburnett set from the game) floating above every piece, and a legend that maps our
+// pieces (photographed by the game's own pieceShot) to the classic ones, so chess players read the position at once
+const badges=(p,on)=>p.evaluate(on=>{ const box=document.getElementById('vidBadges'); box.style.display=on?'block':'none';
+  if(!on){ window.__badgeTick=null; return; }
+  const v=window.__v(), url=k=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(v.CBURNETT[k]);
+  window.__badgeTick=()=>{ box.textContent=''; const b=v.game.board(), T3=v.camera.position.constructor;
+    for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; const sq='abcdefgh'[f]+(8-r);
+      const w=v.sqPos(sq).clone().add(new T3(0,pc.type==='p'?1.05:1.45,0)).project(v.camera);
+      const im=document.createElement('img'); im.src=url(pc.color+pc.type.toUpperCase());
+      im.style.left=((w.x+1)/2*innerWidth)+'px'; im.style.top=((1-w.y)/2*innerHeight)+'px'; box.appendChild(im); } };
+  window.__badgeTick(); },on);
+const legend=(p,on)=>p.evaluate(on=>{ const el=document.getElementById('vidLegend'); el.style.display=on?'flex':'none'; if(!on) return;
+  const v=window.__v(), cl=k=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(v.CBURNETT[k]);
+  el.innerHTML=''; for(const [t,name] of [['r','Rook'],['n','Knight'],['b','Bishop']]){
+    const row=document.createElement('div'); row.className='row';
+    const our=document.createElement('img'); our.className='our'; our.src=v.pieceShot(t,'w').image.toDataURL();
+    row.append(our,Object.assign(document.createElement('span'),{className:'eq',textContent:'='}));
+    const c=document.createElement('img'); c.className='cl'; c.src=cl('w'+t.toUpperCase()); row.append(c,Object.assign(document.createElement('span'),{textContent:name}));
+    el.appendChild(row); } },on);
 const SCRIPTS={
  scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
    await mv('e2','e4',1300); await mv('e7','e5',1300);
@@ -113,11 +132,12 @@ const SCRIPTS={
    title:[VS,"Paul Morphy's famous puzzle"],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,7000,['a8','c8','b6'],.5);
    // steep view of the a- to c-files: the rook on a1 (the key piece) and both kings below the caption box
-   await fly(p,['b6','b7'],3.5,17,0,1500,.05); await shoot(1500);
-   await sub(p,'USA to move: mate in 2'); await shoot(2200);
+   await fly(p,['b6','b7'],3.5,17,0,1500,.05); await shoot(1200);
+   await sub(p,'Our pieces = classic pieces'); await legend(p,true); await shoot(3200); await legend(p,false);
+   await badges(p,true); await sub(p,'USA to move: mate in 2'); await shoot(2200);
    await sub(p,'Comment your move 👇'); await shoot(1800);
    for(const n of [5,4,3,2,1]){ await sub(p,'⏳ '+n); await shoot(1000); }
-   await sub(p,'Rook to a6!! 🤯'); await mv('a1','a6',2200);
+   await badges(p,false); await sub(p,'Rook to a6!! 🤯'); await mv('a1','a6',2200);
    await sub(p,'A quiet sacrifice …'); await shoot(1600);
    await sub(p,'Bishop moves? Rook takes a7, mate'); await shoot(2200);
    await sub(p,'So Russia takes the rook …'); await mv('b7','a6',2000);
@@ -157,13 +177,13 @@ const SCRIPTS={
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
  await p.clock.runFor(500);
- if(MODE==='test'){ if(process.env.TESTFLY){ const a=JSON.parse(process.env.TESTFLY); await p.evaluate(()=>{ window.__ob=window.__ob||null; }); await fly(p,a[0],a[1],a[2],a[3],1,a[4]); await p.clock.runFor(200); } if(process.env.TESTSUB) await sub(p,process.env.TESTSUB); if(process.env.TESTCSS) await p.addStyleTag({content:process.env.TESTCSS}); await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
+ if(MODE==='test'){ if(process.env.TESTFLY){ const a=JSON.parse(process.env.TESTFLY); await p.evaluate(()=>{ window.__ob=window.__ob||null; }); await fly(p,a[0],a[1],a[2],a[3],1,a[4]); await p.clock.runFor(200); } if(process.env.TESTBADGES) await badges(p,true); if(process.env.TESTLEGEND){ await p.clock.runFor(2000); await legend(p,true); } if(process.env.TESTSUB) await sub(p,process.env.TESTSUB); if(process.env.TESTCSS) await p.addStyleTag({content:process.env.TESTCSS}); await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
  const FPS=24, dtms=1000/FPS; let n=0; const log=[];
  const CL=process.env.CLIP||'scholar', FR='frames-'+CL; fs.mkdirSync(FR,{recursive:true});
  const START=+(process.env.START||0);
  const ONLY=+(process.env.ONLY||0); // re-render just the first ONLY frames (e.g. after changing the hook), keep the rest
  const t0=await p.evaluate(()=>{ window.__rec.length=0; return performance.now(); });
- const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)){ n++; continue; } await p.evaluate(()=>{ for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
+ const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold); };
  if(SC.hook){ // big question over the first seconds, the title appears once it is gone

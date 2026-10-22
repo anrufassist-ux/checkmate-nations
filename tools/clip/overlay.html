@@ -14,8 +14,18 @@ header.top,.console{display:none!important}
 #vidEnd .n{font-family:'Barlow Condensed',sans-serif;font-size:22px;margin-top:8px;color:rgba(255,255,255,.7);letter-spacing:.5px}
 #vidHook{position:fixed;left:0;right:0;top:34%;display:none;z-index:58;text-align:center;pointer-events:none}
 #vidHook span{display:inline-block;max-width:94vw;white-space:nowrap;font-family:'Black Ops One',sans-serif;font-size:40px;line-height:1.15;color:#fff;background:rgba(10,12,14,.78);border:3px solid #e8d9a8;border-radius:18px;padding:18px 22px;text-shadow:0 3px 12px rgba(0,0,0,.6);transform:rotate(-2deg)}
+/* puzzle clips: classic chess symbols above our pieces, and a legend (our piece = classic piece) */
+#vidBadges{position:fixed;inset:0;z-index:45;pointer-events:none;display:none}
+#vidBadges img{position:absolute;width:40px;height:40px;transform:translate(-50%,-100%);background:rgba(255,255,255,.88);border:2px solid #1a1208;border-radius:50%;padding:2px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+#vidLegend{position:fixed;left:50%;top:30%;transform:translateX(-50%);z-index:57;display:none;flex-direction:column;gap:10px;background:rgba(10,12,14,.86);border:3px solid #e8d9a8;border-radius:18px;padding:16px 22px;color:#fff;font-family:'Black Ops One',sans-serif;font-size:30px}
+#vidLegend .row{display:flex;align-items:center;gap:12px}
+#vidLegend .our{width:84px;height:84px}
+#vidLegend .eq{color:#ffd447}
+#vidLegend .cl{width:58px;height:58px;background:rgba(255,255,255,.9);border-radius:12px}
 </style>
 <div id="vidTitle"><div class="l1"></div><div class="l2"></div></div>
 <div id="vidNote">🚀 Flying car: a video special, not part of the game</div>
 <div id="vidHook"><span></span></div>
+<div id="vidBadges"></div>
+<div id="vidLegend"></div>
 <div id="vidEnd"><div class="t">CHECKMATE<br>NATIONS</div><div class="cta">PLAY FREE NOW</div><div class="s">checkmatenations.com</div><div class="n">No download · right in your browser</div></div>
