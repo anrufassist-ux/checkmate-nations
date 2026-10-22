@@ -7,7 +7,7 @@ def rep(a,b):
     global h
     assert a in h, 'patch anchor missing: '+a[:60]; h=h.replace(a,b,1)
 rep("<head>","<head>\n<base href=\"../../\">")  # vendor/, fonts/, bg/, board/ from the repo root
-rep("function setNations(w,b){","window.__v=()=>({doMove,setNations,setupPieces,setMode:m=>{mode=m;},setCaric:c=>{caricatures=c;},ensureAudio,game,camera,controls,placeCamera,sqPos,pieceShot,CBURNETT,setBoard,setBackground});\nfunction setNations(w,b){")
+rep("function setNations(w,b){","window.__v=()=>({doMove,setNations,setupPieces,setMode:m=>{mode=m;},setCaric:c=>{caricatures=c;},ensureAudio,game,camera,controls,placeCamera,sqPos,pieceShot,CBURNETT,setBoard,setBackground,pieces:()=>pieces});\nfunction setNations(w,b){")
 # sounds are not played but logged (time, key, volume); capture.js writes them to sounds.json for the mix
 rep("function playSample(k,vol){","function playSample(k,vol){\n  if(window.__rec){ if(!(window.SFX&&window.SFX[k])) return false; window.__rec.push([performance.now(),k,vol]); return true; }")
 rep("function boom(big){","function boom(big){\n  if(window.__rec){ window.__rec.push([performance.now(),big?'boomBig':'boom',1]); return; }")
