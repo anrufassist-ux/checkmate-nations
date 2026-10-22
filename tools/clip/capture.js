@@ -58,8 +58,8 @@ const badges=(p,on)=>p.evaluate(on=>{ const box=document.getElementById('vidBadg
   const v=window.__v(), url=k=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(v.CBURNETT[k]);
   window.__badgeTick=()=>{ box.textContent=''; const b=v.game.board(), T3=v.camera.position.constructor;
     for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; const sq='abcdefgh'[f]+(8-r);
-      const w=v.sqPos(sq).clone().add(new T3(0,pc.type==='p'?1.2:pc.type==='k'||pc.type==='q'?1.85:1.55,0)).project(v.camera);
-      const im=document.createElement('img'); im.src=url(pc.color+pc.type.toUpperCase());
+      const w=v.sqPos(sq).clone().add(new T3(.3,.02,.3)).project(v.camera); // small, in the front right corner of the square
+      const im=document.createElement('img'); im.src=url(pc.color+pc.type.toUpperCase()); im.style.filter=pc.color==='b'?'drop-shadow(0 0 2px #fff) drop-shadow(0 0 1px #fff)':'drop-shadow(0 0 2px rgba(0,0,0,.8))';
       im.style.left=((w.x+1)/2*innerWidth)+'px'; im.style.top=((1-w.y)/2*innerHeight)+'px'; box.appendChild(im); } };
   window.__badgeTick(); },on);
 const legend=(p,on)=>p.evaluate(on=>{ const el=document.getElementById('vidLegend'); el.style.display=on?'flex':'none'; if(!on) return;
@@ -128,7 +128,7 @@ const SCRIPTS={
    await sub(p,'France vs. UK · round 1,000? 👇'); await fly(p,['d4','e4','d5','e5'],8.2,8.6,0,1600,.02); await shoot(1700);
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
  // Puzzle format: Paul Morphy's famous mate in 2 (only solution 1.Ra6!! bxa6 2.b7#; any bishop move allows 2.Rxa7#)
- puzzle_morphy:{nations:['usa','rus'],fen:'kbK5/pp6/1P6/8/8/8/8/R7 w - - 0 1',hook:'MATE IN 2 🧩<br>CAN YOU FIND IT?',
+ puzzle_morphy:{nations:['usa','rus'],board:'classic',bg:'classic',fen:'kbK5/pp6/1P6/8/8/8/8/R7 w - - 0 1',hook:'MATE IN 2 🧩<br>CAN YOU FIND IT?',
    title:[VS,"Paul Morphy's famous puzzle"],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,7000,['a8','c8','b6'],.5);
    // steep view of the a- to c-files: the rook on a1 (the key piece) and both kings below the caption box
@@ -172,8 +172,8 @@ const SCRIPTS={
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
  await p.clock.runFor(1500);
  const SC=SCRIPTS[process.env.CLIP||'scholar'];
- await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,fen:SC.fen,car:SC.car,farm:SC.farm});
- await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
+ await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,fen:SC.fen,car:SC.car,farm:SC.farm,board:process.env.TESTBOARD||SC.board,bg:process.env.TESTBG||SC.bg});
+ await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.board) v.setBoard(sc.board); if(sc.bg) v.setBackground(sc.bg); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
  await p.clock.runFor(500);
