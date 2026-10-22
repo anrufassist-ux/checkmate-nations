@@ -3,7 +3,9 @@ header.top,.console{display:none!important}
 #vidTitle{position:fixed;top:6%;left:0;right:0;text-align:center;z-index:50;font-family:'Black Ops One',sans-serif;color:#fff;text-shadow:0 3px 14px rgba(0,0,0,.8);pointer-events:none}
 #vidTitle .l1{font-size:46px;letter-spacing:2px}
 #vidTitle .l1 .u{color:#7fa8ec}#vidTitle .l1 .r{color:#ff6a5c}
-#vidTitle .l2{font-size:26px;margin-top:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px}
+/* subtitle: big yellow caption box set apart below the title, so viewers actually read it */
+#vidTitle .l2{position:fixed;left:50%;top:21%;transform:translateX(-50%);width:max-content;max-width:92vw;margin:0;font-family:'Black Ops One',sans-serif;font-size:38px;line-height:1.2;letter-spacing:1px;color:#ffd447;background:rgba(10,12,14,.8);border:3px solid #e8d9a8;border-radius:16px;padding:10px 22px;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+#vidTitle .l2:empty{display:none}
 #vidNote{position:fixed;left:0;right:0;bottom:3%;text-align:center;z-index:55;display:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:17px;letter-spacing:.5px;color:rgba(255,255,255,.75);text-shadow:0 2px 8px rgba(0,0,0,.8)}
 #vidEnd{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,12,14,.9);z-index:60;color:#fff;text-align:center}
 #vidEnd .t{font-family:'Black Ops One',sans-serif;font-size:58px;line-height:1.05;color:#e8d9a8}
