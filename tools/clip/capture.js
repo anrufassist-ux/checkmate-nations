@@ -70,6 +70,21 @@ const legend=(p,on)=>p.evaluate(on=>{ const el=document.getElementById('vidLegen
     row.append(our,Object.assign(document.createElement('span'),{className:'eq',textContent:'='}));
     const c=document.createElement('img'); c.className='cl'; c.src=cl('w'+t.toUpperCase()); row.append(c,Object.assign(document.createElement('span'),{textContent:name}));
     el.appendChild(row); } },on);
+// Camera language for clips (keep every clip calm and readable):
+//  1. establishing shot: the whole area of the action fills the frame, no empty table around it
+//  2. chase: when a piece makes the key move, the camera rides behind it (chase(p,…) as the 4th argument of mv)
+//  3. push-in: once the action is in one corner, glide in slowly; a second, closer push-in for the mate
+//  4. every camera move takes at least ~2 s (eased); no cuts back and forth without a reason
+// chase: camera behind the moving piece (seen from its own side), low and slightly to the side, looking where it drives;
+// `ease` blends in from the current camera over the first part of the move so it never jumps
+const chase=(p,{back=2.2,h=1.1,side=.5,ahead=2.6,ease=.25}={})=>(u,to)=>p.evaluate(([u,to,back,h,side,ahead,ease])=>{
+  const v=window.__v(), m=window.__mover; if(!m) return; // the game re-files the piece only after the move const T3=v.camera.position.constructor;
+  const w=m.getWorldPosition(new T3()), dir=m.userData.color==='w'?-1:1; // white drives toward -z
+  const cam=new T3(w.x+side,w.y+h,w.z-dir*back), tgt=new T3(w.x,w.y+.35,w.z+dir*ahead);
+  if(!window.__ch||u===0){ window.__ch={c0:v.camera.position.clone(),t0:v.controls.target.clone()}; }
+  const k=Math.min(1,u/ease), e=(1-Math.cos(Math.PI*k))/2, c=window.__ch;
+  v.camera.position.lerpVectors(c.c0,cam,e); v.controls.target.lerpVectors(c.t0,tgt,e); v.camera.lookAt(v.controls.target);
+  if(u>=1) window.__ch=null; },[u,to,back,h,side,ahead,ease]);
 const SCRIPTS={
  scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
    await mv('e2','e4',1300); await mv('e7','e5',1300);
@@ -191,7 +206,7 @@ const SCRIPTS={
  const t0=await p.evaluate(()=>{ window.__rec.length=0; return performance.now(); });
  const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
- const mv=async(from,to,hold)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold); };
+ const mv=async(from,to,hold,each)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__mover=window.__v().pieces()[a]; window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold,each&&(u=>each(u,to))); };
  if(SC.hook){ // big question over the first seconds, the title appears once it is gone
    await p.evaluate(h=>{ const e=document.getElementById('vidHook'); e.querySelector('span').innerHTML=h; e.style.display='block'; document.getElementById('vidTitle').style.display='none'; },SC.hook);
    await shoot(2600);
