@@ -58,7 +58,7 @@ const badges=(p,on)=>p.evaluate(on=>{ const box=document.getElementById('vidBadg
   const v=window.__v(), url=k=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(v.CBURNETT[k]);
   window.__badgeTick=()=>{ box.textContent=''; const b=v.game.board(), T3=v.camera.position.constructor;
     for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; const sq='abcdefgh'[f]+(8-r);
-      const w=v.sqPos(sq).clone().add(new T3(0,pc.type==='p'?1.05:1.45,0)).project(v.camera);
+      const w=v.sqPos(sq).clone().add(new T3(0,pc.type==='p'?1.2:pc.type==='k'||pc.type==='q'?1.85:1.55,0)).project(v.camera);
       const im=document.createElement('img'); im.src=url(pc.color+pc.type.toUpperCase());
       im.style.left=((w.x+1)/2*innerWidth)+'px'; im.style.top=((1-w.y)/2*innerHeight)+'px'; box.appendChild(im); } };
   window.__badgeTick(); },on);
@@ -133,7 +133,7 @@ const SCRIPTS={
    await orbit(p,shoot,7000,['a8','c8','b6'],.5);
    // steep view of the a- to c-files: the rook on a1 (the key piece) and both kings below the caption box
    await fly(p,['b6','b7'],3.5,17,0,1500,.05); await shoot(1200);
-   await sub(p,'Our pieces = classic pieces'); await legend(p,true); await shoot(3200); await legend(p,false);
+   await sub(p,'Quick guide 👇'); await legend(p,true); await shoot(3200); await legend(p,false);
    await badges(p,true); await sub(p,'USA to move: mate in 2'); await shoot(2200);
    await sub(p,'Comment your move 👇'); await shoot(1800);
    for(const n of [5,4,3,2,1]){ await sub(p,'⏳ '+n); await shoot(1000); }
