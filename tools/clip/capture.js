@@ -130,19 +130,25 @@ const SCRIPTS={
  // Puzzle format: Paul Morphy's famous mate in 2 (only solution 1.Ra6!! bxa6 2.b7#; any bishop move allows 2.Rxa7#)
  puzzle_morphy:{nations:['usa','rus'],board:'classic',bg:'classic',fen:'kbK5/pp6/1P6/8/8/8/8/R7 w - - 0 1',hook:'MATE IN 2 🧩<br>CAN YOU FIND IT?',
    title:[VS,"Paul Morphy's famous puzzle"],play:async(mv,p,shoot)=>{
+   // framing: the pieces sit in the upper half and the empty middle of the board is where the play button appears when
+   // someone pauses; the caption box sits right under the title
+   const board=ms=>fly(p,['b4','b5'],3.5,19,0,ms,.05);
    await orbit(p,shoot,7000,['a8','c8','b6'],.5);
-   // steep view of the a- to c-files: the rook on a1 (the key piece) and both kings below the caption box
-   await fly(p,['b6','b7'],3.5,17,0,1500,.05); await shoot(1200);
+   await board(1500); await shoot(1200);
    await sub(p,'Quick guide 👇'); await legend(p,true); await shoot(3200); await legend(p,false);
    await badges(p,true); await sub(p,'USA to move: mate in 2'); await shoot(2200);
    await sub(p,'Comment your move 👇'); await shoot(1800);
    for(const n of [5,4,3,2,1]){ await sub(p,'⏳ '+n); await shoot(1000); }
-   await badges(p,false); await sub(p,'Rook to a6!! 🤯'); await mv('a1','a6',2200);
-   await sub(p,'A quiet sacrifice …'); await shoot(1600);
-   await sub(p,'Bishop moves? Rook takes a7, mate'); await shoot(2200);
-   await sub(p,'So Russia takes the rook …'); await mv('b7','a6',2000);
+   await sub(p,'Rook to a6!! 🤯'); await mv('a1','a6',2000);
+   // short close-up of the Russian king, then back to the whole corner
+   await sub(p,'Putin: 😳'); await fly(p,['a8'],1.3,.75,.62,900,.2); await shoot(1300);
+   await board(900); await shoot(500);
+   await sub(p,'A quiet sacrifice …'); await shoot(1500);
+   await sub(p,'Bishop moves? Rxa7 mate'); await shoot(2200);
+   await sub(p,'So Russia takes the rook …'.replace('So ','')); await mv('b7','a6',2000);
    await sub(p,'Pawn to b7 …'); await shoot(1200);
-   await hideTitle(p); await mv('b6','b7',16000); }},
+   await badges(p,false); await hideTitle(p); await mv('b6','b7',16000); }},
+
  // Fool's Mate as Trump's trade war: the USA ruins itself with two tariff moves, the panda queen only has to collect
  tariff:{nations:['usa','chn'],hook:"TRUMP'S TRADE WAR<br>IN 2 MOVES 😬",title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','Trade war, round 1 …'],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,8400,['e1','h4','e5','g4','d8'],.75);
