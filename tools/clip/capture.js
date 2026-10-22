@@ -108,6 +108,21 @@ const SCRIPTS={
    await stop('King: Macron, defender of the Élysée',['e1'],1.35,.65,.62,.25);
    await sub(p,'France vs. UK · round 1,000? 👇'); await fly(p,['d4','e4','d5','e5'],8.2,8.6,0,1600,.02); await shoot(1700);
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
+ // Puzzle format: Paul Morphy's famous mate in 2 (only solution 1.Ra6!! bxa6 2.b7#; any bishop move allows 2.Rxa7#)
+ puzzle_morphy:{nations:['usa','rus'],fen:'kbK5/pp6/1P6/8/8/8/8/R7 w - - 0 1',hook:'MATE IN 2 🧩<br>CAN YOU FIND IT?',
+   title:[VS,"Paul Morphy's famous puzzle"],play:async(mv,p,shoot)=>{
+   await orbit(p,shoot,7000,['a8','c8','b6'],.5);
+   // steep view of the a- to c-files: the rook on a1 (the key piece) and both kings below the caption box
+   await fly(p,['b6','b7'],3.5,17,0,1500,.05); await shoot(1500);
+   await sub(p,'USA to move: mate in 2'); await shoot(2200);
+   await sub(p,'Comment your move 👇'); await shoot(1800);
+   for(const n of [5,4,3,2,1]){ await sub(p,'⏳ '+n); await shoot(1000); }
+   await sub(p,'Rook to a6!! 🤯'); await mv('a1','a6',2200);
+   await sub(p,'A quiet sacrifice …'); await shoot(1600);
+   await sub(p,'Bishop moves? Rook takes a7, mate'); await shoot(2200);
+   await sub(p,'So Russia takes the rook …'); await mv('b7','a6',2000);
+   await sub(p,'Pawn to b7 …'); await shoot(1200);
+   await hideTitle(p); await mv('b6','b7',16000); }},
  // Fool's Mate as Trump's trade war: the USA ruins itself with two tariff moves, the panda queen only has to collect
  tariff:{nations:['usa','chn'],hook:"TRUMP'S TRADE WAR<br>IN 2 MOVES 😬",title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','Trade war, round 1 …'],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,8400,['e1','h4','e5','g4','d8'],.75);
@@ -142,7 +157,7 @@ const SCRIPTS={
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
  await p.clock.runFor(500);
- if(MODE==='test'){ if(process.env.TESTSUB) await sub(p,process.env.TESTSUB); if(process.env.TESTCSS) await p.addStyleTag({content:process.env.TESTCSS}); await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
+ if(MODE==='test'){ if(process.env.TESTFLY){ const a=JSON.parse(process.env.TESTFLY); await p.evaluate(()=>{ window.__ob=window.__ob||null; }); await fly(p,a[0],a[1],a[2],a[3],1,a[4]); await p.clock.runFor(200); } if(process.env.TESTSUB) await sub(p,process.env.TESTSUB); if(process.env.TESTCSS) await p.addStyleTag({content:process.env.TESTCSS}); await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
  const FPS=24, dtms=1000/FPS; let n=0; const log=[];
  const CL=process.env.CLIP||'scholar', FR='frames-'+CL; fs.mkdirSync(FR,{recursive:true});
  const START=+(process.env.START||0);
