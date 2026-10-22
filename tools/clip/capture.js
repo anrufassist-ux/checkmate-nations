@@ -58,7 +58,7 @@ const badges=(p,on)=>p.evaluate(on=>{ const box=document.getElementById('vidBadg
   const v=window.__v(), url=k=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(v.CBURNETT[k]);
   window.__badgeTick=()=>{ box.textContent=''; const b=v.game.board(), T3=v.camera.position.constructor;
     for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; const sq='abcdefgh'[f]+(8-r);
-      const w=v.sqPos(sq).clone().add(new T3(0,pc.type==='p'?1.2:pc.type==='k'||pc.type==='q'?1.85:1.55,0)).project(v.camera);
+      const w=v.sqPos(sq).clone().add(new T3(.3,.02,.3)).project(v.camera); // small, in the front right corner of the square
       const im=document.createElement('img'); im.src=url(pc.color+pc.type.toUpperCase());
       im.style.left=((w.x+1)/2*innerWidth)+'px'; im.style.top=((1-w.y)/2*innerHeight)+'px'; box.appendChild(im); } };
   window.__badgeTick(); },on);
