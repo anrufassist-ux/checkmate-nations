@@ -111,7 +111,7 @@ const SCRIPTS={
  // Puzzle format: Paul Morphy's famous mate in 2 (only solution 1.Ra6!! bxa6 2.b7#; any bishop move allows 2.Rxa7#)
  puzzle_morphy:{nations:['usa','rus'],fen:'kbK5/pp6/1P6/8/8/8/8/R7 w - - 0 1',hook:'MATE IN 2 🧩<br>CAN YOU FIND IT?',
    title:[VS,"Paul Morphy's famous puzzle"],play:async(mv,p,shoot)=>{
-   await orbit(p,shoot,7000,['a8','c8','a6','b6'],.5);
+   await orbit(p,shoot,7000,['a1','a8','c8','c1'],.78); // the whole a-file must be in the picture: the rook on a1 is the key piece
    await sub(p,'USA to move. Mate in 2 🧩'); await shoot(2200);
    await sub(p,'Comment your move 👇'); await shoot(1800);
    for(const n of [5,4,3,2,1]){ await sub(p,'⏳ '+n); await shoot(1000); }
