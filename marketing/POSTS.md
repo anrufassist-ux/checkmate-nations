@@ -126,6 +126,18 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: Trump's trade war in 2 moves 😬 USA vs China #shorts #chess
 - Hinweis: Reels haben keinen eigenen Alt-Text (nur Foto-Posts), daher keiner.
 
+### V8 · Puzzle: Morphy's mate in 2 (neues Format: Schach-Rätsel)
+- Datei: `marketing/puzzle-morphy-mate-in-2.mp4` (48 s), Hook „Mate in 2 🧩 Can you find it?“, Aufgabe + „Comment your move 👇“, Countdown 5–1, Lösung 1.Ra6!! bxa6 2.b7# mit Erklär-Untertiteln, Putin im Gefängnis, Endkarte
+- Instagram/TikTok-Text:
+  > Mate in 2 🧩 Paul Morphy's famous puzzle. Most players get it wrong. Can you find it before the timer runs out? ⏳
+  > Comment your move 👇 (no spoilers!)
+  > Play free: link in bio
+- Hashtags: #chess #chesspuzzle #chesstok #mateintwo #chessgame
+- Titelbild (Cover): Stellung mit Aufgabe („USA to move: mate in 2“), nicht das Gefängnis (sonst ist die Lösung verraten)
+- Erster eigener Kommentar: Hint: it's a quiet move 🤫
+- YouTube-Shorts-Titel: Mate in 2: can you solve Morphy's famous puzzle? 🧩 #shorts #chess
+- Ziel: Test, ob Rätsel ohne Tagespolitik besser gepusht werden als die Satire-Clips (Aufrufe nach 2 Tagen vergleichen)
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
