@@ -10,6 +10,13 @@ Records a scripted game as a vertical video (720x1280, 24 fps) for TikTok / Reel
 4. `python3 mix.py <clip> [out.mp4]` mixes the frames with the game music (`window.MUSIC`) and every sound the game played
    (`window.SFX` keys, logged with their times in `sounds-<clip>.json`; synth explosions use `audio-extra/boom.wav`).
 
+**Camera language (for every clip):** 1. establishing shot: the area of the action fills the frame, no empty table around it
+(`compact(p,true)` hides the title and puts the caption at the very top); 2. chase: the camera rides behind the piece that makes
+the key move (`mv(from,to,hold,chase(p))`); 3. push-in: once the action is in one corner, glide in slowly, a second closer
+push-in for the mate; 4. every camera move takes at least about 2 s, eased, no hectic zooms. Keep the middle of the screen
+calm where possible: platforms put the play button there when someone pauses. Puzzle clips also show a legend (`legend()`) and
+small classic symbols on the pieces (`badges()`) until the mate.
+
 **Chess check (mandatory):** `node capture.js check` replays every script with chess.js 0.10.3 (same as the game). It fails on an
 illegal move, on a clip that does not end in checkmate (set `end:'open'` for clips that are not meant to end in mate) and
 warns when the king of the defending side is stuck and only a few other moves keep it from stalemate: that move must be on

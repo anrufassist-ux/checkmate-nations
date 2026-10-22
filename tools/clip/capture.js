@@ -70,6 +70,23 @@ const legend=(p,on)=>p.evaluate(on=>{ const el=document.getElementById('vidLegen
     row.append(our,Object.assign(document.createElement('span'),{className:'eq',textContent:'='}));
     const c=document.createElement('img'); c.className='cl'; c.src=cl('w'+t.toUpperCase()); row.append(c,Object.assign(document.createElement('span'),{textContent:name}));
     el.appendChild(row); } },on);
+// Camera language for clips (keep every clip calm and readable):
+//  1. establishing shot: the whole area of the action fills the frame, no empty table around it
+//  2. chase: when a piece makes the key move, the camera rides behind it (chase(p,…) as the 4th argument of mv)
+//  3. push-in: once the action is in one corner, glide in slowly; a second, closer push-in for the mate
+//  4. every camera move takes at least ~2 s (eased); no cuts back and forth without a reason
+// chase: camera behind the moving piece (seen from its own side), low and slightly to the side, looking where it drives;
+// `ease` blends in from the current camera over the first part of the move so it never jumps
+const chase=(p,{back=2.2,h=1.1,side=.5,ahead=2.6,ease=.25}={})=>(u,to)=>p.evaluate(([u,to,back,h,side,ahead,ease])=>{
+  const v=window.__v(), m=window.__mover; if(!m) return; // the game re-files the piece only after the move
+  const T3=v.camera.position.constructor;
+  const w=m.getWorldPosition(new T3()), dir=m.userData.color==='w'?-1:1; // white drives toward -z
+  const cam=new T3(w.x+side,w.y+h,w.z-dir*back), tgt=new T3(w.x,w.y+.35,w.z+dir*ahead);
+  if(!window.__ch||u===0){ window.__ch={c0:v.camera.position.clone(),t0:v.controls.target.clone()}; }
+  const k=Math.min(1,u/ease), e=(1-Math.cos(Math.PI*k))/2, c=window.__ch;
+  v.camera.position.lerpVectors(c.c0,cam,e); v.controls.target.lerpVectors(c.t0,tgt,e); v.camera.lookAt(v.controls.target);
+  if(u>=1) window.__ch=null; },[u,to,back,h,side,ahead,ease]);
+const compact=(p,on)=>p.evaluate(on=>document.body.classList.toggle('compact',on),on);
 const SCRIPTS={
  scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
    await mv('e2','e4',1300); await mv('e7','e5',1300);
@@ -130,24 +147,23 @@ const SCRIPTS={
  // Puzzle format: Paul Morphy's famous mate in 2 (only solution 1.Ra6!! bxa6 2.b7#; any bishop move allows 2.Rxa7#)
  puzzle_morphy:{nations:['usa','rus'],board:'classic',bg:'classic',fen:'kbK5/pp6/1P6/8/8/8/8/R7 w - - 0 1',hook:'MATE IN 2 🧩<br>CAN YOU FIND IT?',
    title:[VS,"Paul Morphy's famous puzzle"],play:async(mv,p,shoot)=>{
-   // framing: the pieces sit in the upper half and the empty middle of the board is where the play button appears when
-   // someone pauses; the caption box sits right under the title
-   const board=ms=>fly(p,['b4','b5'],3.5,19,0,ms,.05);
+   // establishing shot: the board fills the screen (title hidden, caption on top), the middle stays empty for the play button
    await orbit(p,shoot,7000,['a8','c8','b6'],.5);
-   await board(1500); await shoot(1200);
+   await compact(p,true); await fly(p,['c4','c5'],2.6,13.5,0,2200,-.05); await shoot(2400);
    await sub(p,'Quick guide 👇'); await legend(p,true); await shoot(3200); await legend(p,false);
    await badges(p,true); await sub(p,'USA to move: mate in 2'); await shoot(2200);
    await sub(p,'Comment your move 👇'); await shoot(1800);
    for(const n of [5,4,3,2,1]){ await sub(p,'⏳ '+n); await shoot(1000); }
-   await sub(p,'Rook to a6!! 🤯'); await mv('a1','a6',2000);
-   // short close-up of the Russian king, then back to the whole corner
-   await sub(p,'Putin: 😳'); await fly(p,['a8'],1.3,.75,.62,900,.2); await shoot(1300);
-   await board(900); await shoot(500);
-   await sub(p,'A quiet sacrifice …'); await shoot(1500);
+   // chase: the camera rides behind the tank up the a-file
+   await sub(p,'Rook to a6!! 🤯'); await mv('a1','a6',3200,chase(p));
+   // the action is in one corner now: slow push-in on it
+   await sub(p,'A quiet sacrifice …'); await fly(p,['b5','b6'],3.6,6.5,0,2400,.1); await shoot(2600);
    await sub(p,'Bishop moves? Rxa7 mate'); await shoot(2200);
-   await sub(p,'So Russia takes the rook …'.replace('So ','')); await mv('b7','a6',2000);
-   await sub(p,'Pawn to b7 …'); await shoot(1200);
+   await sub(p,'Russia takes the rook …'); await mv('b7','a6',2400);
+   // second, closer push-in for the mate
+   await sub(p,'Pawn to b7 …'); await fly(p,['b6','b7'],3.2,5.5,0,2200,.1); await shoot(2400);
    await badges(p,false); await hideTitle(p); await mv('b6','b7',16000); }},
+
 
  // Fool's Mate as Trump's trade war: the USA ruins itself with two tariff moves, the panda queen only has to collect
  tariff:{nations:['usa','chn'],hook:"TRUMP'S TRADE WAR<br>IN 2 MOVES 😬",title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','Trade war, round 1 …'],play:async(mv,p,shoot)=>{
@@ -183,7 +199,7 @@ const SCRIPTS={
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
  await p.clock.runFor(500);
- if(MODE==='test'){ if(process.env.TESTFLY){ const a=JSON.parse(process.env.TESTFLY); await p.evaluate(()=>{ window.__ob=window.__ob||null; }); await fly(p,a[0],a[1],a[2],a[3],1,a[4]); await p.clock.runFor(200); } if(process.env.TESTBADGES) await badges(p,true); if(process.env.TESTLEGEND){ await p.clock.runFor(2000); await legend(p,true); } if(process.env.TESTSUB) await sub(p,process.env.TESTSUB); if(process.env.TESTCSS) await p.addStyleTag({content:process.env.TESTCSS}); await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
+ if(MODE==='test'){ if(process.env.TESTFLY){ const a=JSON.parse(process.env.TESTFLY); await p.evaluate(()=>{ window.__ob=window.__ob||null; }); await fly(p,a[0],a[1],a[2],a[3],1,a[4]); await p.clock.runFor(200); } if(process.env.TESTCOMPACT) await p.evaluate(()=>document.body.classList.add('compact')); if(process.env.TESTBADGES) await badges(p,true); if(process.env.TESTLEGEND){ await p.clock.runFor(2000); await legend(p,true); } if(process.env.TESTSUB) await sub(p,process.env.TESTSUB); if(process.env.TESTCSS) await p.addStyleTag({content:process.env.TESTCSS}); await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
  const FPS=24, dtms=1000/FPS; let n=0; const log=[];
  const CL=process.env.CLIP||'scholar', FR='frames-'+CL; fs.mkdirSync(FR,{recursive:true});
  const START=+(process.env.START||0);
@@ -191,7 +207,7 @@ const SCRIPTS={
  const t0=await p.evaluate(()=>{ window.__rec.length=0; return performance.now(); });
  const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
- const mv=async(from,to,hold)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold); };
+ const mv=async(from,to,hold,each)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__mover=window.__v().pieces()[a]; window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold,each&&(u=>each(u,to))); };
  if(SC.hook){ // big question over the first seconds, the title appears once it is gone
    await p.evaluate(h=>{ const e=document.getElementById('vidHook'); e.querySelector('span').innerHTML=h; e.style.display='block'; document.getElementById('vidTitle').style.display='none'; },SC.hook);
    await shoot(2600);
