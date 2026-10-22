@@ -59,7 +59,7 @@ const badges=(p,on)=>p.evaluate(on=>{ const box=document.getElementById('vidBadg
   window.__badgeTick=()=>{ box.textContent=''; const b=v.game.board(), T3=v.camera.position.constructor;
     for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; const sq='abcdefgh'[f]+(8-r);
       const w=v.sqPos(sq).clone().add(new T3(.3,.02,.3)).project(v.camera); // small, in the front right corner of the square
-      const im=document.createElement('img'); im.src=url(pc.color+pc.type.toUpperCase());
+      const im=document.createElement('img'); im.src=url(pc.color+pc.type.toUpperCase()); im.style.filter=pc.color==='b'?'drop-shadow(0 0 2px #fff) drop-shadow(0 0 1px #fff)':'drop-shadow(0 0 2px rgba(0,0,0,.8))';
       im.style.left=((w.x+1)/2*innerWidth)+'px'; im.style.top=((1-w.y)/2*innerHeight)+'px'; box.appendChild(im); } };
   window.__badgeTick(); },on);
 const legend=(p,on)=>p.evaluate(on=>{ const el=document.getElementById('vidLegend'); el.style.display=on?'flex':'none'; if(!on) return;
@@ -172,8 +172,8 @@ const SCRIPTS={
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
  await p.clock.runFor(1500);
  const SC=SCRIPTS[process.env.CLIP||'scholar'];
- await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,fen:SC.fen,car:SC.car,farm:SC.farm});
- await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
+ await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,fen:SC.fen,car:SC.car,farm:SC.farm,board:process.env.TESTBOARD||SC.board,bg:process.env.TESTBG||SC.bg});
+ await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.board) v.setBoard(sc.board); if(sc.bg) v.setBackground(sc.bg); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
  await p.clock.runFor(500);
