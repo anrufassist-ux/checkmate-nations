@@ -85,6 +85,7 @@ const chase=(p,{back=2.2,h=1.1,side=.5,ahead=2.6,ease=.25}={})=>(u,to)=>p.evalua
   const k=Math.min(1,u/ease), e=(1-Math.cos(Math.PI*k))/2, c=window.__ch;
   v.camera.position.lerpVectors(c.c0,cam,e); v.controls.target.lerpVectors(c.t0,tgt,e); v.camera.lookAt(v.controls.target);
   if(u>=1) window.__ch=null; },[u,to,back,h,side,ahead,ease]);
+const compact=(p,on)=>p.evaluate(on=>document.body.classList.toggle('compact',on),on);
 const SCRIPTS={
  scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
    await mv('e2','e4',1300); await mv('e7','e5',1300);
@@ -198,7 +199,7 @@ const SCRIPTS={
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
  await p.clock.runFor(500);
- if(MODE==='test'){ if(process.env.TESTFLY){ const a=JSON.parse(process.env.TESTFLY); await p.evaluate(()=>{ window.__ob=window.__ob||null; }); await fly(p,a[0],a[1],a[2],a[3],1,a[4]); await p.clock.runFor(200); } if(process.env.TESTBADGES) await badges(p,true); if(process.env.TESTLEGEND){ await p.clock.runFor(2000); await legend(p,true); } if(process.env.TESTSUB) await sub(p,process.env.TESTSUB); if(process.env.TESTCSS) await p.addStyleTag({content:process.env.TESTCSS}); await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
+ if(MODE==='test'){ if(process.env.TESTFLY){ const a=JSON.parse(process.env.TESTFLY); await p.evaluate(()=>{ window.__ob=window.__ob||null; }); await fly(p,a[0],a[1],a[2],a[3],1,a[4]); await p.clock.runFor(200); } if(process.env.TESTCOMPACT) await p.evaluate(()=>document.body.classList.add('compact')); if(process.env.TESTBADGES) await badges(p,true); if(process.env.TESTLEGEND){ await p.clock.runFor(2000); await legend(p,true); } if(process.env.TESTSUB) await sub(p,process.env.TESTSUB); if(process.env.TESTCSS) await p.addStyleTag({content:process.env.TESTCSS}); await p.screenshot({path:'test.png'}); await b.close(); srv.close(); return; }
  const FPS=24, dtms=1000/FPS; let n=0; const log=[];
  const CL=process.env.CLIP||'scholar', FR='frames-'+CL; fs.mkdirSync(FR,{recursive:true});
  const START=+(process.env.START||0);
