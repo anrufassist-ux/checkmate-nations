@@ -138,6 +138,18 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: Mate in 2: can you solve Morphy's famous puzzle? 🧩 #shorts #chess
 - Ziel: Test, ob Rätsel ohne Tagespolitik besser gepusht werden als die Satire-Clips (Aufrufe nach 2 Tagen vergleichen)
 
+### V9 · Most people lose to this AI (Werbung für die KI-Challenge)
+- Datei: `marketing/beat-the-ai.mp4` (55 s), Hook „Most people lose to this AI 🤖“, echte Partie gegen die Normal-KI (USA vs Russland, Marmorbrett, Gipfeltreffen): Weiß spielt schwach (1.g4?), die KI bestraft jeden Fehler, Turm und Springer gehen verloren, am Ende Dame g3 matt, Trump im Gefängnis, Endkarte „Can you beat it? AI Challenge 🏆“
+- Instagram/TikTok-Text:
+  > Most people lose to this AI 🤖 I played like a beginner – and it showed no mercy.
+  > Beat it on Normal and your name goes into the Hall of Fame 🏆
+  > Play free: link in bio
+- Hashtags: #chess #chesstok #chessai #chesschallenge #chessgame
+- Titelbild (Cover): Hook-Bild mit „Most people lose to this AI“
+- Erster eigener Kommentar: Who's the first to get into the Hall of Fame? 👇
+- YouTube-Shorts-Titel: Can you beat this chess AI? Most people lose 🤖 #shorts #chess
+- Hinweis: Für die Hall of Fame braucht man ein Konto (kostenlos), spielen geht ohne
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |

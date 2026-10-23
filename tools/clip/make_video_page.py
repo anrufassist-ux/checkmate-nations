@@ -7,7 +7,7 @@ def rep(a,b):
     global h
     assert a in h, 'patch anchor missing: '+a[:60]; h=h.replace(a,b,1)
 rep("<head>","<head>\n<base href=\"../../\">")  # vendor/, fonts/, bg/, board/ from the repo root
-rep("function setNations(w,b){","window.__v=()=>({doMove,setNations,setupPieces,setMode:m=>{mode=m;},setCaric:c=>{caricatures=c;},ensureAudio,game,camera,controls,placeCamera,sqPos,pieceShot,CBURNETT,setBoard,setBackground,pieces:()=>pieces});\nfunction setNations(w,b){")
+rep("function setNations(w,b){","window.__v=()=>({doMove,setNations,setupPieces,setMode:m=>{mode=m;},setCaric:c=>{caricatures=c;},ensureAudio,game,camera,controls,placeCamera,sqPos,pieceShot,CBURNETT,setBoard,setBackground,pieces:()=>pieces,T,scene,squareMeshes,floor:()=>FLOOR,frame,RIM,drawRim});\nfunction setNations(w,b){")
 # sounds are not played but logged (time, key, volume); capture.js writes them to sounds.json for the mix
 rep("function playSample(k,vol){","function playSample(k,vol){\n  if(window.__rec){ if(!(window.SFX&&window.SFX[k])) return false; window.__rec.push([performance.now(),k,vol]); return true; }")
 rep("function boom(big){","function boom(big){\n  if(window.__rec){ window.__rec.push([performance.now(),big?'boomBig':'boom',1]); return; }")
@@ -17,7 +17,7 @@ rep("shift=new T.Vector3(side*2.6,0,0);","shift=new T.Vector3(dest.x-controls.ta
 rep("  startCrying(king);\n  wake(15000);","  startCrying(king);\n  { const hp=new T.Vector3(); king.userData.head.getWorldPosition(hp); const c1=camera.position.clone(), t1=controls.target.clone(), t2=hp.clone().add(new T.Vector3(0,.15,0)), c2=hp.clone().add(new T.Vector3(0,2.0,4.0)); $('banner').hidden=true; controls.minDistance=.5; controls.maxPolarAngle=1.6; await animate(1.8,t=>{ const e=ease(t); camera.position.copy(c1).lerp(c2,e); controls.target.copy(t1).lerp(t2,e); camera.lookAt(controls.target); }); }\n  wake(15000);")
 rep("// size balance:",open(os.path.join(here,'car.js')).read()+open(os.path.join(here,'farm.js')).read()+"// size balance:")
 rep("  const g=polish(makePieceRaw(type,color)), u=g.userData||{};","  const g=polish(window.__car&&type==='n'&&color===window.__car?makeCar(color):window.__farm&&color===window.__farm&&(type==='p'||type==='k')?makeFarmPiece(type,color):makePieceRaw(type,color)), u=g.userData||{};")
-rep("  const anim = res.piece==='n' ? droneHop(mover,res.to)","  const anim = res.piece==='n' ? (mover.userData.car?carFlip(mover,res.to):droneHop(mover,res.to))")
+rep("             : res.piece==='n' ? droneHop(mover,res.to)","             : res.piece==='n' ? (mover.userData.car?carFlip(mover,res.to):droneHop(mover,res.to))")
 rep("  vehicleSound(res.piece);","  if(mover.userData.car){ if(window.__rec) window.__rec.push([performance.now(),'boom',.45]); } else vehicleSound(res.piece);")
 h+=open(os.path.join(here,'overlay.html')).read()
 open(os.path.join(here,'video.html'),'w').write(h)
