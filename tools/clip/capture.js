@@ -28,7 +28,7 @@ const look=(p,focus,zoom,ms,lift)=>p.evaluate(([focus,zoom,ms,lift])=>{ const v=
 // `lift` above the board; a slight side offset keeps it from looking flat
 const fly=(p,focus,dist,h,lift,ms,side)=>p.evaluate(([focus,dist,h,lift,ms,side])=>{ const v=window.__v(), T3=v.camera.position.constructor;
   const f=focus.reduce((a,s)=>a.add(v.sqPos(s)),new T3()).multiplyScalar(1/focus.length); f.y=lift;
-  const c1=new T3(f.x+(side||.18)*dist,f.y+h,f.z+dist), c0=v.camera.position.clone(), t0=v.controls.target.clone(), s=performance.now();
+  const c1=new T3(f.x+(side??.18)*dist,f.y+h,f.z+dist), c0=v.camera.position.clone(), t0=v.controls.target.clone(), s=performance.now();
   v.controls.minDistance=.2;
   (function step(){ const u=Math.min(1,(performance.now()-s)/ms), e=(1-Math.cos(Math.PI*u))/2;
     v.controls.target.lerpVectors(t0,f,e); v.camera.position.lerpVectors(c0,c1,e); v.camera.lookAt(v.controls.target); if(u<1) requestAnimationFrame(step); })(); },[focus,dist,h,lift,ms,side]);
