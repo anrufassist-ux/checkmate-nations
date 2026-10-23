@@ -4,6 +4,11 @@ const ROOT=path.join(__dirname,'../..');
 const TYPES={'.html':'text/html','.js':'application/javascript','.css':'text/css','.woff2':'font/woff2','.webp':'image/webp','.jpg':'image/jpeg','.png':'image/png'};
 const MODE=process.argv[2]||'test';
 const sub=(p,t)=>p.evaluate(t=>{document.querySelector('#vidTitle .l2').textContent=t;},t);
+// a short text pops up on the board, centred on a square (pick an empty one next to the action), and stays put until the next one
+const pop=(p,t,sq)=>p.evaluate(([t,sq])=>{ const old=document.getElementById('vidPop'); if(old) old.remove(); if(!t) return;
+  const v=window.__v(), q=v.sqPos(sq).project(v.camera), e=document.createElement('div'); e.id='vidPop'; e.innerHTML='<span>'+t+'</span>';
+  e.style.top=((1-q.y)/2*innerHeight)+'px'; document.body.appendChild(e);
+  const w=e.firstChild.offsetWidth, x=Math.max(w/2+10,Math.min(innerWidth-w/2-10,(q.x+1)/2*innerWidth)); e.style.left=x+'px'; },[t,sq]);
 const hideTitle=p=>p.evaluate(()=>{document.getElementById('vidTitle').style.display='none';});
 const VS='<span class="u">USA</span> vs. <span class="r">RUSSIA</span>';
 // camera flight around the board at the start, close past the kings (their heads turn to the camera); it ends in a
@@ -158,20 +163,20 @@ const SCRIPTS={
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
  // "Can you beat the AI?": a real game against the Normal AI (the beginner's moves are scripted, every reply is what the
  // server AI played), the camera glides to every move, ends with the AI Challenge call to action
- beat_ai:{nations:['usa','rus'],board:'marble',bg:'summit',hook:'MOST PEOPLE LOSE<br>TO THIS AI 🤖',
+ beat_ai:{nations:['usa','rus'],board:'classic',bg:'classic',start:[['d4','e5'],11.5,16.5,0,0],hookTop:'9%',hook:'MOST PEOPLE LOSE<br>TO THIS AI 🤖',
    title:['<span class="u">YOU</span> vs. <span class="r">THE AI</span>','Normal level · can you beat it?'],play:async(mv,p,shoot)=>{
-   await orbit(p,shoot,7000,['e2','d4','e5','d7'],.9);
-   await compact(p,true); await badges(p,true);
-   const go=async(from,to,text,hold=1500)=>{ if(text) await sub(p,text); await fly(p,[from,to],3.3,9.5,0,1500,0); await shoot(350); await mv(from,to,hold); };
-   await go('g2','g4','Looks easy …'); await go('d7','d5',null);
-   await go('b1','c3','The AI waits for one mistake …'); await go('c8','g4','Pawn gone.');
-   await go('c3','d5','Free pawn! 😏'); await go('d8','d5','Nope. 🤖',1700);
-   await go('c2','c3','Hmm …'); await go('d5','h1','Tank gone 💥',1700);
-   await go('f2','f3','Trap the queen?'); await go('h1','g1','Another one 💥',1700);
-   await go('f3','g4','Revenge! … right?'); await go('b7','b5','The AI: 😐');
-   await go('h2','h4','Almost safe …');
-   await sub(p,''); await badges(p,false); await fly(p,['g1','g3','e1'],3.3,9.5,0,1500,0); await shoot(300);
-   await hideTitle(p); await mv('g1','g3',15000);
+   // one calm wide shot for the whole game (every flight stays in view), texts pop up next to the action
+   await badges(p,true); await shoot(1200);
+   const go=async(from,to,text,at,hold=1600)=>{ await mv(from,to,text?500:hold); if(text){ await pop(p,text,at); await shoot(hold); } };
+   await go('g2','g4','Looks easy …','f5'); await go('d7','d5',null);
+   await go('b1','c3','The AI waits for one mistake …','d4',2000); await go('c8','g4','Pawn gone.','g5');
+   await go('c3','d5','Free pawn! 😏','d4'); await go('d8','d5','Nope. 🤖','d4',1800);
+   await go('c2','c3','Hmm …','c4'); await go('d5','h1','Tank gone 💥','f3',1800);
+   await go('f2','f3','Trap the queen?','e4'); await go('h1','g1','Another one 💥','h3',1800);
+   await go('f3','g4','Revenge! … right?','f5'); await go('b7','b5','The AI: 😐','b6');
+   await go('h2','h4','Almost safe …','g5');
+   await pop(p,''); await badges(p,false); await hideTitle(p); await fly(p,['f2','g3'],6,8.5,0,2600,0); await shoot(2700);
+   await mv('g1','g3',15000);
    await p.evaluate(()=>{ const e=document.getElementById('vidHook'); e.querySelector('span').innerHTML='CAN YOU BEAT IT?<br>AI CHALLENGE 🏆'; e.style.display='block'; });
    await shoot(2600); await p.evaluate(()=>{ document.getElementById('vidHook').style.display='none'; }); }},
  // Puzzle format: Paul Morphy's famous mate in 2 (only solution 1.Ra6!! bxa6 2.b7#; any bishop move allows 2.Rxa7#)
@@ -223,7 +228,7 @@ const SCRIPTS={
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
  await p.clock.runFor(1500);
  const SC=SCRIPTS[process.env.CLIP||'scholar'];
- await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,fen:SC.fen,car:SC.car,farm:SC.farm,board:process.env.TESTBOARD||SC.board,bg:process.env.TESTBG||SC.bg});
+ await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,hookTop:SC.hookTop,fen:SC.fen,car:SC.car,farm:SC.farm,board:process.env.TESTBOARD||SC.board,bg:process.env.TESTBG||SC.bg});
  await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.board) v.setBoard(sc.board); if(sc.bg) v.setBackground(sc.bg); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
@@ -237,8 +242,9 @@ const SCRIPTS={
  const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); if(window.__capTick) window.__capTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold,each)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__mover=window.__v().pieces()[a]; window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold,each&&(u=>each(u,to))); };
+ if(SC.start) await fly(p,...SC.start.slice(0,4),1,SC.start[4]);
  if(SC.hook){ // big question over the first seconds, the title appears once it is gone
-   await p.evaluate(h=>{ const e=document.getElementById('vidHook'); e.querySelector('span').innerHTML=h; e.style.display='block'; document.getElementById('vidTitle').style.display='none'; },SC.hook);
+   await p.evaluate(h=>{ const e=document.getElementById('vidHook'); e.querySelector('span').innerHTML=h; e.style.display='block'; if(window.__sc.hookTop) e.style.top=window.__sc.hookTop; document.getElementById('vidTitle').style.display='none'; },SC.hook);
    await shoot(2600);
    await p.evaluate(()=>{ document.getElementById('vidHook').style.display='none'; document.getElementById('vidTitle').style.display=''; });
  } else await shoot(1500);
