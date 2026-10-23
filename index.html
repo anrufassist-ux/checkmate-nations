@@ -1413,7 +1413,13 @@ function makeFlatPiece(type,color){
     const fc='fill="'+hexCss(team.body)+'"'; // the black set leaves most fills at the default, so set it on the root too
     svg=svg.replace(dark?/fill="#000"/g:/fill="#fff"/g,fc); if(dark) svg=svg.replace('<svg ','<svg '+fc+' ');
     tex=flatTex[key]=new T.CanvasTexture(c); tex.encoding=T.sRGBEncoding; tex.anisotropy=4;
-    const img=new Image(); img.onload=()=>{ c.getContext('2d').drawImage(img,0,0,256,256); tex.needsUpdate=true; };
+    // drawn larger than the set's own padding allows (the pieces fill the square, pawns most), with a soft drop shadow
+    // and a light-from-top-left sheen so they look a little moulded instead of flat
+    const img=new Image(); img.onload=()=>{ const x=c.getContext('2d'), z=type==='p'?1.32:1.16, w=256*z, o=(256-w)/2;
+      x.save(); x.shadowColor='rgba(0,0,0,.45)'; x.shadowBlur=10; x.shadowOffsetX=3; x.shadowOffsetY=6; x.drawImage(img,o,o+4,w,w); x.restore();
+      x.globalCompositeOperation='source-atop'; const gr=x.createLinearGradient(40,20,216,236);
+      gr.addColorStop(0,'rgba(255,255,255,.32)'); gr.addColorStop(.45,'rgba(255,255,255,0)'); gr.addColorStop(1,'rgba(0,0,0,.22)');
+      x.fillStyle=gr; x.fillRect(0,0,256,256); tex.needsUpdate=true; };
     img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
   }
   const g=new T.Group();
@@ -1920,7 +1926,9 @@ async function doMoveInner(mv,remote,expectFen){
   const victim=victimSq?pieces[victimSq]:null; if(victimSq) delete pieces[victimSq];
 
   const jobs=[];
-  const anim = res.piece==='n' ? droneHop(mover,res.to)
+  // 2D: flat pieces just glide (the 3D vehicles turn, hop and bank, which twists a flat piece)
+  const anim = flat2d ? {done:slide(mover,res.to,.28), hitAt:220}
+             : res.piece==='n' ? droneHop(mover,res.to)
              : res.piece==='b' ? jetFly(mover,res.to)
              : res.piece==='r' ? tankDrive(mover,res.to)
              : {done:slide(mover,res.to,.22), hitAt:260};
@@ -1930,7 +1938,7 @@ async function doMoveInner(mv,remote,expectFen){
     const rank=res.color==='w'?'1':'8';
     const rf=res.flags.includes('k')?'h'+rank:'a'+rank, rt=res.flags.includes('k')?'f'+rank:'d'+rank;
     const rook=pieces[rf]; delete pieces[rf]; pieces[rt]=rook; rook.userData.square=rt;
-    jobs.push(tankDrive(rook,rt).done);
+    jobs.push(flat2d?slide(rook,rt,.28):tankDrive(rook,rt).done);
     banner('Rochade!', res.flags.includes('k')?'Kurze Rochade: König in Sicherheit.':'Lange Rochade: König in Sicherheit.');
   }
   if(victim){ await wait(anim.hitAt); const rec=attackSound(res.piece); jobs.push(blowUp(victim,rec)); capturedBy[res.color].push(res.captured); renderCaps(); }
