@@ -156,6 +156,24 @@ const SCRIPTS={
    await stop('King: Macron, defender of the Élysée',['e1'],1.35,.65,.62,.25);
    await sub(p,'France vs. UK · round 1,000? 👇'); await fly(p,['d4','e4','d5','e5'],8.2,8.6,0,1600,.02); await shoot(1700);
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
+ // "Can you beat the AI?": a real game against the Normal AI (the beginner's moves are scripted, every reply is what the
+ // server AI played), the camera glides to every move, ends with the AI Challenge call to action
+ beat_ai:{nations:['usa','rus'],board:'marble',bg:'summit',hook:'MOST PEOPLE LOSE<br>TO THIS AI 🤖',
+   title:['<span class="u">YOU</span> vs. <span class="r">THE AI</span>','Normal level · can you beat it?'],play:async(mv,p,shoot)=>{
+   await orbit(p,shoot,7000,['e2','d4','e5','d7'],.9);
+   await compact(p,true); await badges(p,true);
+   const go=async(from,to,text,hold=1500)=>{ if(text) await sub(p,text); await fly(p,[from,to],3.3,9.5,0,1500,0); await shoot(350); await mv(from,to,hold); };
+   await go('g2','g4','Looks easy …'); await go('d7','d5',null);
+   await go('b1','c3','The AI waits for one mistake …'); await go('c8','g4','Pawn gone.');
+   await go('c3','d5','Free pawn! 😏'); await go('d8','d5','Nope. 🤖',1700);
+   await go('c2','c3','Hmm …'); await go('d5','h1','Tank gone 💥',1700);
+   await go('f2','f3','Trap the queen?'); await go('h1','g1','Another one 💥',1700);
+   await go('f3','g4','Revenge! … right?'); await go('b7','b5','The AI: 😐');
+   await go('h2','h4','Almost safe …');
+   await sub(p,''); await badges(p,false); await fly(p,['g1','g3','e1'],3.3,9.5,0,1500,0); await shoot(300);
+   await hideTitle(p); await mv('g1','g3',15000);
+   await p.evaluate(()=>{ const e=document.getElementById('vidHook'); e.querySelector('span').innerHTML='CAN YOU BEAT IT?<br>AI CHALLENGE 🏆'; e.style.display='block'; });
+   await shoot(2600); await p.evaluate(()=>{ document.getElementById('vidHook').style.display='none'; }); }},
  // Puzzle format: Paul Morphy's famous mate in 2 (only solution 1.Ra6!! bxa6 2.b7#; any bishop move allows 2.Rxa7#)
  puzzle_morphy:{nations:['usa','rus'],board:'classic',bg:'classic',fen:'kbK5/pp6/1P6/8/8/8/8/R7 w - - 0 1',hook:'MATE IN 2 🧩<br>CAN YOU FIND IT?',
    title:[VS,"Paul Morphy's famous puzzle"],play:async(mv,p,shoot)=>{
