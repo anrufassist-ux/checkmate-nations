@@ -352,7 +352,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     </div>
     <p class="note">Tipp: Auf die Statuszeile tippen klappt dieses Feld ein und aus. Rochade: König antippen, dann den blau markierten Panzer oder das blaue Zielfeld. Modus „Zwei Spieler“: Ihr wechselt euch am selben Gerät ab, die Kamera dreht sich nach jedem Zug zur Seite, die dran ist. Schlagen: Figur antippen, dann Ziel. Ziehen mit einem Finger dreht die Kamera.</p>
   </details>
-  <p class="legal"><a href="hilfe.html">Hilfe</a> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a> · <a href="agb.html">AGB</a></p>
+  <p class="legal"><a href="/hilfe">Hilfe</a> · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a> · <a href="/agb">AGB</a></p>
 </div>
 </section>
 
@@ -381,7 +381,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <p class="pickSub">Mit welchem Land spielst du? Jeder hat 15 Minuten für die ganze Partie, nach jedem Zug kommen 10 Sekunden dazu. Wessen Zeit abläuft, verliert.</p>
       <div class="acctPane" id="acctNatBtns"></div>
       <p class="testNote" id="acctNatNote"></p>
-      <p class="testNote"><a href="hilfe.html" target="_blank" rel="noopener">Regeln nachlesen: Wann zählt eine Partie?</a></p>
+      <p class="testNote"><a href="/hilfe" target="_blank" rel="noopener">Regeln nachlesen: Wann zählt eine Partie?</a></p>
     </div>
     <div class="acctPane" id="acctBoard" hidden><ol class="board" id="boardList"></ol><p class="pickSub boardNote">Auf der Rangliste steht jeder mit mindestens einer gewerteten Partie. ? = vorläufige Wertung, unter 20 Partien.</p></div>
     <div class="acctPane" id="acctLeague" hidden>
@@ -403,7 +403,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <button class="modeBtn rematch" type="button" data-m="rematch" hidden><span class="mt">Revanche</span><span class="ms">Gleicher Online-Gegner, gleiche Länder</span></button>
     </div>
     <button class="pickBack" id="modeClose" type="button" hidden>Weiterspielen</button>
-    <p class="legal">Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.<br><a href="hilfe.html">Hilfe</a> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a> · <a href="agb.html">AGB</a></p>
+    <p class="legal">Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.<br><a href="/hilfe">Hilfe</a> · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a> · <a href="/agb">AGB</a></p>
   </div>
 </div>
 
@@ -434,7 +434,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     <p class="pickSub" id="buySub"></p>
     <div class="buyOpts" id="buyOpts"></div>
     <div class="buyPicks" id="buyPicks" hidden></div>
-    <label class="consent"><input type="checkbox" id="buyConsent"><span>Ich möchte, dass die Freischaltung sofort erfolgt, und weiß, dass ich damit mein Widerrufsrecht verliere. Es gelten die <a href="agb.html" target="_blank" rel="noopener">AGB</a>.</span></label>
+    <label class="consent"><input type="checkbox" id="buyConsent"><span>Ich möchte, dass die Freischaltung sofort erfolgt, und weiß, dass ich damit mein Widerrufsrecht verliere. Es gelten die <a href="/agb" target="_blank" rel="noopener">AGB</a>.</span></label>
     <button class="btn primary buyBtn" id="buyGo" type="button">Weiter zur Zahlung</button>
     <p class="testNote" id="buyNote"></p>
     <button class="pickBack" id="buyCancel" type="button">Abbrechen</button>
@@ -2403,7 +2403,7 @@ async function renderMenu(){
   if(PAID.some(k=>!OWNED.has(k))) btn('Länder kaufen','btn primary',()=>{ closeAcct(); openShop('nations',null,()=>{}); },list);
   btn('Nations League','btn',()=>openAcct('league'),list);
   btn('Rangliste','btn',()=>openAcct('board'),list);
-  btn('Hilfe & Regeln','btn',()=>window.open('hilfe.html','_blank','noopener'),list);
+  btn('Hilfe & Regeln','btn',()=>window.open('/hilfe','_blank','noopener'),list);
   if(reg){ const r=el('div','acctMenuSmall',box);
     btn('Abmelden','linkBtn',async()=>{ await logout(); renderMenu(); },r);
     btn('Konto löschen','linkBtn',async()=>{ await deleteAccount(); renderMenu(); },r); }
