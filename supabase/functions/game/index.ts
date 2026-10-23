@@ -484,10 +484,173 @@ async function leagueJoin(u: User, body: Game) {
   return reply(await shopState(u.id));
 }
 
+// ---------- "Beat the AI": the Normal AI plays on the server ----------
+// The same search as the game's own AI (Normal = depth 2 plus a little random noise against repetitive play), but run
+// here: the client only sends the player's moves, so a win in the hall of fame is always a real win.
+const VAL: Record<string, number> = { p: 100, n: 310, b: 325, r: 500, q: 900, k: 0 };
+// The search runs on a plain 64-square array (index 0 = a8 like chess.js board(); "." empty, upper case white): chess.js
+// is far too slow for it (seconds per move, the edge function only has 2 s CPU). Same evaluation and depth as the game's
+// AI and the same scores (checked against it); castling/en passant are only left out inside the search, the root moves
+// always come from chess.js.
+type B = string[];
+const KN = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]], KG = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+const DB = [[-1, -1], [-1, 1], [1, -1], [1, 1]], DR = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+const isW = (ch: string) => ch >= "A" && ch <= "Z";
+function fenBoard(fen: string): B {
+  const b: B = [];
+  for (const ch of fen.split(" ")[0]) {
+    if (ch === "/") continue;
+    if (ch >= "1" && ch <= "8") for (let i = 0; i < +ch; i++) b.push("."); else b.push(ch);
+  }
+  return b;
+}
+function aiEval(b: B) {
+  let s = 0;
+  for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) {
+    const ch = b[i * 8 + j]; if (ch === ".") continue;
+    const t = ch.toLowerCase(), black = !isW(ch);
+    let v = VAL[t];
+    if (t !== "k" && t !== "r") v += (3.5 - Math.abs(j - 3.5)) * 4 + (3.5 - Math.abs(i - 3.5)) * 4;
+    if (t === "p") v += (black ? i : 7 - i) * 6;
+    s += black ? v : -v;
+  }
+  return s;
+}
+function attacked(b: B, sq: number, byW: boolean) {
+  const r = sq >> 3, c = sq & 7, at = (rr: number, cc: number) => rr >= 0 && rr < 8 && cc >= 0 && cc < 8 ? b[rr * 8 + cc] : "";
+  for (const dc of [-1, 1]) if (at(byW ? r + 1 : r - 1, c + dc) === (byW ? "P" : "p")) return true;
+  for (const [dr, dc] of KN) if (at(r + dr, c + dc) === (byW ? "N" : "n")) return true;
+  for (const [dr, dc] of KG) if (at(r + dr, c + dc) === (byW ? "K" : "k")) return true;
+  for (const [dirs, set] of [[DB, "bq"], [DR, "rq"]] as [number[][], string][]) for (const [dr, dc] of dirs) {
+    let rr = r + dr, cc = c + dc;
+    while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+      const ch = b[rr * 8 + cc];
+      if (ch !== ".") { if (isW(ch) === byW && set.includes(ch.toLowerCase())) return true; break; }
+      rr += dr; cc += dc;
+    }
+  }
+  return false;
+}
+type M = [number, number, number]; // from, to, value of the captured piece (for move ordering)
+function make(b: B, m: M): [string, string] {
+  const [s, d] = m, cap = b[d], pc = b[s];
+  b[d] = pc; b[s] = ".";
+  if (pc === "P" && d < 8) b[d] = "Q";
+  if (pc === "p" && d >= 56) b[d] = "q";
+  return [cap, pc];
+}
+const unmake = (b: B, m: M, [cap, pc]: [string, string]) => { b[m[0]] = pc; b[m[1]] = cap; };
+function gen(b: B, wtm: boolean): M[] {
+  const mv: M[] = [], mine = (ch: string) => ch !== "." && isW(ch) === wtm, theirs = (ch: string) => ch !== "." && isW(ch) !== wtm;
+  for (let s = 0; s < 64; s++) {
+    const ch = b[s]; if (!mine(ch)) continue;
+    const t = ch.toLowerCase(), r = s >> 3, c = s & 7;
+    const add = (rr: number, cc: number) => {
+      if (rr < 0 || rr > 7 || cc < 0 || cc > 7) return false;
+      const d = rr * 8 + cc, x = b[d]; if (mine(x)) return false;
+      mv.push([s, d, x === "." ? 0 : VAL[x.toLowerCase()]]); return x === ".";
+    };
+    if (t === "p") {
+      const dir = wtm ? -1 : 1, r1 = r + dir;
+      if (r1 < 0 || r1 > 7) continue;
+      if (b[r1 * 8 + c] === ".") {
+        mv.push([s, r1 * 8 + c, 0]);
+        if (r === (wtm ? 6 : 1) && b[(r + 2 * dir) * 8 + c] === ".") mv.push([s, (r + 2 * dir) * 8 + c, 0]);
+      }
+      for (const dc of [-1, 1]) { const cc = c + dc; if (cc < 0 || cc > 7) continue; const x = b[r1 * 8 + cc]; if (theirs(x)) mv.push([s, r1 * 8 + cc, VAL[x.toLowerCase()]]); }
+    } else if (t === "n") for (const [dr, dc] of KN) add(r + dr, c + dc);
+    else if (t === "k") for (const [dr, dc] of KG) add(r + dr, c + dc);
+    else for (const [dr, dc] of t === "b" ? DB : t === "r" ? DR : DB.concat(DR)) { let rr = r + dr, cc = c + dc; while (add(rr, cc)) { rr += dr; cc += dc; } }
+  }
+  const out: M[] = [];
+  for (const m of mv) { const u = make(b, m); if (!attacked(b, b.indexOf(wtm ? "K" : "k"), !wtm)) out.push(m); unmake(b, m, u); }
+  return out.sort((x, y) => y[2] - x[2]);
+}
+function aiSearch(b: B, wtm: boolean, depth: number, alpha: number, beta: number, maxi: boolean): number {
+  if (depth === 0) return aiEval(b);
+  const ms = gen(b, wtm);
+  if (!ms.length) return attacked(b, b.indexOf(wtm ? "K" : "k"), !wtm) ? (maxi ? -1e5 - depth : 1e5 + depth) : 0;
+  let best = maxi ? -Infinity : Infinity;
+  for (const m of ms) {
+    const u = make(b, m); const v = aiSearch(b, !wtm, depth - 1, alpha, beta, !maxi); unmake(b, m, u);
+    if (maxi) { best = Math.max(best, v); alpha = Math.max(alpha, best); } else { best = Math.min(best, v); beta = Math.min(beta, best); }
+    if (beta <= alpha) break;
+  }
+  return best;
+}
+// the AI always plays black in the challenge (the player is white, like in the game)
+// deno-lint-ignore no-explicit-any
+function aiPick(c: any) {
+  const moves = c.moves({ verbose: true }).filter((m: Game) => !m.promotion || m.promotion === "q")
+    .sort((a: Game, b: Game) => (b.captured ? VAL[b.captured] : 0) - (a.captured ? VAL[a.captured] : 0));
+  let best = null, bestScore = -Infinity;
+  for (const m of moves) {
+    c.move({ from: m.from, to: m.to, promotion: m.promotion });
+    // white to move minimises, the AI (black) takes the highest score; a little noise against always the same game
+    const sc = (c.in_checkmate() ? 1e6 : aiSearch(fenBoard(c.fen()), true, 2, -Infinity, Infinity, false)) + Math.random() * 12;
+    c.undo();
+    if (sc > bestScore) { bestScore = sc; best = m; }
+  }
+  return best;
+}
+const aiView = (g: Game) => ({ id: g.id, moves: g.moves, status: g.status, nations: { w: g.white_nation, b: g.black_nation } });
+// deno-lint-ignore no-explicit-any
+const aiEnd = (c: any) => c.in_checkmate() ? (c.turn() === "b" ? "won" : "lost") : c.game_over() ? "draw" : null;
+
+async function aiStart(u: User, body: Game) {
+  if (!registered(u)) return fail("account needed", 403);
+  const [p] = await sql`select 1 from public.profiles where id = ${u.id}`;
+  if (!p) return fail("no profile", 412);
+  const w = String(body.w || "usa"), b = String(body.b || "rus");
+  const mine = await ownedNations(sql, u.id);
+  if (!mine.includes(w) || !mine.includes(b) || w === b) return fail("nation not owned", 403);
+  // one challenge at a time: an unfinished earlier one counts as given up
+  await sql`update public.ai_games set status = 'resigned', finished_at = now() where user_id = ${u.id} and status = 'active'`;
+  const [g] = await sql`insert into public.ai_games (user_id, white_nation, black_nation) values (${u.id}, ${w}, ${b}) returning *`;
+  return reply({ ai: aiView(g) });
+}
+
+function aiMove(u: User, body: Game) {
+  const from = String(body.from || ""), to = String(body.to || "");
+  const promotion = body.promotion ? String(body.promotion) : "";
+  if (!SQ.test(from) || !SQ.test(to) || (promotion && !/^[qrbn]$/.test(promotion))) return fail("bad move", 400);
+  if (!UUID.test(String(body.id || ""))) return fail("not found", 404);
+  return sql.begin(async (tx) => {
+    const [g] = await tx`select * from public.ai_games where id = ${String(body.id)} and user_id = ${u.id} for update`;
+    if (!g) return fail("not found", 404);
+    if (g.status !== "active") return reply({ ai: aiView(g) });
+    if (Number(body.moveNo) !== g.moves.length) return reply({ error: "out of sync", ai: aiView(g) }, 409);
+    const c = replay(g.moves);
+    if (c.turn() !== "w") return fail("not your turn", 409);
+    const res = c.move({ from, to, promotion: promotion || undefined });
+    if (!res) return fail("illegal move", 400);
+    const moves = [...g.moves, res.from + res.to + (res.promotion || "")];
+    let status = aiEnd(c), reply_ = null;
+    if (!status) {
+      const m = aiPick(c);
+      const r = c.move({ from: m.from, to: m.to, promotion: m.promotion });
+      reply_ = { from: r.from, to: r.to, promotion: r.promotion || null };
+      moves.push(r.from + r.to + (r.promotion || ""));
+      status = aiEnd(c);
+    }
+    const [n] = await tx`update public.ai_games set moves = ${moves}, status = ${status || "active"}, updated_at = now(),
+      finished_at = case when ${!!status} then now() else null end where id = ${g.id} returning *`;
+    return reply({ ai: aiView(n), reply: reply_ });
+  });
+}
+
+async function aiResign(u: User, body: Game) {
+  if (!UUID.test(String(body.id || ""))) return fail("not found", 404);
+  await sql`update public.ai_games set status = 'resigned', finished_at = now()
+    where id = ${String(body.id)} and user_id = ${u.id} and status = 'active'`;
+  return reply({ ok: true });
+}
+
 const ACTIONS: Record<string, (u: User, body: Game) => Promise<Response> | Response> = {
   create, join, move, resign, claim, rematch, profile, queue, unqueue, stats: () => stats(), ping, abandon,
   me, checkout, league, league_join: leagueJoin, league_status: leagueStatus,
   delete_account: (u) => deleteAccount(u),
+  ai_start: aiStart, ai_move: aiMove, ai_resign: aiResign,
 };
 
 Deno.serve(async (req) => {
