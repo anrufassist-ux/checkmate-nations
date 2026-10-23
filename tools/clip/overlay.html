@@ -15,6 +15,9 @@ body.compact #vidTitle .l2{top:3%;transition:top .5s ease-in-out}
 #vidEnd .cta{font-family:'Black Ops One',sans-serif;font-size:40px;margin-top:34px;color:#0d1a0c;background:#7fd36a;border-radius:999px;padding:10px 30px}
 #vidEnd .s{font-family:'Barlow Condensed',sans-serif;font-size:34px;margin-top:18px;font-weight:700;letter-spacing:1px}
 #vidEnd .n{font-family:'Barlow Condensed',sans-serif;font-size:22px;margin-top:8px;color:rgba(255,255,255,.7);letter-spacing:.5px}
+#vidPop{position:fixed;z-index:50;transform:translate(-50%,-50%);pointer-events:none}
+#vidPop span{display:block;white-space:nowrap;font-family:'Black Ops One',sans-serif;font-size:30px;color:#ffd447;background:rgba(10,12,14,.85);border:3px solid #e8d9a8;border-radius:14px;padding:8px 18px;text-shadow:0 2px 6px rgba(0,0,0,.6);animation:popIn .35s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 #vidHook{position:fixed;left:0;right:0;top:34%;display:none;z-index:58;text-align:center;pointer-events:none}
 #vidHook span{display:inline-block;max-width:94vw;white-space:nowrap;font-family:'Black Ops One',sans-serif;font-size:40px;line-height:1.15;color:#fff;background:rgba(10,12,14,.78);border:3px solid #e8d9a8;border-radius:18px;padding:18px 22px;text-shadow:0 3px 12px rgba(0,0,0,.6);transform:rotate(-2deg)}
 /* puzzle clips: classic chess symbols above our pieces, and a legend (our piece = classic piece) */
