@@ -14,6 +14,7 @@ chess.js auf dem Server prüft.
 - `migrations/007_abandon.sql`: verlassene gewertete Partien. Die Clients melden sich alle 15 s (`ping`), nach 2 Minuten Funkstille kann der Gegner den Sieg beanspruchen (`abandon`).
 - `migrations/008_league_search.sql`: Spalte `league_only` in `match_queue`. Wer in der Liga ist, kann gezielt einen Liga-Gegner suchen (`queue` mit `league: true`, nur Gegner aus der Liga mit ihrem Liga-Land, andere Nation). Die Aktion `league_status` sagt dem Spiel, ob eine gewertete Partie für die Liga zählt und wie viele Punkte sie gebracht hat.
 - `migrations/009_open_leaderboard.sql`: Rangliste schon ab einer gewerteten Partie (statt 5 verschiedenen Gegnern).
+- `migrations/010_ai_challenge.sql`: KI-Challenge. Tabelle `ai_games` (nur die Funktion schreibt), die KI auf Normal rechnet in der Funktion (`ai_start`, `ai_move`, `ai_resign`), öffentliche Hall of Fame `ai_hall()`.
 - `functions/game/index.ts`: die Server-Funktion.
 
 ## Einmal einrichten (im Supabase-Dashboard, kein Programm nötig)
