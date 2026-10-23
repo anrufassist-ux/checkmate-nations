@@ -86,7 +86,19 @@ const chase=(p,{back=2.2,h=1.1,side=.5,ahead=2.6,ease=.25}={})=>(u,to)=>p.evalua
   const k=Math.min(1,u/ease), e=(1-Math.cos(Math.PI*k))/2, c=window.__ch;
   v.camera.position.lerpVectors(c.c0,cam,e); v.controls.target.lerpVectors(c.t0,tgt,e); v.camera.lookAt(v.controls.target);
   if(u>=1) window.__ch=null; },[u,to,back,h,side,ahead,ease]);
-const compact=(p,on)=>p.evaluate(on=>document.body.classList.toggle('compact',on),on);
+// compact: title hidden, the caption box goes wherever it covers no piece (checked every frame against the pieces' screen
+// boxes; first free slot of top, bottom, lower middle, upper middle), gliding there when it has to move
+const compact=(p,on)=>p.evaluate(on=>{ document.body.classList.toggle('compact',on); if(!on){ window.__capTick=null; return; }
+  const v=window.__v(), el=document.querySelector('#vidTitle .l2'), T3=v.camera.position.constructor;
+  window.__capTick=()=>{ if(!el.textContent||document.getElementById('vidTitle').style.display==='none') return;
+    const H=innerHeight, h=el.offsetHeight+16, boxes=[], b=v.game.board(), proj=q=>q.project(v.camera);
+    for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; const c=v.sqPos('abcdefgh'[f]+(8-r));
+      const top=proj(c.clone().add(new T3(0,pc.type==='k'||pc.type==='q'?2.0:1.4,0))), bot=proj(c.clone().add(new T3(0,0,.45)));
+      boxes.push([(1-top.y)/2*H,(1-bot.y)/2*H]); }
+    const free=y=>boxes.every(([a,z])=>z<y||a>y+h);
+    const cur=parseFloat(el.style.top)||H*.03; if(free(cur)) return;
+    for(const f of [.03,.8,.66,.5,.36,.2]){ const y=H*f; if(free(y)){ el.style.top=y+'px'; return; } } };
+  window.__capTick(); },on);
 const SCRIPTS={
  scholar:{title:[VS,'Checkmate in 4 moves?'],play:async(mv,p)=>{ // USA mates Russia, Putin cries
    await mv('e2','e4',1300); await mv('e7','e5',1300);
@@ -150,7 +162,6 @@ const SCRIPTS={
    // establishing shot: the board fills the screen (title hidden, caption on top), the middle stays empty for the play button
    await orbit(p,shoot,7000,['a8','c8','b6'],.5);
    await compact(p,true); await fly(p,['c4','c5'],2.6,13.5,0,2200,-.05); await shoot(2400);
-   await sub(p,'Quick guide 👇'); await legend(p,true); await shoot(3200); await legend(p,false);
    await badges(p,true); await sub(p,'USA to move: mate in 2'); await shoot(2200);
    await sub(p,'Comment your move 👇'); await shoot(1800);
    for(const n of [5,4,3,2,1]){ await sub(p,'⏳ '+n); await shoot(1000); }
@@ -205,7 +216,7 @@ const SCRIPTS={
  const START=+(process.env.START||0);
  const ONLY=+(process.env.ONLY||0); // re-render just the first ONLY frames (e.g. after changing the hook), keep the rest
  const t0=await p.evaluate(()=>{ window.__rec.length=0; return performance.now(); });
- const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
+ const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); if(window.__capTick) window.__capTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold,each)=>{ log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__mover=window.__v().pieces()[a]; window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold,each&&(u=>each(u,to))); };
  if(SC.hook){ // big question over the first seconds, the title appears once it is gone
