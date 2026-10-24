@@ -4,9 +4,10 @@ const ROOT=path.join(__dirname,'../..');
 const TYPES={'.html':'text/html','.js':'application/javascript','.css':'text/css','.woff2':'font/woff2','.webp':'image/webp','.jpg':'image/jpeg','.png':'image/png'};
 const MODE=process.argv[2]||'test';
 const sub=(p,t)=>p.evaluate(t=>{document.querySelector('#vidTitle .l2').textContent=t;},t);
-// a short text pops up on the board, centred on a square (pick an empty one next to the action), and stays put until the next one
+// a short text pops up and stays put until the next one: centred on a square (pick an empty one next to the action),
+// or without a square in the free space below the board
 const pop=(p,t,sq)=>p.evaluate(([t,sq])=>{ const old=document.getElementById('vidPop'); if(old) old.remove(); if(!t) return;
-  const v=window.__v(), q=v.sqPos(sq).project(v.camera), e=document.createElement('div'); e.id='vidPop'; e.innerHTML='<span>'+t+'</span>';
+  const v=window.__v(), q=sq?v.sqPos(sq).project(v.camera):{x:0,y:-.7}, e=document.createElement('div'); e.id='vidPop'; e.innerHTML='<span>'+t+'</span>';
   e.style.top=((1-q.y)/2*innerHeight)+'px'; document.body.appendChild(e);
   const w=e.firstChild.offsetWidth, x=Math.max(w/2+10,Math.min(innerWidth-w/2-10,(q.x+1)/2*innerWidth)); e.style.left=x+'px'; },[t,sq]);
 const hideTitle=p=>p.evaluate(()=>{document.getElementById('vidTitle').style.display='none';});
@@ -165,16 +166,16 @@ const SCRIPTS={
  // server AI played), the camera glides to every move, ends with the AI Challenge call to action
  beat_ai:{nations:['usa','rus'],board:'classic',bg:'classic',start:[['d4','e5'],11.5,16.5,0,0],hookTop:'9%',hook:'MOST PEOPLE LOSE<br>TO THIS AI 🤖',
    title:['<span class="u">YOU</span> vs. <span class="r">THE AI</span>','Normal level · can you beat it?'],play:async(mv,p,shoot)=>{
-   // one calm wide shot for the whole game (every flight stays in view), texts pop up next to the action
+   // one calm wide shot for the whole game (every flight stays in view), texts pop up below the board
    await badges(p,true); await shoot(1200);
    const go=async(from,to,text,at,hold=1600)=>{ await mv(from,to,text?500:hold); if(text){ await pop(p,text,at); await shoot(hold); } };
-   await go('g2','g4','Looks easy …','f5'); await go('d7','d5',null);
-   await go('b1','c3','The AI waits for one mistake …','d4',2000); await go('c8','g4','Pawn gone.','g5');
-   await go('c3','d5','Free pawn! 😏','d4'); await go('d8','d5','Nope. 🤖','d4',1800);
-   await go('c2','c3','Hmm …','c4'); await go('d5','h1','Tank gone 💥','f3',1800);
-   await go('f2','f3','Trap the queen?','e4'); await go('h1','g1','Another one 💥','h3',1800);
-   await go('f3','g4','Revenge! … right?','f5'); await go('b7','b5','The AI: 😐','b6');
-   await go('h2','h4','Almost safe …','g5');
+   await go('g2','g4','Looks easy …',null); await go('d7','d5',null);
+   await go('b1','c3','The AI waits for one mistake …',null,2000); await go('c8','g4','Pawn gone.',null);
+   await go('c3','d5','Free pawn! 😏',null); await go('d8','d5','Nope. 🤖',null,1800);
+   await go('c2','c3','Hmm …',null); await go('d5','h1','Tank gone 💥',null,1800);
+   await go('f2','f3','Trap the queen?',null); await go('h1','g1','Another one 💥',null,1800);
+   await go('f3','g4','Revenge! … right?',null); await go('b7','b5','The AI: 😐',null);
+   await go('h2','h4','Almost safe …',null);
    await pop(p,''); await badges(p,false); await hideTitle(p); await fly(p,['f2','g3'],6,8.5,0,2600,0); await shoot(2700);
    await mv('g1','g3',15000);
    await p.evaluate(()=>{ const e=document.getElementById('vidHook'); e.querySelector('span').innerHTML='CAN YOU BEAT IT?<br>AI CHALLENGE 🏆'; e.style.display='block'; });
