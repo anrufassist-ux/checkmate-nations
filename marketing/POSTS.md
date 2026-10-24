@@ -184,3 +184,4 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-22 | Instagram | V7 Trump's trade war in 2 moves | | ca. 40 kurz nach dem Posten | | | | | neue gelbe Untertitel; Reichweite deutlich schwächer, Verdacht: Politik-Inhalte werden gebremst |
 | 2026-10-22 | TikTok | V7 Trump's trade war in 2 moves | | | | | | | |
 | 2026-10-22 | YouTube Shorts | V7 Trump's trade war in 2 moves | | | | | | | |
+| 2026-10-24 | TikTok | V11 Puzzle mate in 1 als Fotokarussell (3 Bilder) | | | | | | | erstes Foto-Format; Titel oben und Texte unten werden von der TikTok-Oberfläche verdeckt, nächstes Mal Sicherheitszone beachten |
