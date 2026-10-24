@@ -31,7 +31,8 @@ Software rendering takes about 20 minutes per 28-second clip.
 - Calm wide shot of the whole board (`start`), no orbit at the start; texts with `pop(p,text)` in the free space below the board, never over the pieces.
 - TikTok also gets the puzzle as a photo carousel: 1 puzzle, 2 solution, 3 jail/end card (captions over 200 characters).
 - TikTok photo safe zone: the app zooms 9:16 photos to fill the screen and lays its UI over them (search bar on the top ~12 %,
-  caption and name on the bottom ~35 %, buttons on the right ~15 %). Keep the title and every text between about 15 % and 60 %
-  of the height, keep the board clear of the right edge (smaller board, shifted left), nothing important at the bottom.
+  caption and name on the bottom ~35 %, buttons on the right ~15 %). A smaller board was too hard to read (owner), so the board
+  stays full width and the texts go onto empty ranks of the board (`r1`/`r2`, `cx` in `carousel.js`); short descriptions leave
+  more room at the bottom.
 - Carousel stills: `PZ=<key> SLIDE=1|2|3 CLIP=car_<key> TESTBADGES=1 TESTJS=carousel.js node capture.js test` writes `test.png`
   (puzzles, texts and highlight squares live in `carousel.js`; check every puzzle has exactly one solution with chess.js first).
