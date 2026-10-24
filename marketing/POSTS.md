@@ -150,6 +150,17 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: Can you beat this chess AI? Most people lose 🤖 #shorts #chess
 - Hinweis: Für die Hall of Fame braucht man ein Konto (kostenlos), spielen geht ohne
 
+### V10 · Welcome, Germany! (Serie „Meet the nations“)
+- Datei: `marketing/welcome-germany.mp4` (ca. 32 s), Hook „Germany has entered the chat 🇩🇪“, gleicher Aufbau wie V6: Infantry, Tanks, Drones, Fighter jets, Schäferhund im Dirndl mit Bierkrug, Merz, dann erste Züge gegen Frankreich, Endkarte
+- Instagram/TikTok-Text:
+  > Willkommen, Germany! 🇩🇪 The queen is a German shepherd in a dirndl – with a beer, of course 🍺 And the king? Merz ♟️
+  > Germany vs. France: who wins? 👇
+  > Play free: link in bio
+- Hashtags: #chess #chesstok #germany #satire #gaming
+- Titelbild (Cover): Schäferhund-Dame mit Bierkrug (ca. Sekunde 17) oder Merz in Nahaufnahme (ca. Sekunde 21)
+- Erster eigener Kommentar: Which nation should join next? 🌍
+- YouTube-Shorts-Titel: Germany joins Checkmate Nations 🇩🇪🍺 #shorts #chess
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
