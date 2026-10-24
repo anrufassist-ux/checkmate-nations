@@ -215,8 +215,8 @@ const SCRIPTS={
 
 
  // Puzzle: back-rank mate in 1 (only solution 1.Rd8#: the king is walled in by its own pawns, the queen on a7 cannot help)
- puzzle_backrank:{nations:['usa','rus'],board:'classic',bg:'classic',fen:'6k1/q4ppp/8/8/6K1/8/8/3R4 w - - 0 1',
-   start:[['d4','e5'],11.5,16.5,0,0],hookTop:'9%',hook:'MATE IN 1 🧩<br>CAN YOU SEE IT?',
+ puzzle_backrank:{nations:['usa','rus'],board:'classic',bg:'earth',fen:'6k1/q4ppp/8/8/6K1/8/8/3R4 w - - 0 1',coords:'inner',
+   start:[['d4','e5'],12.6,18.2,0,0],hookTop:'9%',hook:'MATE IN 1 🧩<br>CAN YOU SEE IT?',
    title:[VS,'Puzzle: mate in 1'],play:async(mv,p,shoot)=>{
    // calm wide shot, texts below the board, one slow push-in before the solution
    await badges(p,true); await pop(p,'USA to move: mate in 1'); await shoot(2600);
@@ -255,8 +255,8 @@ const SCRIPTS={
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
  await p.clock.runFor(1500);
  const SC=SCRIPTS[process.env.CLIP||'scholar'];
- await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,hookTop:SC.hookTop,fen:SC.fen,car:SC.car,farm:SC.farm,board:process.env.TESTBOARD||SC.board,bg:process.env.TESTBG||SC.bg});
- await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.board) v.setBoard(sc.board); if(sc.bg) v.setBackground(sc.bg); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
+ await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,coords:SC.coords,hookTop:SC.hookTop,fen:SC.fen,car:SC.car,farm:SC.farm,board:process.env.TESTBOARD||SC.board,bg:process.env.TESTBG||SC.bg});
+ await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.board) v.setBoard(sc.board); if(sc.bg) v.setBackground(sc.bg); if(sc.coords==='inner') v.innerCoords(); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
  await p.clock.runFor(500);
