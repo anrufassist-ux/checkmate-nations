@@ -18,7 +18,7 @@ module.exports=async(p)=>{
     .ob span{display:inline-block;font:400 21px/1.2 'Black Ops One',sans-serif;color:#ffd447;background:rgba(10,12,14,.62);border:2px solid #e8d9a8;border-radius:12px;padding:6px 14px}
     .ob.w span{font-size:16px}
     .st span{display:inline-block;font:400 28px/1.2 'Black Ops One',sans-serif;color:#ffd447;background:rgba(10,12,14,.85);border:3px solid #e8d9a8;border-radius:14px;padding:8px 18px}
-    .st.s{top:29.5%}.st.b1{top:64%}.st.b2{top:69.5%}.st.b2 span{font-size:22px}`});
+    .st.s{top:29.5%}.st.b1{top:64%}.st.b2{top:71.5%}.st.b2 span{font-size:22px}`});
   await p.evaluate(([z,S,cam])=>{ const v=window.__v(), add=(c,h)=>{ const e=document.createElement('div'); e.className='st '+c; e.innerHTML=h; document.body.appendChild(e); };
     if(S<3){ v.game.load(S===1?z.fen:z.post); v.setupPieces();
       const [tx,tz,H,D]=cam; v.controls.target.set(tx,0,tz); v.camera.position.set(tx,H,tz+D); v.camera.lookAt(v.controls.target); v.controls.update();
@@ -61,6 +61,12 @@ module.exports=async(p)=>{
     await p.clock.runFor(400); return; }
   await p.evaluate(m=>{ window.__v().doMove({from:m[0],to:m[1]}); },z.mate);
   for(let i=0;i<300;i++) await p.clock.runFor(40);
+  // jail close-up from higher up (about 45 degrees instead of 27) so the head shows more and the padlock hangs lower
+  await p.evaluate(z=>{ const v=window.__v(), T=v.T, sq=z.hl.find(h=>h[1]==='r')[0], k=v.pieces()[sq]||Object.values(v.pieces()).find(g=>g&&g.userData.head&&g.userData.inJail);
+    const king=k&&k.userData.head?k:Object.values(v.pieces()).filter(g=>g&&g.userData.head).sort((a,b)=>b.position.y-a.position.y)[0];
+    const hp=new T.Vector3(); king.userData.head.getWorldPosition(hp);
+    v.controls.target.copy(hp).add(new T.Vector3(0,.05,0)); v.camera.position.copy(hp).add(new T.Vector3(0,2.5,3.9)); v.camera.lookAt(v.controls.target); },z);
+  await p.clock.runFor(200);
   await p.evaluate(()=>{ const add=(c,h)=>{ const e=document.createElement('div'); e.className='st '+c; e.innerHTML=h; document.body.appendChild(e); };
     add('t','OFF TO JAIL! 🚔'); add('b1','<span style="font-size:23px">Play free 👉 checkmatenations.com</span>'); add('b2','<span>No download · right in your browser</span>'); });
   await p.clock.runFor(200);

@@ -33,7 +33,18 @@ Chess content (puzzles, patterns, mistakes) goes out as photo carousels; videos 
   edge; hidden where a caricature head in front covers them.
 - Solution slide: last move yellow, the winning move's square green, the mated king red; rating badge (!! green, ! blue)
   next to the moving piece without covering any other piece (the rook on g8 in a smothered mate must stay visible).
+- Jail slide: camera higher than in the game (about 35-40 degrees, `carousel.js`), so the caricature head is big, the
+  crown stays visible and the padlock hangs at the chin, not in front of the face; clear gap between the two text boxes.
 - Nations: Germany may win, never be the beaten side in ads; no Ukraine vs Russia; satire, no violence.
+
+## Platforms
+Post every carousel on TikTok and Instagram (Instagram also pushes carousels; same images, Instagram adds music too).
+
+## Backlog
+- Harder puzzles that teach something (mate in 2-3 with a sacrifice, famous combinations, typical patterns: Greek gift,
+  Anastasia's mate, back-rank tricks, removing the defender). Mix levels: label each slide Easy / Medium / Hard so beginners
+  (our main audience) and real players both find something.
+- Explainer carousels with arrows (opening traps like the Queen's Gambit, 5 beginner mistakes).
 
 ## Captions
 Short (about 150 characters plus 5 hashtags), so TikTok's caption leaves room for the board. Never reveal the solution.
