@@ -161,7 +161,11 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Erster eigener Kommentar: Which nation should join next? 🌍
 - YouTube-Shorts-Titel: Germany joins Checkmate Nations 🇩🇪🍺 #shorts #chess
 
-## Protokoll
+### V11 · Puzzle: mate in 1 (Grundreihenmatt) – vorbereitet, noch nicht gerendert
+- Skript `puzzle_backrank` in `tools/clip/capture.js`, Stellung aus einer Rätsel-App nachgestellt (nur die Stellung, nicht deren Design): Weiß Kg4, Td1; Schwarz Kg8, Da7, Bauern f7 g7 h7. Einzige Lösung 1.Td8#
+- Ablauf: ruhige Gesamtansicht, Texte unter dem Brett, Countdown 5–1, langsame Fahrt zur Grundreihe, Td8 matt, Putin im Gefängnis
+- Texte folgen nach dem Rendern
+
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
 |---|---|---|---|---|---|---|---|---|---|

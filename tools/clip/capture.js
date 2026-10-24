@@ -214,6 +214,18 @@ const SCRIPTS={
    await badges(p,false); await hideTitle(p); await mv('b6','b7',16000); }},
 
 
+ // Puzzle: back-rank mate in 1 (only solution 1.Rd8#: the king is walled in by its own pawns, the queen on a7 cannot help)
+ puzzle_backrank:{nations:['usa','rus'],board:'classic',bg:'classic',fen:'6k1/q4ppp/8/8/6K1/8/8/3R4 w - - 0 1',
+   start:[['d4','e5'],11.5,16.5,0,0],hookTop:'9%',hook:'MATE IN 1 🧩<br>CAN YOU SEE IT?',
+   title:[VS,'Puzzle: mate in 1'],play:async(mv,p,shoot)=>{
+   // calm wide shot, texts below the board, one slow push-in before the solution
+   await badges(p,true); await pop(p,'USA to move: mate in 1'); await shoot(2600);
+   await pop(p,'Comment your move 👇'); await shoot(2000);
+   for(const n of [5,4,3,2,1]){ await pop(p,'⏳ '+n); await shoot(1000); }
+   await pop(p,'Look at the back rank … 🧱'); await fly(p,['e5','f6'],8.5,11,0,2800,0); await shoot(2600);
+   await pop(p,'Rook to d8: checkmate! 🎯'); await badges(p,false); await hideTitle(p);
+   await mv('d1','d8',1800); await pop(p,''); await shoot(14200); }},
+
  // Fool's Mate as Trump's trade war: the USA ruins itself with two tariff moves, the panda queen only has to collect
  tariff:{nations:['usa','chn'],hook:"TRUMP'S TRADE WAR<br>IN 2 MOVES 😬",title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','Trade war, round 1 …'],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,8400,['e1','h4','e5','g4','d8'],.75);
