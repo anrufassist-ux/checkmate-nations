@@ -63,10 +63,16 @@ const badges=(p,on)=>p.evaluate(on=>{ const box=document.getElementById('vidBadg
   if(!on){ window.__badgeTick=null; return; }
   const v=window.__v(), url=k=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(v.CBURNETT[k]);
   window.__badgeTick=()=>{ box.textContent=''; const b=v.game.board(), T3=v.camera.position.constructor;
+    const heads=[]; Object.entries(v.pieces()).forEach(([sq,g])=>{ const hd=g&&g.userData&&g.userData.head; if(!hd) return;
+      const bb=new v.T.Box3().setFromObject(hd), pts=[]; for(const x of [bb.min.x,bb.max.x]) for(const y of [bb.min.y,bb.max.y]) for(const z of [bb.min.z,bb.max.z]) pts.push(new T3(x,y,z).project(v.camera));
+      const xs=pts.map(q=>(q.x+1)/2*innerWidth), ys=pts.map(q=>(1-q.y)/2*innerHeight); heads.push([Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys),sq]); });
     for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; const sq='abcdefgh'[f]+(8-r);
       // small, inside the front right corner of the square: about a third of the square's width on screen
       const c=v.sqPos(sq), w=c.clone().add(new T3(.33,.02,.33)).project(v.camera), l=c.clone().add(new T3(-.5,0,.5)).project(v.camera), rr=c.clone().add(new T3(.5,0,.5)).project(v.camera);
       const px=Math.max(14,Math.min(21,(rr.x-l.x)/2*innerWidth*.38));
+      // behind caricature heads: skip the symbol where a head in front of it covers it
+      const sx=(w.x+1)/2*innerWidth, sy=(1-w.y)/2*innerHeight;
+      if(heads.some(h=>sx>h[0]-px/2&&sx<h[2]+px/2&&sy>h[1]-px/2&&sy<h[3]+px/2&&h[4]!==sq)) continue;
       const im=document.createElement('img'); im.style.width=im.style.height=px+'px'; im.src=url(pc.color+pc.type.toUpperCase()); im.style.filter=pc.color==='b'?'drop-shadow(0 0 2px #fff) drop-shadow(0 0 1px #fff)':'drop-shadow(0 0 2px rgba(0,0,0,.8))';
       im.style.left=((w.x+1)/2*innerWidth)+'px'; im.style.top=((1-w.y)/2*innerHeight)+'px'; box.appendChild(im); } };
   window.__badgeTick(); },on);
