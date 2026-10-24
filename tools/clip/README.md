@@ -33,3 +33,5 @@ Software rendering takes about 20 minutes per 28-second clip.
 - TikTok photo safe zone: the app zooms 9:16 photos to fill the screen and lays its UI over them (search bar on the top ~12 %,
   caption and name on the bottom ~35 %, buttons on the right ~15 %). Keep the title and every text between about 15 % and 60 %
   of the height, keep the board clear of the right edge (smaller board, shifted left), nothing important at the bottom.
+- Carousel stills: `PZ=<key> SLIDE=1|2|3 CLIP=car_<key> TESTBADGES=1 TESTJS=carousel.js node capture.js test` writes `test.png`
+  (puzzles, texts and highlight squares live in `carousel.js`; check every puzzle has exactly one solution with chess.js first).

@@ -226,6 +226,11 @@ const SCRIPTS={
    await pop(p,'Rook to d8: checkmate! 🎯'); await badges(p,false); await hideTitle(p);
    await mv('d1','d8',1800); await pop(p,''); await shoot(14200); }},
 
+ // TikTok puzzle carousels (stills only, see the clip README): nations per carousel, same look as the puzzles
+ car_fra:{nations:['fra','gbr'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
+ car_usa:{nations:['usa','chn'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
+ car_ger:{nations:['ger','eu'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
+
  // Fool's Mate as Trump's trade war: the USA ruins itself with two tariff moves, the panda queen only has to collect
  tariff:{nations:['usa','chn'],hook:"TRUMP'S TRADE WAR<br>IN 2 MOVES 😬",title:['<span class="u">USA</span> vs. <span style="color:#e0b23a">CHINA</span>','Trade war, round 1 …'],play:async(mv,p,shoot)=>{
    await orbit(p,shoot,8400,['e1','h4','e5','g4','d8'],.75);
