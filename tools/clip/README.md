@@ -25,3 +25,11 @@ it, list the white move before it in `shown` (e.g. `shown:['d5f6']`). `full` run
 
 The moves and titles are set in `SCRIPTS` in `capture.js` (`mv(from,to,holdMs)`, `sub()`, `hideTitle()`).
 Software rendering takes about 20 minutes per 28-second clip.
+
+## Puzzle look (owner's choice)
+- Classic board (`board:'classic'`), dark earth-from-space background (`bg:'earth'`), coordinates inside the edge squares (`coords:'inner'`, frame and rim hidden).
+- Calm wide shot of the whole board (`start`), no orbit at the start; texts with `pop(p,text)` in the free space below the board, never over the pieces.
+- TikTok also gets the puzzle as a photo carousel: 1 puzzle, 2 solution, 3 jail/end card (captions over 200 characters).
+- TikTok photo safe zone: the app zooms 9:16 photos to fill the screen and lays its UI over them (search bar on the top ~12 %,
+  caption and name on the bottom ~35 %, buttons on the right ~15 %). Keep the title and every text between about 15 % and 60 %
+  of the height, keep the board clear of the right edge (smaller board, shifted left), nothing important at the bottom.

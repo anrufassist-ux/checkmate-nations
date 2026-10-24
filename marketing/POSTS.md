@@ -150,7 +150,22 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - YouTube-Shorts-Titel: Can you beat this chess AI? Most people lose 🤖 #shorts #chess
 - Hinweis: Für die Hall of Fame braucht man ein Konto (kostenlos), spielen geht ohne
 
-## Protokoll
+### V10 · Welcome, Germany! (Serie „Meet the nations“)
+- Datei: `marketing/welcome-germany.mp4` (ca. 32 s), Hook „Germany has entered the chat 🇩🇪“, gleicher Aufbau wie V6: Infantry, Tanks, Drones, Fighter jets, Schäferhund im Dirndl mit Bierkrug, Merz, dann erste Züge gegen Frankreich, Endkarte
+- Instagram/TikTok-Text:
+  > Willkommen, Germany! 🇩🇪 The queen is a German shepherd in a dirndl – with a beer, of course 🍺 And the king? Merz ♟️
+  > Germany vs. France: who wins? 👇
+  > Play free: link in bio
+- Hashtags: #chess #chesstok #germany #satire #gaming
+- Titelbild (Cover): Schäferhund-Dame mit Bierkrug (ca. Sekunde 17) oder Merz in Nahaufnahme (ca. Sekunde 21)
+- Erster eigener Kommentar: Which nation should join next? 🌍
+- YouTube-Shorts-Titel: Germany joins Checkmate Nations 🇩🇪🍺 #shorts #chess
+
+### V11 · Puzzle: mate in 1 (Grundreihenmatt) – vorbereitet, noch nicht gerendert
+- Skript `puzzle_backrank` in `tools/clip/capture.js`, Stellung aus einer Rätsel-App nachgestellt (nur die Stellung, nicht deren Design): Weiß Kg4, Td1; Schwarz Kg8, Da7, Bauern f7 g7 h7. Einzige Lösung 1.Td8#
+- Ablauf: ruhige Gesamtansicht, Texte unter dem Brett, Countdown 5–1, langsame Fahrt zur Grundreihe, Td8 matt, Putin im Gefängnis
+- Texte folgen nach dem Rendern
+
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
 |---|---|---|---|---|---|---|---|---|---|
@@ -169,3 +184,4 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-22 | Instagram | V7 Trump's trade war in 2 moves | | ca. 40 kurz nach dem Posten | | | | | neue gelbe Untertitel; Reichweite deutlich schwächer, Verdacht: Politik-Inhalte werden gebremst |
 | 2026-10-22 | TikTok | V7 Trump's trade war in 2 moves | | | | | | | |
 | 2026-10-22 | YouTube Shorts | V7 Trump's trade war in 2 moves | | | | | | | |
+| 2026-10-24 | TikTok | V11 Puzzle mate in 1 als Fotokarussell (3 Bilder) | | | | | | | erstes Foto-Format; Titel oben und Texte unten werden von der TikTok-Oberfläche verdeckt, nächstes Mal Sicherheitszone beachten |
