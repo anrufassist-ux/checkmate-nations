@@ -1,10 +1,10 @@
 // TikTok puzzle carousels, laid out for the TikTok photo safe zone. PZ=<key> SLIDE=1|2|3 CAM="tx,tz,H,D"
 const PZ={
-  fra:{fen:'6rk/pp4pp/8/6N1/8/8/PP3PPP/6K1 w - - 0 1',pre:'6rk/pp4pp/8/6N1/8/8/PP3PPP/6K1 w - - 0 1',mate:['g5','f7'],post:'6rk/pp3Npp/8/8/8/8/PP3PPP/6K1 b - - 1 1',hl:[['g5','y'],['f7','g'],['h8','r']],badge:['f7','!!','g'],
+  fra:{fen:'6rk/pp4pp/8/6N1/8/8/PP3PPP/6K1 w - - 0 1',pre:'6rk/pp4pp/8/6N1/8/8/PP3PPP/6K1 w - - 0 1',mate:['g5','f7'],post:'6rk/pp3Npp/8/8/8/8/PP3PPP/6K1 b - - 1 1',hl:[['g5','y'],['f7','g'],['h8','r']],badge:['f7','!!','g'],badgeLeft:true,
     t:'MATE IN 1 🧩',s:'France to move 🇫🇷',sol:'Drone to f7: checkmate! 🎯',why:'Smothered: his own pieces block the king'},
   usa:{fen:'5rk1/pp3ppp/8/7Q/8/3B4/PP3PPP/6K1 w - - 0 1',pre:'5rk1/pp3ppp/8/7Q/8/3B4/PP3PPP/6K1 w - - 0 1',mate:['h5','h7'],post:'5rk1/pp3ppQ/8/8/8/3B4/PP3PPP/6K1 b - - 0 1',hl:[['h5','y'],['h7','g'],['g8','r']],badge:['h7','!','b'],
     t:'MATE IN 1 🧩',s:'USA to move 🇺🇸',sol:'Queen takes h7: checkmate! 🎯',why:'The jet on d3 protects the queen'},
-  ger:{fen:'5r1k/pp4pp/7N/3Q4/8/8/PP4PP/6K1 w - - 0 1',pre:'6rk/pp4pp/7N/8/8/8/PP4PP/6K1 w - - 0 1',mate:['h6','f7'],post:'6rk/pp3Npp/8/8/8/8/PP4PP/6K1 b - - 1 2',hl:[['h6','y'],['f7','g'],['h8','r']],badge:['f7','!!','g'],
+  ger:{fen:'5r1k/pp4pp/7N/3Q4/8/8/PP4PP/6K1 w - - 0 1',pre:'6rk/pp4pp/7N/8/8/8/PP4PP/6K1 w - - 0 1',mate:['h6','f7'],post:'6rk/pp3Npp/8/8/8/8/PP4PP/6K1 b - - 1 2',hl:[['h6','y'],['f7','g'],['h8','r']],badge:['f7','!!','g'],badgeLeft:true,
     t:'MATE IN 2 🧩',s:'Germany to move 🇩🇪',sol:'1. Queen g8+!! Rook takes',why:'2. Drone f7: checkmate! 🎯'},
 };
 module.exports=async(p)=>{
@@ -34,7 +34,7 @@ module.exports=async(p)=>{
         const [sq,txt,k]=z.badge, bb=new T.Box3().setFromObject(v.pieces()[sq]), q=new T.Vector3((bb.min.x+bb.max.x)/2,bb.max.y,(bb.min.z+bb.max.z)/2).project(v.camera);
         const e=document.createElement('div'); e.textContent=txt;
         e.style.cssText='position:fixed;z-index:61;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:900 28px/1 Barlow,Arial,sans-serif;letter-spacing:-2px;color:#fff;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.5);background:'+({g:'#3fbf6a',b:'#4f8fe0'}[k]);
-        e.style.left=Math.min(innerWidth-30,(q.x+1)/2*innerWidth+26)+'px'; e.style.top=((1-q.y)/2*innerHeight-22)+'px'; document.body.appendChild(e); },z); }
+        e.style.left=((q.x+1)/2*innerWidth+(z.badgeLeft?-40:26))+'px'; e.style.top=((1-q.y)/2*innerHeight-22)+'px'; document.body.appendChild(e); },z); }
     await p.clock.runFor(400); return; }
   await p.evaluate(m=>{ window.__v().doMove({from:m[0],to:m[1]}); },z.mate);
   for(let i=0;i<300;i++) await p.clock.runFor(40);
