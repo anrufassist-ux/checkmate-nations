@@ -34,5 +34,6 @@ Software rendering takes about 20 minutes per 28-second clip.
   caption and name on the bottom ~35 %, buttons on the right ~15 %). A smaller board was too hard to read (owner), so the board
   stays full width and the texts go onto empty ranks of the board (`r1`/`r2`, `cx` in `carousel.js`); short descriptions leave
   more room at the bottom.
+- Rules and workflow for carousels: .claude/skills/chess-carousel/SKILL.md.
 - Carousel stills: `PZ=<key> SLIDE=1|2|3 CLIP=car_<key> TESTBADGES=1 TESTJS=carousel.js node capture.js test` writes `test.png`
   (puzzles, texts and highlight squares live in `carousel.js`; check every puzzle has exactly one solution with chess.js first).

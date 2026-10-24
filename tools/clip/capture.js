@@ -68,8 +68,9 @@ const badges=(p,on)=>p.evaluate(on=>{ const box=document.getElementById('vidBadg
       const xs=pts.map(q=>(q.x+1)/2*innerWidth), ys=pts.map(q=>(1-q.y)/2*innerHeight); heads.push([Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys),sq]); });
     for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; const sq='abcdefgh'[f]+(8-r);
       // small, inside the front right corner of the square: about a third of the square's width on screen
-      const c=v.sqPos(sq), w=c.clone().add(new T3(.33,.02,.33)).project(v.camera), l=c.clone().add(new T3(-.5,0,.5)).project(v.camera), rr=c.clone().add(new T3(.5,0,.5)).project(v.camera);
-      const px=Math.max(14,Math.min(21,(rr.x-l.x)/2*innerWidth*.38));
+      const c=v.sqPos(sq), l=c.clone().add(new T3(-.5,0,.5)).project(v.camera), rr=c.clone().add(new T3(.5,0,.5)).project(v.camera);
+      const sqpx=(rr.x-l.x)/2*innerWidth, px=Math.max(15,Math.min(23,sqpx*.42)), off=.5-px/sqpx/2-.03; // never past the square's edge
+      const w=c.clone().add(new T3(off,.02,off)).project(v.camera);
       // behind caricature heads: skip the symbol where a head in front of it covers it
       const sx=(w.x+1)/2*innerWidth, sy=(1-w.y)/2*innerHeight;
       if(heads.some(h=>sx>h[0]-px/2&&sx<h[2]+px/2&&sy>h[1]-px/2&&sy<h[3]+px/2&&h[4]!==sq)) continue;

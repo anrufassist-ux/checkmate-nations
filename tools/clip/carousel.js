@@ -15,7 +15,7 @@ module.exports=async(p)=>{
     .st.t{top:23%;font:400 54px/1 'Black Ops One',sans-serif;color:#fff;text-shadow:0 3px 0 #000,0 0 14px rgba(0,0,0,.8)}
     .ob{position:fixed;z-index:60;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none;text-align:center}
     .ob.t{font:400 40px/1 'Black Ops One',sans-serif;color:#fff;text-shadow:0 3px 0 #000,0 0 10px #000,0 0 18px rgba(0,0,0,.8)}
-    .ob span{display:inline-block;font:400 21px/1.2 'Black Ops One',sans-serif;color:#ffd447;background:rgba(10,12,14,.82);border:2px solid #e8d9a8;border-radius:12px;padding:6px 14px}
+    .ob span{display:inline-block;font:400 21px/1.2 'Black Ops One',sans-serif;color:#ffd447;background:rgba(10,12,14,.62);border:2px solid #e8d9a8;border-radius:12px;padding:6px 14px}
     .ob.w span{font-size:16px}
     .st span{display:inline-block;font:400 28px/1.2 'Black Ops One',sans-serif;color:#ffd447;background:rgba(10,12,14,.85);border:3px solid #e8d9a8;border-radius:14px;padding:8px 18px}
     .st.s{top:29.5%}.st.b1{top:64%}.st.b2{top:69.5%}.st.b2 span{font-size:22px}`});
@@ -25,11 +25,23 @@ module.exports=async(p)=>{
       // title just above the board, who is to move on an empty rank of the board (rs), the call to action just below it
       const rows=S===1?[['t',z.t,'8',-1.05],['s',z.s,String(z.rs),0],['s','Comment your move 👇','1',1.0]]
                       :[['t','SOLUTION ✅','8',-1.05],['s',z.sol,String(z.rs),0],['w',z.why,'1',1.0]];
+      const boxes=Object.values(v.pieces()).filter(Boolean).map(g=>{ const bb=new v.T.Box3().setFromObject(g), xs=[], ys=[];
+        for(const x of [bb.min.x,bb.max.x]) for(const y of [bb.min.y,bb.max.y]) for(const zz of [bb.min.z,bb.max.z]){ const q=new v.T.Vector3(x,y,zz).project(v.camera); xs.push((q.x+1)/2*innerWidth); ys.push((1-q.y)/2*innerHeight); }
+        return [Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)]; });
       // title left-aligned with the board's left edge (the right side belongs to TikTok's buttons), text below centred under it
       rows.forEach(([c,h,rank,dz])=>{ const q=v.sqPos(dz<0?'a'+rank:'d'+rank); q.x+=dz<0?-.5:.5+(dz?0:(z.cx||0)); q.z+=dz; q.project(v.camera);
         const e=document.createElement('div'); e.className='ob '+c; e.innerHTML=c==='t'?h:'<span>'+h+'</span>';
         if(dz<0) e.style.transform='translate(0,-50%)';
-        e.style.left=Math.max(dz<0?22:0,(q.x+1)/2*innerWidth)+'px'; e.style.top=((1-q.y)/2*innerHeight)+'px'; document.body.appendChild(e); }); }
+        e.style.left=Math.max(dz<0?22:0,(q.x+1)/2*innerWidth)+'px'; e.style.top=((1-q.y)/2*innerHeight)+'px'; document.body.appendChild(e);
+        // rule: a text box never touches a piece. Try nearby spots (on the board: other empty ranks and sideways), keep the first free one
+        const hit=()=>{ const r=e.getBoundingClientRect(); return boxes.some(b=>r.left<b[2]+10&&r.right>b[0]-10&&r.top<b[3]+10&&r.bottom>b[1]-10); };
+        if(hit()){ const tries=[]; for(const dy of dz?[0,-10,10,-20,20,-30,30]:[0]) for(const dx of [0,-40,40,-80,80,-120,120]) tries.push([dx,dy]);
+          const L=parseFloat(e.style.left), Tp=parseFloat(e.style.top);
+          // on the board: first the same spot on other ranks, then sideways
+          const dys=[0,1,-1,2,-2].flatMap(dr=>{ const rk=+rank+dr; if(rk<2||rk>7) return []; const p=v.sqPos('d'+rk); p.project(v.camera); return [(1-p.y)/2*innerHeight-Tp]; });
+          const cand=dz?tries:[0,-40,40,-80,80,-120,120].flatMap(dx=>dys.map(dy=>[dx,dy]));
+          for(const [dx,dy] of cand){ e.style.left=(L+dx)+'px'; e.style.top=(Tp+dy)+'px'; if(!hit()) break; } }
+        if(hit()) console.log('TEXT TOUCHES A PIECE: '+h); }); }
     else { v.game.load(z.pre); v.setupPieces(); }
   },[z,S,cam]);
   if(S<3){ if(S===2){ 
