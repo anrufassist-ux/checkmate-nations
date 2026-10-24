@@ -189,3 +189,4 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-22 | TikTok | V7 Trump's trade war in 2 moves | | | | | | | |
 | 2026-10-22 | YouTube Shorts | V7 Trump's trade war in 2 moves | | | | | | | |
 | 2026-10-24 | TikTok | V11 Puzzle mate in 1 als Fotokarussell (3 Bilder) | | 201 nach 15 Min., 659 nach ca. 2,5 Std. | | | | | erstes Foto-Format; Titel oben und Texte unten werden von der TikTok-Oberfläche verdeckt, nächstes Mal Sicherheitszone beachten |
+| 2026-10-24 | Instagram | V11 Puzzle mate in 1 als Karussell (neues Design, 3 Bilder) | | | | | | | Song „BENNY · i play chess“ aus der Instagram-Bibliothek, erster Kommentar mit Hinweis |
