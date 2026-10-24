@@ -27,7 +27,8 @@ Chess content (puzzles, patterns, mistakes) goes out as photo carousels; videos 
 - Who is to move ("USA to move 🇺🇸") / the solution move on the board, on empty squares.
 - Call to action ("Comment your move 👇") / the explanation directly below the board, centred under it, not far below.
 - A text box NEVER touches a piece (and never a caricature head). `carousel.js` checks the screen boxes of all pieces
-  and moves the text to another empty rank or sideways; check the image anyway.
+  and moves the text to another empty rank or sideways (a title only up or right, never out of the picture); badges get
+  `badgeDx`/`badgeDy` so they cover neither a piece nor the title. Check the image anyway.
 - Text boxes: small, dark and semi-transparent (rgba .62).
 - Piece symbols (classic chess glyphs): about 42 % of a square, inside the front right corner, never past the square's
   edge; hidden where a caricature head in front covers them.
@@ -45,6 +46,11 @@ Post every carousel on TikTok and Instagram (Instagram also pushes carousels; sa
   Anastasia's mate, back-rank tricks, removing the defender). Mix levels: label each slide Easy / Medium / Hard so beginners
   (our main audience) and real players both find something.
 - Explainer carousels with arrows (opening traps like the Queen's Gambit, 5 beginner mistakes).
+
+## Music
+Our own theme (`window.MUSIC` in index.html, extracted to `tools/clip/snd/music.mp3`) is the brand sound: send it as
+`marketing/carousels/checkmate-nations-theme.mp3` with every carousel. Instagram/TikTok only allow their own library for
+photo posts unless the post is a video, so offer a slideshow video with the theme if he wants the song itself.
 
 ## Captions
 Short (about 150 characters plus 5 hashtags), so TikTok's caption leaves room for the board. Never reveal the solution.

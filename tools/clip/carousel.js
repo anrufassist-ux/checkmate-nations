@@ -1,6 +1,8 @@
 // TikTok puzzle carousels: the board as big as the screen allows, texts written onto empty ranks of the board (rs: the empty rank
 // for who is to move; title just above the board, call to action just below). PZ=<key> SLIDE=1|2|3 CAM="tx,tz,H,D"
 const PZ={
+  rus:{fen:'6k1/q4ppp/8/8/6K1/8/8/3R4 w - - 0 1',pre:'6k1/q4ppp/8/8/6K1/8/8/3R4 w - - 0 1',mate:['d1','d8'],post:'3R2k1/q4ppp/8/8/6K1/8/8/8 b - - 1 1',hl:[['d1','y'],['d8','g'],['g8','r']],badge:['d8','!','b'],badgeDy:34,badgeDx:34,
+    rs:4,t:'MATE IN 1 🧩',s:'USA to move 🇺🇸',sol:'Rook to d8: checkmate! 🎯',why:'His own pawns wall the king in 🧱'},
   fra:{fen:'6rk/pp4pp/8/6N1/8/8/PP3PPP/6K1 w - - 0 1',pre:'6rk/pp4pp/8/6N1/8/8/PP3PPP/6K1 w - - 0 1',mate:['g5','f7'],post:'6rk/pp3Npp/8/8/8/8/PP3PPP/6K1 b - - 1 1',hl:[['g5','y'],['f7','g'],['h8','r']],badge:['f7','!!','g'],badgeLeft:true,
     rs:4,cx:-1,t:'MATE IN 1 🧩',s:'France to move 🇫🇷',sol:'Drone to f7: checkmate! 🎯',why:'Smothered: his own pieces block the king'},
   usa:{fen:'5rk1/pp3ppp/8/7Q/8/3B4/PP3PPP/6K1 w - - 0 1',pre:'5rk1/pp3ppp/8/7Q/8/3B4/PP3PPP/6K1 w - - 0 1',mate:['h5','h7'],post:'5rk1/pp3ppQ/8/8/8/3B4/PP3PPP/6K1 b - - 0 1',hl:[['h5','y'],['h7','g'],['g8','r']],badge:['h7','!','b'],
@@ -35,7 +37,7 @@ module.exports=async(p)=>{
         e.style.left=Math.max(dz<0?22:0,(q.x+1)/2*innerWidth)+'px'; e.style.top=((1-q.y)/2*innerHeight)+'px'; document.body.appendChild(e);
         // rule: a text box never touches a piece. Try nearby spots (on the board: other empty ranks and sideways), keep the first free one
         const hit=()=>{ const r=e.getBoundingClientRect(); return boxes.some(b=>r.left<b[2]+10&&r.right>b[0]-10&&r.top<b[3]+10&&r.bottom>b[1]-10); };
-        if(hit()){ const tries=[]; for(const dy of dz?[0,-10,10,-20,20,-30,30]:[0]) for(const dx of [0,-40,40,-80,80,-120,120]) tries.push([dx,dy]);
+        if(hit()){ const tries=[]; for(const dy of dz<0?[0,-10,-20,-30,-40]:dz?[0,10,20,-10,30]:[0]) for(const dx of dz<0?[0,40,80,120]:[0,-40,40,-80,80,-120,120]) tries.push([dx,dy]); // title: only up or right, never out of the picture
           const L=parseFloat(e.style.left), Tp=parseFloat(e.style.top);
           // on the board: first the same spot on other ranks, then sideways
           const dys=[0,1,-1,2,-2].flatMap(dr=>{ const rk=+rank+dr; if(rk<2||rk>7) return []; const p=v.sqPos('d'+rk); p.project(v.camera); return [(1-p.y)/2*innerHeight-Tp]; });
@@ -57,7 +59,7 @@ module.exports=async(p)=>{
         const [sq,txt,k]=z.badge, bb=new T.Box3().setFromObject(v.pieces()[sq]), q=new T.Vector3((bb.min.x+bb.max.x)/2,bb.max.y,(bb.min.z+bb.max.z)/2).project(v.camera);
         const e=document.createElement('div'); e.textContent=txt;
         e.style.cssText='position:fixed;z-index:61;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:900 28px/1 Barlow,Arial,sans-serif;letter-spacing:-2px;color:#fff;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.5);background:'+({g:'#3fbf6a',b:'#4f8fe0'}[k]);
-        e.style.left=((q.x+1)/2*innerWidth+(z.badgeLeft?-40:26))+'px'; e.style.top=((1-q.y)/2*innerHeight-22)+'px'; document.body.appendChild(e); },z); }
+        e.style.left=((q.x+1)/2*innerWidth+(z.badgeLeft?-40:26)+(z.badgeDx||0))+'px'; e.style.top=((1-q.y)/2*innerHeight-22+(z.badgeDy||0))+'px'; document.body.appendChild(e); },z); }
     await p.clock.runFor(400); return; }
   await p.evaluate(m=>{ window.__v().doMove({from:m[0],to:m[1]}); },z.mate);
   for(let i=0;i<300;i++) await p.clock.runFor(40);

@@ -236,6 +236,7 @@ const SCRIPTS={
    await mv('d1','d8',1800); await pop(p,''); await shoot(14200); }},
 
  // TikTok puzzle carousels (stills only, see the clip README): nations per carousel, same look as the puzzles
+ car_rus:{nations:['usa','rus'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
  car_fra:{nations:['fra','gbr'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
  car_usa:{nations:['usa','chn'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
  car_ger:{nations:['ger','eu'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
