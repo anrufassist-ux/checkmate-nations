@@ -64,8 +64,10 @@ const badges=(p,on)=>p.evaluate(on=>{ const box=document.getElementById('vidBadg
   const v=window.__v(), url=k=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(v.CBURNETT[k]);
   window.__badgeTick=()=>{ box.textContent=''; const b=v.game.board(), T3=v.camera.position.constructor;
     for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; const sq='abcdefgh'[f]+(8-r);
-      const w=v.sqPos(sq).clone().add(new T3(.3,.02,.3)).project(v.camera); // small, in the front right corner of the square
-      const im=document.createElement('img'); im.src=url(pc.color+pc.type.toUpperCase()); im.style.filter=pc.color==='b'?'drop-shadow(0 0 2px #fff) drop-shadow(0 0 1px #fff)':'drop-shadow(0 0 2px rgba(0,0,0,.8))';
+      // small, inside the front right corner of the square: about a third of the square's width on screen
+      const c=v.sqPos(sq), w=c.clone().add(new T3(.33,.02,.33)).project(v.camera), l=c.clone().add(new T3(-.5,0,.5)).project(v.camera), rr=c.clone().add(new T3(.5,0,.5)).project(v.camera);
+      const px=Math.max(14,Math.min(21,(rr.x-l.x)/2*innerWidth*.38));
+      const im=document.createElement('img'); im.style.width=im.style.height=px+'px'; im.src=url(pc.color+pc.type.toUpperCase()); im.style.filter=pc.color==='b'?'drop-shadow(0 0 2px #fff) drop-shadow(0 0 1px #fff)':'drop-shadow(0 0 2px rgba(0,0,0,.8))';
       im.style.left=((w.x+1)/2*innerWidth)+'px'; im.style.top=((1-w.y)/2*innerHeight)+'px'; box.appendChild(im); } };
   window.__badgeTick(); },on);
 const legend=(p,on)=>p.evaluate(on=>{ const el=document.getElementById('vidLegend'); el.style.display=on?'flex':'none'; if(!on) return;
