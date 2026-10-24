@@ -9,7 +9,7 @@ const PZ={
     rs:4,cx:-1,t:'MATE IN 2 🧩',s:'Germany to move 🇩🇪',sol:'1. Queen g8+!! Rook takes',why:'2. Drone f7: checkmate! 🎯'},
 };
 module.exports=async(p)=>{
-  const S=+process.env.SLIDE, K=process.env.PZ, z=PZ[K], cam=(process.env.CAM||'0,0,19.5,8').split(',').map(Number);
+  const S=+process.env.SLIDE, K=process.env.PZ, z=PZ[K], cam=(process.env.CAM||'.15,0,18.2,12.6').split(',').map(Number);
   await p.addStyleTag({content:`#vidTitle,#banner{display:none!important}
     .st{position:fixed;left:0;right:0;text-align:center;z-index:60;pointer-events:none}
     .st.t{top:23%;font:400 54px/1 'Black Ops One',sans-serif;color:#fff;text-shadow:0 3px 0 #000,0 0 14px rgba(0,0,0,.8)}
@@ -25,9 +25,11 @@ module.exports=async(p)=>{
       // title just above the board, who is to move on an empty rank of the board (rs), the call to action just below it
       const rows=S===1?[['t',z.t,'8',-1.05],['s',z.s,String(z.rs),0],['s','Comment your move 👇','1',1.0]]
                       :[['t','SOLUTION ✅','8',-1.05],['s',z.sol,String(z.rs),0],['w',z.why,'1',1.0]];
-      rows.forEach(([c,h,rank,dz])=>{ const q=v.sqPos('d'+rank); q.x+=.5+(dz?0:(z.cx||0)); q.z+=dz; q.project(v.camera);
+      // above and below the board: left-aligned with the board's left edge (the right side belongs to TikTok's buttons)
+      rows.forEach(([c,h,rank,dz])=>{ const q=v.sqPos(dz?'a'+rank:'d'+rank); q.x+=dz?-.5:.5+(z.cx||0); q.z+=dz; q.project(v.camera);
         const e=document.createElement('div'); e.className='ob '+c; e.innerHTML=c==='t'?h:'<span>'+h+'</span>';
-        e.style.left=((q.x+1)/2*innerWidth)+'px'; e.style.top=((1-q.y)/2*innerHeight)+'px'; document.body.appendChild(e); }); }
+        if(dz) e.style.transform='translate(0,-50%)';
+        e.style.left=Math.max(dz?22:0,(q.x+1)/2*innerWidth)+'px'; e.style.top=((1-q.y)/2*innerHeight)+'px'; document.body.appendChild(e); }); }
     else { v.game.load(z.pre); v.setupPieces(); }
   },[z,S,cam]);
   if(S<3){ if(S===2){ 
