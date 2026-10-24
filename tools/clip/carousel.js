@@ -1,15 +1,15 @@
-// TikTok puzzle carousels: the board as big as the screen allows, texts written onto empty ranks of the board (r1/r2: ranks
-// for slide 1/2, top to bottom). PZ=<key> SLIDE=1|2|3 CAM="tx,tz,H,D"
+// TikTok puzzle carousels: the board as big as the screen allows, texts written onto empty ranks of the board (rs: the empty rank
+// for who is to move; title just above the board, call to action just below). PZ=<key> SLIDE=1|2|3 CAM="tx,tz,H,D"
 const PZ={
   fra:{fen:'6rk/pp4pp/8/6N1/8/8/PP3PPP/6K1 w - - 0 1',pre:'6rk/pp4pp/8/6N1/8/8/PP3PPP/6K1 w - - 0 1',mate:['g5','f7'],post:'6rk/pp3Npp/8/8/8/8/PP3PPP/6K1 b - - 1 1',hl:[['g5','y'],['f7','g'],['h8','r']],badge:['f7','!!','g'],badgeLeft:true,
-    cx:-1,r1:[6,5,4],r2:[6,5,4],t:'MATE IN 1 🧩',s:'France to move 🇫🇷',sol:'Drone to f7: checkmate! 🎯',why:'Smothered: his own pieces block the king'},
+    rs:4,cx:-1,t:'MATE IN 1 🧩',s:'France to move 🇫🇷',sol:'Drone to f7: checkmate! 🎯',why:'Smothered: his own pieces block the king'},
   usa:{fen:'5rk1/pp3ppp/8/7Q/8/3B4/PP3PPP/6K1 w - - 0 1',pre:'5rk1/pp3ppp/8/7Q/8/3B4/PP3PPP/6K1 w - - 0 1',mate:['h5','h7'],post:'5rk1/pp3ppQ/8/8/8/3B4/PP3PPP/6K1 b - - 0 1',hl:[['h5','y'],['h7','g'],['g8','r']],badge:['h7','!','b'],
-    r1:[6,5,4],r2:[6,5,4],t:'MATE IN 1 🧩',s:'USA to move 🇺🇸',sol:'Queen takes h7: checkmate! 🎯',why:'The jet on d3 protects the queen'},
+    rs:4,t:'MATE IN 1 🧩',s:'USA to move 🇺🇸',sol:'Queen takes h7: checkmate! 🎯',why:'The jet on d3 protects the queen'},
   ger:{fen:'5r1k/pp4pp/7N/3Q4/8/8/PP4PP/6K1 w - - 0 1',pre:'6rk/pp4pp/7N/8/8/8/PP4PP/6K1 w - - 0 1',mate:['h6','f7'],post:'6rk/pp3Npp/8/8/8/8/PP4PP/6K1 b - - 1 2',hl:[['h6','y'],['f7','g'],['h8','r']],badge:['f7','!!','g'],badgeLeft:true,
-    cx:-1,r1:[6,4,3],r2:[6,5,4],t:'MATE IN 2 🧩',s:'Germany to move 🇩🇪',sol:'1. Queen g8+!! Rook takes',why:'2. Drone f7: checkmate! 🎯'},
+    rs:4,cx:-1,t:'MATE IN 2 🧩',s:'Germany to move 🇩🇪',sol:'1. Queen g8+!! Rook takes',why:'2. Drone f7: checkmate! 🎯'},
 };
 module.exports=async(p)=>{
-  const S=+process.env.SLIDE, K=process.env.PZ, z=PZ[K], cam=(process.env.CAM||'0,0,18.2,12.6').split(',').map(Number);
+  const S=+process.env.SLIDE, K=process.env.PZ, z=PZ[K], cam=(process.env.CAM||'0,0,19.5,8').split(',').map(Number);
   await p.addStyleTag({content:`#vidTitle,#banner{display:none!important}
     .st{position:fixed;left:0;right:0;text-align:center;z-index:60;pointer-events:none}
     .st.t{top:23%;font:400 54px/1 'Black Ops One',sans-serif;color:#fff;text-shadow:0 3px 0 #000,0 0 14px rgba(0,0,0,.8)}
@@ -22,9 +22,10 @@ module.exports=async(p)=>{
   await p.evaluate(([z,S,cam])=>{ const v=window.__v(), add=(c,h)=>{ const e=document.createElement('div'); e.className='st '+c; e.innerHTML=h; document.body.appendChild(e); };
     if(S<3){ v.game.load(S===1?z.fen:z.post); v.setupPieces();
       const [tx,tz,H,D]=cam; v.controls.target.set(tx,0,tz); v.camera.position.set(tx,H,tz+D); v.camera.lookAt(v.controls.target); v.controls.update();
-      // texts centred on the board, one empty rank each
-      const rows=S===1?[['t',z.t],['s',z.s],['s','Comment your move 👇']]:[['t','SOLUTION ✅'],['s',z.sol],['w',z.why]];
-      rows.forEach(([c,h],i)=>{ const q=v.sqPos('d'+(S===1?z.r1:z.r2)[i]); q.x+=.5+(z.cx||0); q.project(v.camera); // cx: shift left/right, away from pieces on the same ranks
+      // title just above the board, who is to move on an empty rank of the board (rs), the call to action just below it
+      const rows=S===1?[['t',z.t,'8',-1.05],['s',z.s,String(z.rs),0],['s','Comment your move 👇','1',1.0]]
+                      :[['t','SOLUTION ✅','8',-1.05],['s',z.sol,String(z.rs),0],['w',z.why,'1',1.0]];
+      rows.forEach(([c,h,rank,dz])=>{ const q=v.sqPos('d'+rank); q.x+=.5+(dz?0:(z.cx||0)); q.z+=dz; q.project(v.camera);
         const e=document.createElement('div'); e.className='ob '+c; e.innerHTML=c==='t'?h:'<span>'+h+'</span>';
         e.style.left=((q.x+1)/2*innerWidth)+'px'; e.style.top=((1-q.y)/2*innerHeight)+'px'; document.body.appendChild(e); }); }
     else { v.game.load(z.pre); v.setupPieces(); }
