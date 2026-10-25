@@ -39,7 +39,7 @@ Chess content (puzzles, patterns, mistakes) goes out as photo carousels; videos 
 - Nations: Germany may win, never be the beaten side in ads; no Ukraine vs Russia; satire, no violence.
 
 ## Platforms
-Post every carousel on TikTok and Instagram (Instagram also pushes carousels; same images, Instagram adds music too).
+Carousels go on TikTok only (25.10.: 800+ views in a day on TikTok, almost none on Instagram). Instagram gets Reels.
 
 ## Backlog
 - Harder puzzles that teach something (mate in 2-3 with a sacrifice, famous combinations, typical patterns: Greek gift,

@@ -32,6 +32,8 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Formatentscheidung (24.10.): Schach-Inhalte (Rätsel, Muster, Fehler) als TikTok-Fotokarussell, nicht mehr als Video
   (erstes Karussell 659 Aufrufe nach 2,5 Std., das Rätselvideo 285 am ganzen Tag). Videos nur noch für die Vorstellung
   neuer Nationen (Figuren in Nahaufnahme, „Germany has entered the chat“). Karussell-Regeln in `tools/clip/README.md`.
+- Plattformen (25.10.): Karussells nur auf TikTok (über 800 Aufrufe am ersten Tag, auf Instagram kaum Aufrufe).
+  Instagram bekommt Reels (Videos).
 
 - Englisch, kurz, ein Witz pro Text, Frage am Ende (bringt Kommentare).
 - Immer „link in bio“, auf Instagram sind Links in Beschreibungen nicht klickbar.
@@ -188,5 +190,8 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-22 | Instagram | V7 Trump's trade war in 2 moves | | ca. 40 kurz nach dem Posten | | | | | neue gelbe Untertitel; Reichweite deutlich schwächer, Verdacht: Politik-Inhalte werden gebremst |
 | 2026-10-22 | TikTok | V7 Trump's trade war in 2 moves | | | | | | | |
 | 2026-10-22 | YouTube Shorts | V7 Trump's trade war in 2 moves | | | | | | | |
-| 2026-10-24 | TikTok | V11 Puzzle mate in 1 als Fotokarussell (3 Bilder) | | 201 nach 15 Min., 659 nach ca. 2,5 Std. | | | | | erstes Foto-Format; Titel oben und Texte unten werden von der TikTok-Oberfläche verdeckt, nächstes Mal Sicherheitszone beachten |
-| 2026-10-24 | Instagram | V11 Puzzle mate in 1 als Karussell (neues Design, 3 Bilder) | | | | | | | Song „BENNY · i play chess“ aus der Instagram-Bibliothek, erster Kommentar mit Hinweis |
+| 2026-10-24 | TikTok | V11 Puzzle mate in 1 als Fotokarussell (3 Bilder) | | 201 nach 15 Min., 659 nach ca. 2,5 Std., über 800 nach 1 Tag | | | | | erstes Foto-Format; Titel oben und Texte unten werden von der TikTok-Oberfläche verdeckt, nächstes Mal Sicherheitszone beachten |
+| 2026-10-24 | Instagram | V11 Puzzle mate in 1 als Karussell (neues Design, 3 Bilder) | | | | | | | Song „BENNY · i play chess“ aus der Instagram-Bibliothek, erster Kommentar mit Hinweis; kaum Aufrufe (Karussells laufen auf Instagram nicht) |
+| 2026-10-25 | TikTok | V10 Welcome, Germany! (32 s) | | | | | | | |
+| 2026-10-25 | YouTube Shorts | V10 Welcome, Germany! (32 s) | | | | | | | |
+| offen | Instagram | V10 Welcome, Germany! (32 s) | | | | | | | noch posten (als Reel) |
