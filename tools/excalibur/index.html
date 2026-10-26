@@ -13,11 +13,11 @@ const T = { hookIn: -1.2, legend2: 1.6, swordIn: 4.65, tries: 6.65, nobody: 8.25
   plate2: 10.4, plate3: 12.0, plate4: 13.5, punish: 10.45, tired: 12.65, s3out: 14.95,
   hallIn: 14.95, empty: 16.45, s4out: 18.3, willIn: 18.35, urlIn: 20.75, END: 27 };
 
-const img = {}, plates = ['p1','p2','p3','p4','p5'];
+const img = {}, plates = ['p1','p2','p3','p4','p5','logo'];
 const fonts = [['BlackOps','fonts/black-ops-one-latin-400-normal.woff2',400],['BarlowC','fonts/barlow-condensed-latin-700-normal.woff2',700],['BarlowC','fonts/barlow-condensed-latin-600-normal.woff2',600]];
 window.ready = Promise.all([
   ...fonts.map(([n,u,w]) => new FontFace(n, `url(${u})`, { weight: String(w) }).load().then(f => document.fonts.add(f))),
-  ...plates.map(k => new Promise(r => { const i = new Image(); i.onload = r; i.src = 'plates/' + k + '.png'; img[k] = i; }))
+  ...plates.map(k => new Promise(r => { const i = new Image(); i.onload = r; i.src = k === 'logo' ? 'logo.png' : 'plates/' + k + '.png'; img[k] = i; }))
 ]).then(() => window.seek(0));
 
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -186,14 +186,21 @@ function s5(t) {
     ctx.fillStyle = INK; ctx.font = `700 76px ${BC}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('checkmatenations.com', 0, 4); ctx.restore();
     const v = snap(t - T.urlIn - .35); ctx.save(); ctx.globalAlpha = clamp(v * 1.4); ctx.fillStyle = 'rgba(255,255,255,.85)';
     ctx.font = `600 50px ${BC}`; ctx.textAlign = 'center'; ctx.fillText('AI CHALLENGE · FREE · NO DOWNLOAD', W / 2, 1360); ctx.restore(); }
+  const lg = snap(t - T.urlIn - .6);
+  if (lg > 0 && img.logo) { ctx.save(); ctx.globalAlpha = clamp(lg * 1.4); const lw = 700, lh = lw * 300 / 1100;
+    ctx.drawImage(img.logo, W / 2 - lw / 2, 1520 + (1 - lg) * 40, lw, lh); ctx.restore(); }
   flash(t, T.willIn, .3, '255,236,190');
   vignette(.6);
   const out = clamp((t - (T.END - .8)) / .8); if (out > 0) { ctx.fillStyle = `rgba(0,0,0,${out})`; ctx.fillRect(0, 0, W, H); }
 }
 
+const HITS = [[T.swordIn, 10], [T.nobody, 14], [T.plate2, 18], [T.plate3, 18], [T.plate4, 22], [T.empty, 26], [T.willIn, 30]];
+function shake(t) { let x = 0, y = 0; for (const [a, amp] of HITS) { const d = t - a; if (d < 0 || d > .45) continue;
+  const e = amp * Math.exp(-d * 9); x += e * Math.sin(d * 97); y += e * Math.cos(d * 83); } return [x, y]; }
 window.seek = function (t) {
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.shadowColor = 'transparent';
   ctx.fillStyle = INK; ctx.fillRect(0, 0, W, H);
+  const [sx, sy] = shake(t); ctx.setTransform(1.03, 0, 0, 1.03, -W * .015 + sx, -H * .015 + sy);
   s1(t); s2(t); s3(t); s4(t); s5(t);
 };
 </script></body></html>
