@@ -67,7 +67,7 @@ module.exports=async(p)=>{
   await p.evaluate(z=>{ const v=window.__v(), T=v.T, sq=z.hl.find(h=>h[1]==='r')[0], k=v.pieces()[sq]||Object.values(v.pieces()).find(g=>g&&g.userData.head&&g.userData.inJail);
     const king=k&&k.userData.head?k:Object.values(v.pieces()).filter(g=>g&&g.userData.head).sort((a,b)=>b.position.y-a.position.y)[0];
     const hp=new T.Vector3(); king.userData.head.getWorldPosition(hp);
-    v.controls.target.copy(hp).add(new T.Vector3(0,.05,0)); v.camera.position.copy(hp).add(new T.Vector3(0,2.5,3.9)); v.camera.lookAt(v.controls.target); },z);
+    v.controls.target.copy(hp).add(new T.Vector3(0,.05,0)); v.camera.position.copy(hp).add(new T.Vector3(0,2.5,3.9).multiplyScalar(innerHeight/innerWidth>2?1.18:1)); v.camera.lookAt(v.controls.target); },z);
   await p.clock.runFor(200);
   await p.evaluate(()=>{ const add=(c,h)=>{ const e=document.createElement('div'); e.className='st '+c; e.innerHTML=h; document.body.appendChild(e); };
     add('t','OFF TO JAIL! 🚔'); add('b1','<span style="font-size:23px">Play free 👉 checkmatenations.com</span>'); add('b2','<span>No download · right in your browser</span>'); });
