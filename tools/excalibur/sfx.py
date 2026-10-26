@@ -34,6 +34,34 @@ def rattle(dur=1.1):           # sword shaking in the stone: fast metal ticks
         i = int(k * .065 * SR); c = metal(.25, 900 + 120 * (k % 3))[: n - i] * (1 - k / 16); s[i:i + len(c)] += c
     return norm(s)
 
+def bp(x, fc, q=8):            # resonant band-pass (2-pole), for metallic noise
+    w = 2 * np.pi * fc / SR; r = 1 - w / q; y = np.zeros_like(x); y1 = y2 = 0.0
+    for i, v in enumerate(x): y0 = v + 2 * r * np.cos(w) * y1 - r * r * y2; y[i] = y0; y2, y1 = y1, y0
+    return y
+
+def shing(dur=1.6):            # sword drawn/unsheathed: rising metallic noise sweep into a bright, short ring
+    n = int(dur * SR); t = np.arange(n) / SR; x = rng.standard_normal(n)
+    sweep = np.zeros(n)
+    for f0, f1, g in ((2500, 7000, 1), (3800, 9000, .6)):
+        seg = int(.35 * SR); f = np.linspace(f0, f1, seg)
+        for k in range(0, seg, 480): sweep[k:k + 480] += g * bp(x[k:k + 480], f[k])
+    sweep[: int(.35 * SR)] *= np.sin(np.linspace(0, np.pi / 2, int(.35 * SR)))
+    sweep[int(.35 * SR):] *= np.exp(-(t[int(.35 * SR):] - .35) * 14)
+    ring = sum(np.sin(2 * np.pi * f * t) * a for f, a in ((2960, .5), (4420, .3), (6650, .18))) * np.exp(-np.maximum(t - .3, 0) * 5) * (t > .3)
+    return norm(norm(sweep) + .35 * ring)
+
+def grind(dur=1.2):            # the sword won't move: stone grinding + a low strain
+    n = int(dur * SR); t = np.arange(n) / SR
+    rumble = lp(rng.standard_normal(n), 350) * (.6 + .4 * np.sin(2 * np.pi * 7 * t)) * np.sin(np.pi * t / dur)
+    creak = np.sin(2 * np.pi * (180 + 25 * np.sin(2 * np.pi * 3 * t)) * t) * np.sin(np.pi * t / dur) * .35
+    return norm(rumble + creak)
+
+def ring_bell(dur=1.6):        # boxing ring bell: bright inharmonic ding
+    n = int(dur * SR); t = np.arange(n) / SR
+    s = sum(np.sin(2 * np.pi * f * t) * a * np.exp(-t * d) for f, a, d in ((1180, 1, 2.2), (2950, .55, 3), (4630, .3, 4.5), (6900, .15, 6)))
+    s += .4 * rng.standard_normal(n) * np.exp(-t * 300)          # hammer click
+    return norm(s)
+
 def whoosh(dur=.6):
     n = int(dur * SR); x = rng.standard_normal(n); u = np.arange(n) / n; y = np.empty(n); acc = 0.0
     for i in range(n):
@@ -50,14 +78,14 @@ def shimmer(dur=2.5):          # magic glint for the URL / logo
     s = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * (2 + i)) * np.clip(t / .02, 0, 1) for i, f in enumerate((1568, 2093, 2637, 3136)))
     return norm(s)
 
-add(whoosh(), T['swordIn'] - .55, .35); add(metal(1.8, 380), T['swordIn'], .45)       # the sword appears, rings
-add(rattle(), T['tries'], .5)                                                          # someone tries to pull it
-add(impact(), T['nobody'], .7)                                                         # nobody pulls it out
-for k in ('plate2', 'plate3', 'plate4'): add(whoosh(.35), T[k] - .3, .3); add(impact(1.2), T[k], .75)
+add(whoosh(), T['swordIn'] - .55, .3); add(shing(), T['swordIn'] - .25, .5)          # the sword appears: metallic 'shing'
+add(grind(), T['tries'], .55)                                                          # someone tries: stone grinds, sword stays
+add(impact(), T['nobody'], .63)                                                         # nobody pulls it out
+for k in ('plate2', 'plate3', 'plate4'): add(whoosh(.35), T[k] - .3, .3); add(impact(1.2), T[k], .675)
 add(whoosh(.5), T['hallIn'] - .45, .3)
 add(stamp(), T['empty'], .9)                                                           # 0 WINNERS stamp
-add(impact(2.2), T['willIn'], .85)                                                     # the question lands
-add(shimmer(), T['urlIn'], .35, -.2); add(shimmer(), T['urlIn'] + .6, .3, .2)          # URL, then logo
-out /= np.abs(out).max() / .9
+add(impact(2.2), T['willIn'], .765)                                                     # the question lands
+for k in range(3): add(ring_bell(), T['urlIn'] + k * .32, .5)                                # ding ding ding, like the boxing ring
+print('peak', round(float(np.abs(out).max()), 3)); out = np.tanh(out * .9 / 1.0)  # fixed scale: the booms set the old peak (1.0), so the -10 % on them stays audible
 w = wave.open('out/sfx.wav', 'wb'); w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
 w.writeframes((out * 32767).astype('<i2').tobytes()); w.close(); print('out/sfx.wav')
