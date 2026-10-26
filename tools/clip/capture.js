@@ -264,7 +264,8 @@ const SCRIPTS={
  const srv=http.createServer((q,r)=>{ const f=path.join(ROOT,decodeURIComponent(q.url.split('?')[0])); if(!f.startsWith(ROOT)||!fs.existsSync(f)||fs.statSync(f).isDirectory()){ r.writeHead(404); return r.end(); } r.writeHead(200,{'content-type':TYPES[path.extname(f)]||'application/octet-stream'}); fs.createReadStream(f).pipe(r); }).listen(0);
  const port=srv.address().port;
  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--autoplay-policy=no-user-gesture-required']});
- const p=await b.newPage({viewport:{width:540,height:960},deviceScaleFactor:4/3,reducedMotion:'no-preference'});
+ // carousels (PHONE=1): phone format 9:19.5 in full resolution, 1080x2340, so TikTok neither crops nor upscales
+ const PH=!!process.env.PHONE, p=await b.newPage({viewport:PH?{width:540,height:1170}:{width:540,height:960},deviceScaleFactor:PH?2:4/3,reducedMotion:'no-preference'});
  p.on('pageerror',e=>console.log('ERR',e.message)); if(process.env.DEBUG) p.on('console',m=>console.log('PAGE',m.text()));
  await p.clock.install({time:new Date('2026-10-12T12:00:00')}); await p.clock.pauseAt(new Date('2026-10-12T12:00:01'));
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);

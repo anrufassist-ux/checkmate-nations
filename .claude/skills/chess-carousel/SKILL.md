@@ -14,14 +14,16 @@ Chess content (puzzles, patterns, mistakes) goes out as photo carousels; videos 
 2. Add the puzzle to `PZ` in `tools/clip/carousel.js` (fen, post-mate fen, highlight squares, badge, texts, `rs` = the
    empty rank for "X to move") and a `car_<key>` entry with the nations in `capture.js`.
 3. Render ONE image first and send only that one (the owner checks it on his phone):
-   `cd tools/clip && PZ=<key> SLIDE=1 CLIP=car_<key> TESTBADGES=1 TESTJS=carousel.js node capture.js test` (writes test.png;
+   `cd tools/clip && PHONE=1 PZ=<key> SLIDE=1 CLIP=car_<key> TESTBADGES=1 TESTJS=carousel.js node capture.js test` (writes test.png;
    with `DEBUG=1` a text that still touches a piece is logged as `TEXT TOUCHES A PIECE`).
 4. Only after his OK: all slides (1 puzzle, 2 solution, 3 jail with the link), copied to `marketing/carousels/` (gitignored).
 5. Look at every image yourself before sending it. Tell him clearly which file is which.
 
 ## Layout rules (owner)
+- Format: always `PHONE=1` = 1080x2340 (phone ratio 9:19.5, full resolution). The old 720x1280 was blurry on the phone
+  and TikTok cropped its sides.
 - Board: classic board, dark earth background (`bg:'earth'`), coordinates inside the edge squares. Framing as the owner
-  set it on his phone: big board shifted a bit left (camera `.2,0,16.9,11.7`), the bottom-left square may be cut a little,
+  set it on his phone: big board shifted a bit left (camera `.2,0,20.6,14.3` in the phone format), the bottom-left square may be cut a little,
   the right side stays free for TikTok's like/comment buttons.
 - Title ("MATE IN 1 🧩", "SOLUTION ✅") just above the board, left-aligned with it, a little gap, not high up.
 - Who is to move ("USA to move 🇺🇸") / the solution move on the board, on empty squares.

@@ -11,7 +11,7 @@ const PZ={
     rs:4,cx:-1,t:'MATE IN 2 🧩',s:'Germany to move 🇩🇪',sol:'1. Queen g8+!! Rook takes',why:'2. Drone f7: checkmate! 🎯'},
 };
 module.exports=async(p)=>{
-  const S=+process.env.SLIDE, K=process.env.PZ, z=PZ[K], cam=(process.env.CAM||'.2,0,16.9,11.7').split(',').map(Number);
+  const S=+process.env.SLIDE, K=process.env.PZ, z=PZ[K], cam=(process.env.CAM||'.2,0,20.6,14.3').split(',').map(Number);
   await p.addStyleTag({content:`#vidTitle,#banner{display:none!important}
     .st{position:fixed;left:0;right:0;text-align:center;z-index:60;pointer-events:none}
     .st.t{top:23%;font:400 54px/1 'Black Ops One',sans-serif;color:#fff;text-shadow:0 3px 0 #000,0 0 14px rgba(0,0,0,.8)}
