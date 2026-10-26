@@ -236,6 +236,7 @@ const SCRIPTS={
    await mv('d1','d8',1800); await pop(p,''); await shoot(14200); }},
 
  // TikTok puzzle carousels (stills only, see the clip README): nations per carousel, same look as the puzzles
+ plates:{nations:['usa','rus'],board:'steel',bg:'command',title:['',''],play:async()=>{}},
  car_rus:{nations:['usa','rus'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
  car_fra:{nations:['fra','gbr'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
  car_usa:{nations:['usa','chn'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
@@ -265,7 +266,7 @@ const SCRIPTS={
  const port=srv.address().port;
  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--autoplay-policy=no-user-gesture-required']});
  // carousels (PHONE=1): phone format 9:19.5 in full resolution, 1080x2340, so TikTok neither crops nor upscales
- const PH=!!process.env.PHONE, p=await b.newPage({viewport:PH?{width:540,height:1170}:{width:540,height:960},deviceScaleFactor:PH?2:4/3,reducedMotion:'no-preference'});
+ const PH=!!process.env.PHONE, p=await b.newPage({viewport:PH?{width:540,height:1170}:{width:540,height:960},deviceScaleFactor:PH||process.env.HD?2:4/3,reducedMotion:'no-preference'});
  p.on('pageerror',e=>console.log('ERR',e.message)); if(process.env.DEBUG) p.on('console',m=>console.log('PAGE',m.text()));
  await p.clock.install({time:new Date('2026-10-12T12:00:00')}); await p.clock.pauseAt(new Date('2026-10-12T12:00:01'));
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
