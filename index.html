@@ -70,6 +70,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);overflow:hid
 .volPop .vopts .btn span{font-family:var(--f-body);font-weight:400;font-size:12px;color:var(--muted)}
 .volPop .vopts .btn[aria-pressed=true]{border-color:var(--sand);box-shadow:inset 3px 0 0 var(--sand)}
 .volPop .vtog{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:480px){#ranksBtn .rkLbl{display:none}}
 @media (max-width:600px){.volPop{position:fixed;left:16px;right:16px;width:auto;max-width:none}}
 .btn,.sel{font-family:var(--f-label);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer}
 .btn:hover,.sel:hover{border-color:var(--sand)}
@@ -300,6 +301,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
         </div>
       </div>
     </div>
+    <button class="btn" id="ranksBtn" type="button" aria-label="Ranglisten">🏆<span class="rkLbl"> Ranglisten</span></button>
     <button class="btn" id="acctBtn" type="button">Konto</button>
     <button class="btn" id="langBtn" type="button" aria-label="Language / Sprache" onclick="setLang(LANG==='en'?'de':'en')">EN · DE</button>
     <button class="btn primary" id="reset" type="button">Neues Spiel</button>
@@ -383,6 +385,8 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <p class="testNote" id="acctNatNote"></p>
       <p class="testNote"><a href="/hilfe" target="_blank" rel="noopener">Regeln nachlesen: Wann zählt eine Partie?</a></p>
     </div>
+    <div class="tabs" id="ranksTabs" hidden><button class="btn tab" type="button" data-rk="board">Rangliste</button><button class="btn tab" type="button" data-rk="league">Nations League</button><button class="btn tab" type="button" data-rk="aihall">KI-Challenge</button></div>
+    <div class="box ranksCta" id="ranksCta" hidden><div>Kostenloses Konto: dein Name auf der Rangliste und in der Hall of Fame.</div><div class="row"><button class="btn primary" id="ranksLogin" type="button">Kostenlos anmelden</button></div></div>
     <div class="acctPane" id="acctBoard" hidden><ol class="board" id="boardList"></ol><p class="pickSub boardNote">Auf der Rangliste steht jeder mit mindestens einer gewerteten Partie. ? = vorläufige Wertung, unter 20 Partien.</p></div>
     <div class="acctPane" id="acctAihall" hidden><p class="pickSub" id="aiHallStat"></p><ol class="board" id="aiHallList"></ol>
       <p class="pickSub boardNote">Hier steht jeder, der die KI auf Normal in der KI-Challenge besiegt hat, mit seinem kürzesten Sieg. Die KI rechnet dabei auf unserem Server, deshalb zählt jeder Sieg wirklich.</p>
@@ -478,7 +482,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
     '2,99 €':'€2.99','4,99 €':'€4.99','0,99 €':'€0.99',
     'Neue Länder':'New nations','Länder freischalten':'Unlock nations','League-Pass':'League pass','Damit spielst du diese Saison mit USA oder Russland in der Nations League. Wer ein Land kauft, ist ohne Pass in jeder Saison dabei.':'Play this season of the Nations League with the USA or Russia. Anyone who buys a nation is in every season without a pass.','Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen, auch online. Jeder Länderkauf enthält die Nations League für alle Saisons.':'Own pieces, own queen, own flag pattern. Buy once, play forever, online too. Every nation purchase includes the Nations League for all seasons.','3 Länder nach Wahl':'3 nations of your choice','Du wählst gleich aus':'You pick them next','Alle Länder':'All nations','Auch alle, die später dazukommen':'Including every nation added later','Gilt bis zum Monatsende':'Valid until the end of the month','Weiter zur Zahlung':'Continue to payment','Ich möchte, dass die Freischaltung sofort erfolgt, und weiß, dass ich damit mein Widerrufsrecht verliere. Es gelten die':'I want the unlock to happen immediately and understand that I thereby lose my right of withdrawal. The following apply:','AGB':'Terms','Einmalige Zahlung, kein Abo, keine automatische Verlängerung. Endpreise, gemäß § 19 UStG ohne Umsatzsteuer. Bezahlt wird über Stripe.':'One-time payment, no subscription, no automatic renewal. Final prices, no VAT charged (small business, § 19 UStG). Payment via Stripe.','Du hast schon alle Länder.':'You already own every nation.','Bitte genau 3 Länder wählen.':'Please pick exactly 3 nations.','Bitte bestätige zuerst das Häkchen.':'Please tick the box first.','Einen Moment …':'One moment …','Verbindung zum Server fehlgeschlagen.':'Could not connect to the server.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.','Das hast du schon.':'You already have this.','Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.':'Could not start the purchase. Please try again.','Danke für deinen Kauf!':'Thanks for your purchase!','Die Zahlung wird noch bestätigt …':'Payment is being confirmed …','Freigeschaltet. Viel Spaß!':'Unlocked. Have fun!','Die Zahlung ist noch nicht bestätigt. Lade die Seite gleich nochmal.':'The payment is not confirmed yet. Reload the page in a moment.','Saison':'Season','League konnte nicht geladen werden.':'Could not load the league.','Für die League brauchst du ein Konto und ein gekauftes Land oder den League-Pass.':'For the league you need an account and a bought nation or the league pass.','Wähle zuerst einen Spielernamen.':'Choose a player name first.','Wähle dein Land für diese Saison. Es bleibt bis zum Monatsende fest.':'Choose your nation for this season. It stays fixed until the end of the month.','Dabei bist du mit jedem Länderkauf (gilt für alle Saisons) oder mit dem League-Pass für diese Saison.':'You are in with any nation purchase (valid for all seasons) or with the league pass for this season.','League-Pass · 0,99 €':'League pass · €0.99','Länder ansehen':'See nations','Länder':'Nations','Land':'Nation','Pkt/Partie':'Pts/game','Partien':'Games','Spieler':'Players','Punkte':'Points','Beste Spieler':'Top players','Noch keine League-Partien in dieser Saison.':'No league games this season yet.','3 Punkte für einen Sieg, 1 für ein Remis. Länder werden nach Punkten pro Partie gewertet. Neue Spieler (unter 20 Partien) und Spieler unter 1000 Elo zählen für ihr Land halb.':'3 points for a win, 1 for a draw. Nations are ranked by points per game. New players (under 20 games) and players under 1000 Elo count half for their nation.','Meister':'Champions','Titel':'Titles','Ewige Tabelle':'All-time table','Die erste Saison läuft noch. Am Monatsende steht hier der erste Meister.':'The first season is still running. At the end of the month the first champion appears here.','Du spielst diese Saison für':'You play this season for','Meister:':'Champion:',
-    'Konto':'Account','Konto, Shop, League':'Account, shop, league','freischalten · ab 2,99 €':'unlock · from €2.99','Kostenlos':'Free','Du bist am Zug':'Your move','Schach! Du bist am Zug':'Check! Your move','Gegner ist am Zug':'Opponent to move','einmalig · kein Abo':'one-time · no subscription','spielbereit · kostenlos':'ready to play · free','gewählt':'taken','Spielbereit':'Ready to play','Freischalten · 3 Länder 2,99 € · alle 4,99 €':'Unlock · 3 nations €2.99 · all €4.99','2,99 €':'€2.99','Länder kaufen':'Buy nations','Weitere Länder kaufen':'Buy more nations',
+    'Konto':'Account','🏆 Ranglisten':'🏆 Ranks',' Ranglisten':' Ranks','Ranglisten':'Ranks','Kostenloses Konto: dein Name auf der Rangliste und in der Hall of Fame.':'Free account: your name on the leaderboard and in the Hall of Fame.','Kostenlos anmelden':'Sign up free','Konto, Shop, League':'Account, shop, league','freischalten · ab 2,99 €':'unlock · from €2.99','Kostenlos':'Free','Du bist am Zug':'Your move','Schach! Du bist am Zug':'Check! Your move','Gegner ist am Zug':'Opponent to move','einmalig · kein Abo':'one-time · no subscription','spielbereit · kostenlos':'ready to play · free','gewählt':'taken','Spielbereit':'Ready to play','Freischalten · 3 Länder 2,99 € · alle 4,99 €':'Unlock · 3 nations €2.99 · all €4.99','2,99 €':'€2.99','Länder kaufen':'Buy nations','Weitere Länder kaufen':'Buy more nations',
     'Spielen ist ohne Konto kostenlos. Ein Konto brauchst du nur zum Kaufen, für gewertete Partien und die Nations League.':'Playing is free without an account. You only need one to buy, to play rated games and for the Nations League.',
     'Angemeldet, noch ohne Spielernamen.':'Signed in, no player name yet.','Deine Länder: ':'Your nations: ','Noch keine Länder gekauft.':'No nations bought yet.','League diese Saison: ':'League this season: ','League: Land noch nicht gewählt.':'League: nation not chosen yet.','League: nicht dabei.':'League: not entered.',
     'Gekaufte Länder kannst du sofort überall spielen, auch gewertet. Für die League zählen sie ab der nächsten Saison.':'Bought nations are playable everywhere right away, rated games too. For the league they count from next season.',
@@ -2120,7 +2124,7 @@ async function loadAiHall(){
   const ol=$('aiHallList'), st=$('aiHallStat'), item=(t,cls)=>{ const li=document.createElement('li'); li.textContent=t; if(cls) li.className=cls; ol.appendChild(li); return li; };
   ol.textContent=''; st.textContent='Lade …';
   $('aiHallGo').onclick=()=>{ closeAcct(); $('modeScreen').hidden=true; pickerOpen=false; ensureAudio(); startChallenge(); };
-  try{ await ensureSb(false); }catch(e){}
+  try{ await ensureSb(false); }catch(e){} $('ranksCta').hidden=isReg(on.user);
   let res; try{ res=await on.sb.rpc('ai_hall'); }catch(e){ res={error:e}; }
   if(res.error||!res.data){ st.textContent='Hall of Fame konnte nicht geladen werden.'; return; }
   const d=res.data;
@@ -2434,7 +2438,10 @@ function renderAccount(){
 }
 function openAcct(v){
   ['menu','login','name','nation','board','league','aihall'].forEach(k=>{ $('acct'+k[0].toUpperCase()+k.slice(1)).hidden=k!==v; });
-  $('acctTitle').textContent={menu:'Konto',login:'Anmelden',name:'Spielername',nation:'Gewertete Partie',board:'Rangliste',league:'Nations League',aihall:'KI-Challenge'}[v];
+  const rk=v==='board'||v==='league'||v==='aihall'; // leaderboard, league and AI challenge live together under "Ranglisten"
+  $('acctTitle').textContent=rk?'🏆 Ranglisten':{menu:'Konto',login:'Anmelden',name:'Spielername',nation:'Gewertete Partie'}[v];
+  $('ranksTabs').hidden=!rk; document.querySelectorAll('#ranksTabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.rk===v));
+  $('ranksCta').hidden=!rk||v==='league'||isReg(on.user); // the league pane has its own sign-in box
   $('acct').hidden=false; pickerOpen=true;
   if(v==='login'){ $('acctNote').textContent=''; $('acctCodeRow').hidden=true; $('acctCode').value=''; setTimeout(()=>$('acctEmail').focus(),50); }
   if(v==='name'){ $('acctNameNote').textContent=''; $('acctUser').value=on.profile?on.profile.username:''; setTimeout(()=>$('acctUser').focus(),50); }
@@ -2463,9 +2470,7 @@ async function renderMenu(){
   }
   const list=el('div','acctMenuList',box);
   if(PAID.some(k=>!OWNED.has(k))) btn('Länder kaufen','btn primary',()=>{ closeAcct(); openShop('nations',null,()=>{}); },list);
-  btn('Nations League','btn',()=>openAcct('league'),list);
-  btn('Rangliste','btn',()=>openAcct('board'),list);
-  btn('KI-Challenge 🏆','btn',()=>openAcct('aihall'),list);
+  btn('🏆 Ranglisten','btn',()=>openAcct('board'),list);
   btn('Hilfe & Regeln','btn',()=>window.open('/hilfe','_blank','noopener'),list);
   if(reg){ const r=el('div','acctMenuSmall',box);
     btn('Abmelden','linkBtn',async()=>{ await logout(); renderMenu(); },r);
@@ -2532,6 +2537,7 @@ async function deleteAccount(){
 async function loadBoard(){
   const ol=$('boardList'), item=(t,cls)=>{ const li=document.createElement('li'); li.textContent=t; if(cls) li.className=cls; ol.appendChild(li); return li; };
   ol.textContent=''; item('Lade …');
+  try{ await ensureSb(false); }catch(e){} $('ranksCta').hidden=isReg(on.user); // the session is only known now
   let res; try{ res=await on.sb.rpc('leaderboard'); }catch(e){ res={error:e}; }
   ol.textContent='';
   if(res.error||!res.data||!res.data.length){ item(res.error?'Rangliste konnte nicht geladen werden.':'Noch steht niemand auf der Rangliste.'); return; }
@@ -3053,6 +3059,9 @@ $('onRated').addEventListener('click',()=>{ if(on.profile) openAcct('nation'); }
 $('onSearchStop').addEventListener('click',()=>stopSearch());
 $('onSearchAll').addEventListener('click',()=>{ if(on.search){ on.search.league=false; $('onSearchAll').hidden=true; tickSearch(); } });
 document.querySelectorAll('#acctLeague .tab').forEach(b=>b.addEventListener('click',()=>renderLeague(b.dataset.tab)));
+document.querySelectorAll('#ranksTabs .tab').forEach(b=>b.addEventListener('click',()=>openAcct(b.dataset.rk)));
+$('ranksBtn').addEventListener('click',()=>openAcct('board'));
+$('ranksLogin').addEventListener('click',()=>openAcct('login'));
 $('buyGo').addEventListener('click',shopGo);
 $('buyCancel').addEventListener('click',()=>{ $('buy').hidden=true; });
 $('acctSend').addEventListener('click',sendLink);
