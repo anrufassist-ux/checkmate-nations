@@ -32,6 +32,10 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Formatentscheidung (24.10.): Schach-Inhalte (Rätsel, Muster, Fehler) als TikTok-Fotokarussell, nicht mehr als Video
   (erstes Karussell 659 Aufrufe nach 2,5 Std., das Rätselvideo 285 am ganzen Tag). Videos nur noch für die Vorstellung
   neuer Nationen (Figuren in Nahaufnahme, „Germany has entered the chat“). Karussell-Regeln in `tools/clip/README.md`.
+- Posting-Zeit (27.10., aus TikTok-Analyse „Follower → Aktivste Zeiten“, 23.10.): Follower ab ca. 14 Uhr aktiv,
+  Spitze 16 Uhr, zweite Spitze 20 Uhr, bis 23 Uhr hoch; nachts und vormittags kaum jemand. Posten gegen 15:30–16 Uhr,
+  danach die erste Stunde Kommentare beantworten. Neu prüfen, sobald mehr Follower da sind (Stichprobe ~80).
+- Uhrzeit jedes Posts im Protokoll notieren (Spalte Notiz), damit wir eigene Zahlen bekommen.
 - Plattformen (25.10.): Karussells nur auf TikTok (über 800 Aufrufe am ersten Tag, auf Instagram kaum Aufrufe).
   Instagram bekommt Reels (Videos).
 
