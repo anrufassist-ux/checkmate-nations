@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zoo-Klingel (Prototyp)</title>
+<style>
+  :root { --bg:#2a1f3d; --felt:#5b3f6e; --ink:#2b2b2b; --card:clamp(52px,13vw,86px); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:#fff; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; user-select:none; }
+  header { display:flex; align-items:center; gap:10px; padding:10px 16px; }
+  header h1 { margin:0; font-size:20px; }
+  header .tag { font-size:12px; background:#ffffff22; padding:2px 8px; border-radius:10px; }
+  #setup { max-width:520px; margin:0 auto; padding:8px 16px 24px; }
+  #setup label { display:block; margin:10px 0 4px; font-size:14px; opacity:.8; }
+  #setup select, button { font:inherit; padding:10px 14px; border-radius:10px; border:0; }
+  #setup select { width:100%; }
+  button.primary { background:#ffcf33; color:#222; font-weight:700; width:100%; margin-top:16px; cursor:pointer; }
+  .rules { font-size:14px; line-height:1.5; background:#ffffff12; border-radius:12px; padding:12px 14px; margin-top:18px; }
+  .rules ul { margin:6px 0 0; padding-left:18px; }
+  .preview { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; justify-content:center; }
+  .preview .card { --card:54px; }
+
+  #table { position:relative; display:none; margin:0 auto; width:100%; max-width:820px; height:min(80vh,680px); min-height:460px;
+           background:radial-gradient(ellipse at center,var(--felt),#3b2850 75%); border-radius:24px; }
+  .seat { position:absolute; transform:translate(-50%,-50%); text-align:center; transition:filter .2s; }
+  .seat .name { font-size:13px; font-weight:600; margin-bottom:4px; white-space:nowrap; }
+  .seat .name small { opacity:.75; font-weight:400; }
+  .seat .row { display:flex; gap:6px; align-items:center; justify-content:center; }
+  .seat.turn .name { color:#ffcf33; }
+  .seat.turn .stack { box-shadow:0 0 0 3px #ffcf33, 0 0 18px #ffcf33aa; }
+  .seat.out { filter:grayscale(1) opacity(.45); }
+  .seat.win .pile { animation:pulse .6s 2; }
+
+  .card { width:var(--card); height:calc(var(--card)*1.42); border-radius:8px; background:#fffdf6; border:2px solid #fff;
+          box-shadow:0 2px 6px #0006; position:relative; overflow:hidden; flex:none; }
+  .card svg { position:absolute; inset:12% 4%; width:92%; height:76%; }
+  .card .star { position:absolute; font-size:calc(var(--card)*.17); line-height:1; }
+  .card .s1{top:4%;left:6%} .card .s2{top:4%;right:6%} .card .s3{bottom:4%;left:6%} .card .s4{bottom:4%;right:6%}
+  .card.new { animation:flip .28s ease-out; }
+  .stack { --card:calc(clamp(52px,13vw,86px)*.7); cursor:default;
+           background:repeating-linear-gradient(45deg,#ff7aa8 0 6px,#ff9dc0 6px 12px); border-color:#fff; }
+  .stack b { position:absolute; inset:0; display:grid; place-items:center; font-size:15px; color:#fff; text-shadow:0 1px 3px #000a; }
+  .stack.empty { background:#ffffff14; border:2px dashed #ffffff55; box-shadow:none; }
+  .seat.me.turn .stack { cursor:pointer; }
+  .slot { width:var(--card); height:calc(var(--card)*1.42); border-radius:8px; border:2px dashed #ffffff40; }
+
+  #bell { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:clamp(84px,20vw,120px); height:clamp(84px,20vw,120px);
+          border-radius:50%; border:0; background:none; cursor:pointer; padding:0; -webkit-tap-highlight-color:transparent; }
+  #bell svg { width:100%; height:100%; filter:drop-shadow(0 6px 8px #0008); }
+  #bell.hit { animation:ding .35s; }
+  #msg { position:absolute; left:50%; top:calc(50% + clamp(50px,12vw,72px)); transform:translateX(-50%); width:min(90%,360px);
+         text-align:center; font-size:14px; font-weight:600; min-height:20px; text-shadow:0 1px 3px #000; }
+  #hint { text-align:center; font-size:12px; opacity:.6; padding:8px 16px; display:none; }
+
+  #over { position:fixed; inset:0; background:#000a; display:none; place-items:center; z-index:5; }
+  #over .box { background:#fff; color:#222; border-radius:16px; padding:22px 26px; text-align:center; width:min(90%,340px); }
+  #over h2 { margin:0 0 8px; }
+
+  @keyframes flip { from { transform:rotateY(90deg) scale(.9); } to { transform:none; } }
+  @keyframes ding { 30% { transform:translate(-50%,-50%) scale(.86); } 60% { transform:translate(-50%,-50%) scale(1.06) rotate(4deg); } }
+  @keyframes pulse { 50% { transform:scale(1.12); } }
+</style>
+</head>
+<body>
+<header><h1>🔔 Zoo-Klingel</h1><span class="tag">Prototyp</span></header>
+
+<div id="setup">
+  <label for="nPlayers">Spieler am Tisch</label>
+  <select id="nPlayers">
+    <option value="2">2 (du + 1)</option><option value="3">3 (du + 2)</option>
+    <option value="4" selected>4 (du + 3)</option><option value="5">5 (du + 4)</option>
+  </select>
+  <label for="speed">Reaktion der Gegner</label>
+  <select id="speed">
+    <option value="slow">Gemütlich</option><option value="normal" selected>Normal</option><option value="fast">Blitzschnell</option>
+  </select>
+  <button class="primary" id="go">Spiel starten</button>
+  <div class="rules">
+    <b>So geht's</b>
+    <ul>
+      <li>Reihum deckt jeder die oberste Karte seines Stapels auf.</li>
+      <li>Liegen bei zwei Spielern <b>zwei gleiche fröhliche Tiere</b> oben: sofort klingeln!</li>
+      <li>Wer zuerst klingelt, bekommt <b>alle offenen Karten</b>.</li>
+      <li>Traurige Tiere haben <b>keinen Partner</b> – auch nicht das fröhliche Tier derselben Sorte.</li>
+      <li>Falsch geklingelt: du gibst jedem Mitspieler eine Karte.</li>
+      <li>Wer keine Karten mehr hat, ist raus. Der Letzte gewinnt.</li>
+    </ul>
+    <div class="preview" id="preview"></div>
+    <p style="margin:10px 0 0;opacity:.7">Steuerung: Leertaste oder Glocke tippen = klingeln · Enter oder Stapel tippen = aufdecken</p>
+  </div>
+</div>
+
+<div id="table">
+  <button id="bell" aria-label="Klingeln">
+    <svg viewBox="0 0 100 100">
+      <ellipse cx="50" cy="80" rx="40" ry="10" fill="#c99a00"/>
+      <rect x="10" y="70" width="80" height="10" fill="#ffcf33"/>
+      <ellipse cx="50" cy="70" rx="40" ry="10" fill="#ffe27a"/>
+      <path d="M18 70 Q18 28 50 26 Q82 28 82 70Z" fill="#f4f4f4"/>
+      <path d="M26 64 Q26 36 44 32" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/>
+      <rect x="44" y="16" width="12" height="12" fill="#ccc"/>
+      <ellipse cx="50" cy="16" rx="13" ry="6" fill="#d9302c"/>
+      <ellipse cx="50" cy="13" rx="13" ry="6" fill="#ff4b45"/>
+    </svg>
+  </button>
+  <div id="msg"></div>
+</div>
+<div id="hint">Leertaste = klingeln · Enter = aufdecken</div>
+
+<div id="over"><div class="box"><h2 id="overTitle"></h2><p id="overText"></p>
+  <button class="primary" id="again">Nochmal</button></div></div>
+
+<script>
+// ---------- Karten ----------
+const ANIMALS = [
+  { key:'fox',   name:'Fuchs',   color:'#f28c28', star:'#f28c28' },
+  { key:'frog',  name:'Frosch',  color:'#5cb85c', star:'#3e9b3e' },
+  { key:'bunny', name:'Hase',    color:'#f7a1c4', star:'#e5679a' },
+  { key:'chick', name:'Küken',   color:'#ffd93b', star:'#e0b000' },
+  { key:'panda', name:'Panda',   color:'#ffffff', star:'#444444' },
+  { key:'peng',  name:'Pinguin', color:'#3f6fd8', star:'#3f6fd8' },
+  { key:'cat',   name:'Katze',   color:'#a06cd5', star:'#8a4fc4' },
+];
+const BY_KEY = Object.fromEntries(ANIMALS.map(a => [a.key, a]));
+const HAPPY_PER_ANIMAL = 5, SAD_PER_ANIMAL = 3;
+
+function faceSvg(a, happy) {
+  const c = a.color, O = 'stroke="#333" stroke-width="2.5"';
+  let back = '', front = '', ex = 40, ey = 52, eyeWhite = false, mouthY = 0, nose = '<ellipse cx="50" cy="63" rx="4" ry="3" fill="#333"/>';
+  switch (a.key) {
+    case 'fox':
+      back = `<path d="M24 44 L20 10 L47 30Z" fill="${c}" ${O}/><path d="M76 44 L80 10 L53 30Z" fill="${c}" ${O}/>
+              <path d="M27 36 L25 18 L40 30Z" fill="#7a3d0c"/><path d="M73 36 L75 18 L60 30Z" fill="#7a3d0c"/>`;
+      front = `<path d="M24 60 Q50 98 76 60 Q62 70 50 64 Q38 70 24 60Z" fill="#fff"/>`; break;
+    case 'cat':
+      back = `<path d="M24 44 L26 16 L46 32Z" fill="${c}" ${O}/><path d="M76 44 L74 16 L54 32Z" fill="${c}" ${O}/>
+              <path d="M29 38 L30 24 L40 32Z" fill="#f7b6d2"/><path d="M71 38 L70 24 L60 32Z" fill="#f7b6d2"/>`;
+      front = `<g stroke="#333" stroke-width="1.5"><path d="M30 64 L14 60"/><path d="M30 68 L14 70"/><path d="M70 64 L86 60"/><path d="M70 68 L86 70"/></g>`;
+      nose = '<path d="M46 61 L54 61 L50 66Z" fill="#e5679a"/>'; break;
+    case 'frog':
+      back = `<circle cx="33" cy="32" r="13" fill="${c}" ${O}/><circle cx="67" cy="32" r="13" fill="${c}" ${O}/>`;
+      ex = 33; ey = 31; eyeWhite = true;
+      nose = '<circle cx="46" cy="58" r="1.6" fill="#333"/><circle cx="54" cy="58" r="1.6" fill="#333"/>'; mouthY = -3; break;
+    case 'bunny':
+      back = `<ellipse cx="38" cy="18" rx="8" ry="22" fill="${c}" ${O}/><ellipse cx="62" cy="18" rx="8" ry="22" fill="${c}" ${O}/>
+              <ellipse cx="38" cy="20" rx="4" ry="15" fill="#fff0f6"/><ellipse cx="62" cy="20" rx="4" ry="15" fill="#fff0f6"/>`;
+      nose = '<ellipse cx="50" cy="62" rx="4" ry="3" fill="#d94f86"/>'; break;
+    case 'chick':
+      back = `<path d="M44 28 Q42 12 50 20 Q54 8 56 26" fill="${c}" ${O}/>`;
+      nose = '<path d="M43 60 L57 60 L50 69Z" fill="#f28c28" stroke="#b85c00" stroke-width="1.5"/>'; mouthY = 5; break;
+    case 'panda':
+      back = `<circle cx="27" cy="32" r="10" fill="#222"/><circle cx="73" cy="32" r="10" fill="#222"/>`;
+      front = `<ellipse cx="39" cy="53" rx="9" ry="11" fill="#222" transform="rotate(25 39 53)"/>
+               <ellipse cx="61" cy="53" rx="9" ry="11" fill="#222" transform="rotate(-25 61 53)"/>`;
+      eyeWhite = true; break;
+    case 'peng':
+      front = `<path d="M50 44 Q36 34 28 46 Q22 66 50 84 Q78 66 72 46 Q64 34 50 44Z" fill="#fff"/>`;
+      nose = '<path d="M44 60 L56 60 L50 68Z" fill="#ffae1a" stroke="#b86e00" stroke-width="1.5"/>'; mouthY = 5; break;
+  }
+  const ex2 = 100 - ex;
+  const eye = x => eyeWhite
+    ? `<circle cx="${x}" cy="${ey}" r="6" fill="#fff"/><circle cx="${x}" cy="${ey + 1}" r="3.5" fill="#222"/><circle cx="${x + 1.2}" cy="${ey - .5}" r="1.2" fill="#fff"/>`
+    : `<circle cx="${x}" cy="${ey}" r="4.5" fill="#222"/><circle cx="${x + 1.5}" cy="${ey - 1.5}" r="1.5" fill="#fff"/>`;
+  const my = 72 + mouthY;
+  let mood;
+  if (happy) {
+    mood = `<path d="M40 ${my} Q50 ${my + 11} 60 ${my}" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="28" cy="66" r="5" fill="#ff6b8b" opacity=".45"/><circle cx="72" cy="66" r="5" fill="#ff6b8b" opacity=".45"/>`;
+  } else {
+    const by = ey - 10;
+    mood = `<path d="M41 ${my + 6} Q50 ${my - 3} 59 ${my + 6}" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+            <path d="M${ex - 8} ${by + 3} L${ex + 6} ${by - 2}" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M${ex2 + 8} ${by + 3} L${ex2 - 6} ${by - 2}" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M${ex - 3} ${ey + 7} q-4 7 0 9 q4 -2 0 -9Z" fill="#4fb3ff"/>`;
+  }
+  return `<svg viewBox="0 4 100 92">${back}<circle cx="50" cy="56" r="31" fill="${c}" ${O}/>${front}${eye(ex)}${eye(ex2)}${nose}${mood}</svg>`;
+}
+
+function cardHtml(card, extra = '') {
+  const a = BY_KEY[card.a];
+  const st = s => `<span class="star ${s}" style="color:${a.star}">★</span>`;
+  return `<div class="card ${extra}" title="${a.name} ${card.happy ? 'fröhlich' : 'traurig'}">${st('s1')}${st('s2')}${st('s3')}${st('s4')}${faceSvg(a, card.happy)}</div>`;
+}
+
+// ---------- Hilfen ----------
+const $ = s => document.querySelector(s);
+const rand = (a, b) => a + Math.random() * (b - a);
+function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+let AC = null;
+function audio() { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} return AC; }
+function tone(freq, dur, type = 'sine', vol = .25) {
+  const ac = audio(); if (!ac) return;
+  const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
+  o.type = type; o.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur);
+}
+const sndBell = () => { tone(1320, 1.2, 'sine', .3); tone(2650, .8, 'sine', .12); };
+const sndFlip = () => tone(240, .06, 'triangle', .15);
+const sndWrong = () => tone(140, .35, 'sawtooth', .12);
+
+// ---------- Spiel ----------
+const SPEED = { slow: [900, 1700], normal: [620, 1150], fast: [400, 760] };
+const BOT_NAMES = ['Lotte', 'Ben', 'Mia', 'Kalle'];
+const HUMAN_AUTO_FLIP_MS = 4000;
+let G = null;
+
+function start() {
+  const n = +$('#nPlayers').value;
+  const deck = [];
+  ANIMALS.forEach(a => {
+    for (let i = 0; i < HAPPY_PER_ANIMAL; i++) deck.push({ a: a.key, happy: true });
+    for (let i = 0; i < SAD_PER_ANIMAL; i++) deck.push({ a: a.key, happy: false });
+  });
+  shuffle(deck).forEach((c, i) => c.id = i);
+  const players = [{ name: 'Du', bot: false }, ...BOT_NAMES.slice(0, n - 1).map(name => ({ name, bot: true }))];
+  players.forEach(p => { p.stack = []; p.pile = []; p.out = false; });
+  deck.forEach((c, i) => players[i % n].stack.push(c));
+  if (G) clearTimeout(G.timer);
+  G = { players, turn: 0, ver: 0, busy: false, over: false, speed: $('#speed').value, timer: null, lastTop: {} };
+
+  $('#setup').style.display = 'none'; $('#over').style.display = 'none';
+  $('#table').style.display = 'block'; $('#hint').style.display = 'block';
+  buildSeats();
+  say('Du fängst an – tippe auf deinen Stapel.');
+  schedule();
+}
+
+function buildSeats() {
+  document.querySelectorAll('.seat').forEach(e => e.remove());
+  const n = G.players.length;
+  G.players.forEach((p, i) => {
+    const ang = (90 + 360 * i / n) * Math.PI / 180;
+    const el = document.createElement('div');
+    el.className = 'seat' + (p.bot ? '' : ' me');
+    el.style.left = (50 + 37 * Math.cos(ang)) + '%';
+    el.style.top = (50 + 38 * Math.sin(ang)) + '%';
+    $('#table').appendChild(el);
+    p.el = el;
+  });
+}
+
+function render() {
+  G.players.forEach((p, i) => {
+    const top = p.pile[p.pile.length - 1];
+    const isNew = top && G.lastTop[i] !== top.id;
+    G.lastTop[i] = top && top.id;
+    const total = p.stack.length + p.pile.length;
+    p.el.classList.toggle('turn', !G.over && i === G.turn && !G.busy);
+    p.el.classList.toggle('out', p.out);
+    p.el.innerHTML =
+      `<div class="name">${p.name} <small>· ${total} Karten</small></div>
+       <div class="row">
+         <div class="card stack ${p.stack.length ? '' : 'empty'}" data-i="${i}"><b>${p.stack.length || ''}</b></div>
+         <div class="pile">${top ? cardHtml(top, isNew ? 'new' : '') : '<div class="slot"></div>'}</div>
+       </div>`;
+  });
+}
+
+function say(t) { $('#msg').textContent = t; }
+
+// Gibt es zwei gleiche fröhliche Tiere oben?
+function matchExists() {
+  const seen = new Set();
+  for (const p of G.players) {
+    const c = p.pile[p.pile.length - 1];
+    if (!c || !c.happy) continue;
+    if (seen.has(c.a)) return true;
+    seen.add(c.a);
+  }
+  return false;
+}
+// Falle: fröhliches und trauriges gleiches Tier liegen oben (Bots fallen manchmal drauf rein)
+function trapExists() {
+  const tops = G.players.map(p => p.pile[p.pile.length - 1]).filter(Boolean);
+  return tops.some(x => !x.happy && tops.some(y => y !== x && y.a === x.a));
+}
+
+function schedule() {
+  clearTimeout(G.timer);
+  if (G.over) return;
+  const alive = G.players.filter(p => !p.out && p.stack.length > 0);
+  if (alive.length <= 1) return endGame(alive[0]);
+  // Spieler ohne Stapel sind raus, sobald sie dran wären
+  while (G.players[G.turn].out || G.players[G.turn].stack.length === 0) {
+    const p = G.players[G.turn];
+    if (!p.out) { p.out = true; say(`${p.name} hat keine Karten mehr – raus!`); }
+    G.turn = (G.turn + 1) % G.players.length;
+  }
+  G.players.forEach(q => q.el.classList.remove('win'));
+  render();
+  const p = G.players[G.turn];
+  G.timer = setTimeout(() => flip(G.turn), p.bot ? rand(700, 1100) : HUMAN_AUTO_FLIP_MS);
+}
+
+function flip(i) {
+  if (!G || G.over || G.busy || i !== G.turn) return;
+  const p = G.players[i];
+  p.pile.push(p.stack.pop());
+  G.ver++;
+  sndFlip();
+  botsReact();
+  G.turn = (G.turn + 1) % G.players.length;
+  schedule();
+}
+
+function botsReact() {
+  const g = G, v = G.ver, [lo, hi] = SPEED[G.speed];
+  const match = matchExists(), trap = !match && trapExists();
+  G.players.forEach((p, i) => {
+    if (!p.bot || p.out) return;
+    if (match || (trap && Math.random() < .08)) {
+      setTimeout(() => { if (G === g && G.ver === v) ring(i); }, rand(lo, hi));
+    }
+  });
+}
+
+function ring(i) {
+  if (!G || G.over || G.busy) return;
+  const p = G.players[i];
+  if (p.out) return;
+  G.ver++; G.busy = true; clearTimeout(G.timer);
+  const bell = $('#bell'); bell.classList.remove('hit'); void bell.offsetWidth; bell.classList.add('hit');
+  sndBell();
+  if (matchExists()) {
+    const won = shuffle(G.players.flatMap(q => q.pile.splice(0)));
+    p.stack.unshift(...won);              // unter den eigenen Stapel
+    say(`${p.name === 'Du' ? 'Du warst' : p.name + ' war'} am schnellsten! +${won.length} Karten`);
+    render(); p.el.classList.add('win');
+  } else {
+    sndWrong();
+    let given = 0;
+    G.players.forEach(q => { if (q !== p && !q.out && p.stack.length) { q.stack.unshift(p.stack.shift()); given++; } });
+    say(`${p.name === 'Du' ? 'Du hast' : p.name + ' hat'} falsch geklingelt – ${given} Karte${given === 1 ? '' : 'n'} abgegeben.`);
+    render();
+  }
+  setTimeout(() => { if (!G.over) { G.busy = false; schedule(); } }, 1500);
+}
+
+function endGame(winner) {
+  G.over = true; clearTimeout(G.timer); render();
+  const me = winner && !winner.bot;
+  $('#overTitle').textContent = me ? '🎉 Gewonnen!' : 'Verloren';
+  $('#overText').textContent = winner ? (me ? 'Du hast alle anderen abgeräumt.' : `${winner.name} gewinnt.`) : 'Unentschieden.';
+  $('#over').style.display = 'grid';
+}
+
+// ---------- Eingabe ----------
+$('#go').onclick = () => { audio(); start(); };
+$('#again').onclick = () => { $('#over').style.display = 'none'; $('#table').style.display = 'none'; $('#hint').style.display = 'none'; $('#setup').style.display = 'block'; };
+$('#bell').addEventListener('pointerdown', e => { e.preventDefault(); ring(0); });
+$('#table').addEventListener('click', e => { const s = e.target.closest('.stack'); if (s && s.dataset.i === '0') flip(0); });
+document.addEventListener('keydown', e => {
+  if (!G || $('#table').style.display !== 'block') return;
+  if (e.code === 'Space') { e.preventDefault(); ring(0); }
+  if (e.code === 'Enter') { e.preventDefault(); flip(0); }
+});
+
+$('#preview').innerHTML = ANIMALS.map(a => cardHtml({ a: a.key, happy: true })).join('') + cardHtml({ a: 'fox', happy: false });
+</script>
+</body>
+</html>
