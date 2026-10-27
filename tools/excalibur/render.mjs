@@ -8,10 +8,10 @@ mkdirSync('out', { recursive: true });
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
 page.on('pageerror', e => console.log('ERR', e.message));
-await page.goto('http://127.0.0.1:8765/index.html'); await page.evaluate(() => window.ready);
+await page.goto('http://127.0.0.1:8765/index.html' + (process.env.AD ? '?ad' : '')); await page.evaluate(() => window.ready);
 const vf = `tmix=frames=${SUB},select='eq(mod(n\\,${SUB})\\,${SUB - 1})',setpts=N/${FPS}/TB`;
 const ff = spawn('ffmpeg', ['-y','-loglevel','error','-f','image2pipe','-framerate',String(FPS*SUB),'-i','-',
-  '-vf', vf, '-r', String(FPS), '-c:v','libx264','-crf','16','-pix_fmt','yuv420p','out/silent.mp4'], { stdio: ['pipe','inherit','inherit'] });
+  '-vf', vf, '-r', String(FPS), '-c:v','libx264','-crf','16','-pix_fmt','yuv420p',process.env.AD?'out/silent_ad.mp4':'out/silent.mp4'], { stdio: ['pipe','inherit','inherit'] });
 const total = Math.round(DUR * FPS * SUB);
 for (let i = 0; i < total; i++) {
   await page.evaluate(t => window.seek(t), i / (FPS * SUB));

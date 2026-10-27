@@ -272,8 +272,8 @@ const SCRIPTS={
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
  await p.clock.runFor(1500);
  const SC=SCRIPTS[process.env.CLIP||'scholar'];
- await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,coords:SC.coords,hookTop:SC.hookTop,fen:SC.fen,car:SC.car,farm:SC.farm,board:process.env.TESTBOARD||SC.board,bg:process.env.TESTBG||SC.bg});
- await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); v.setCaric(true); const sc=window.__sc; v.setNations(...(sc.nations||['usa','rus'])); if(sc.board) v.setBoard(sc.board); if(sc.bg) v.setBackground(sc.bg); if(sc.coords==='inner') v.innerCoords(); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
+ await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,nocaric:!!process.env.NOCARIC,coords:SC.coords,hookTop:SC.hookTop,fen:SC.fen,car:SC.car,farm:SC.farm,board:process.env.TESTBOARD||SC.board,bg:process.env.TESTBG||SC.bg});
+ await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); const sc=window.__sc; v.setCaric(!sc.nocaric); v.setNations(...(sc.nations||['usa','rus'])); if(sc.board) v.setBoard(sc.board); if(sc.bg) v.setBackground(sc.bg); if(sc.coords==='inner') v.innerCoords(); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
  await new Promise(r=>setTimeout(r,4000)); // board and background textures load for real, outside the fake clock
  await p.clock.runFor(500);
