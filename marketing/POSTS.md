@@ -172,6 +172,17 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Ablauf: ruhige Gesamtansicht, Texte unter dem Brett, Countdown 5–1, langsame Fahrt zur Grundreihe, Td8 matt, Putin im Gefängnis
 - Texte folgen nach dem Rendern
 
+### V12 · Excalibur: the unbeatable AI (KI-Challenge, mit Stimme)
+- Dateien: `marketing/excalibur-ai-challenge.mp4` (27 s, mit Karikaturen, zum normalen Posten) und `marketing/excalibur-ai-challenge-AD.mp4` (gleich, aber neutrale Köpfe ohne Politiker: nur diese für bezahlte Werbung). Stimme ElevenLabs „Rex Thunder“ mit Hall, Musik Suno „Quis Erit Primus“, Quellen in `tools/excalibur/`
+- Text (alle Plattformen):
+  > Legend says this AI cannot be beaten ⚔️ Everyone tries. Nobody wins. The Hall of Fame is still EMPTY. Will you be the first? 👑 Free, no download: checkmatenations.com
+- Hashtags: #chess #chesstok #chessai #challenge #chessgame
+- Erster Kommentar: First person to beat it gets their name in the Hall of Fame forever 🏆 Drop "⚔️" if you're trying today
+- YouTube-Shorts-Titel: Nobody has beaten this chess AI… will you be the first? ⚔️ #shorts #chess
+- Bezahlt (TikTok Promote, 13 €): nur die AD-Version, Ziel „Website-Besuche“, Link https://checkmatenations.com/?src=tiktok-ad
+- Nur „bisher niemand“ behaupten; sobald jemand gewinnt, wird das der nächste Post
+
+## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
 |---|---|---|---|---|---|---|---|---|---|

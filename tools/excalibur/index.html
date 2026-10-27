@@ -17,7 +17,7 @@ const img = {}, plates = ['p1','p2','p3','p4','p5','logo'];
 const fonts = [['BlackOps','fonts/black-ops-one-latin-400-normal.woff2',400],['BarlowC','fonts/barlow-condensed-latin-700-normal.woff2',700],['BarlowC','fonts/barlow-condensed-latin-600-normal.woff2',600]];
 window.ready = Promise.all([
   ...fonts.map(([n,u,w]) => new FontFace(n, `url(${u})`, { weight: String(w) }).load().then(f => document.fonts.add(f))),
-  ...plates.map(k => new Promise(r => { const i = new Image(); i.onload = r; i.src = k === 'logo' ? 'logo.png' : 'plates/' + k + '.png'; img[k] = i; }))
+  ...plates.map(k => new Promise(r => { const i = new Image(); i.onload = r; i.src = k === 'logo' ? 'logo.png' : (location.search.includes('ad') && ['p1','p4','p5'].includes(k) ? 'plates_nc/' : 'plates/') + k + '.png'; img[k] = i; }))
 ]).then(() => window.seek(0));
 
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
