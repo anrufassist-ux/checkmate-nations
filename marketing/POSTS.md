@@ -35,6 +35,10 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Posting-Zeit (27.10., aus TikTok-Analyse „Follower → Aktivste Zeiten“, 23.10.): Follower ab ca. 14 Uhr aktiv,
   Spitze 16 Uhr, zweite Spitze 20 Uhr, bis 23 Uhr hoch; nachts und vormittags kaum jemand. Posten gegen 15:30–16 Uhr,
   danach die erste Stunde Kommentare beantworten. Neu prüfen, sobald mehr Follower da sind (Stichprobe ~80).
+- Follower-Standorte TikTok (27.10.): weit verstreut, Top 5 Vietnam 6,5 %, Indonesien 5,4 %, Kongo 4,3 %, UK 3,3 %,
+  Nigeria 3,3 %, Deutschland nicht in den Top 5. Englische Texte bleiben richtig. Bezahlte Werbung immer mit festen
+  Ländern (DE, AT, CH, UK), sonst geht das Budget in billige Länder ohne Käufer. Erfolg an Website-Besuchen messen
+  (`?src=`), nicht an Followern.
 - Uhrzeit jedes Posts im Protokoll notieren (Spalte Notiz), damit wir eigene Zahlen bekommen.
 - Plattformen (25.10.): Karussells nur auf TikTok (über 800 Aufrufe am ersten Tag, auf Instagram kaum Aufrufe).
   Instagram bekommt Reels (Videos).
