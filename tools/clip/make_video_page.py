@@ -6,7 +6,8 @@ h=open(os.path.join(here,'../../index.html')).read()
 def rep(a,b):
     global h
     assert a in h, 'patch anchor missing: '+a[:60]; h=h.replace(a,b,1)
-rep("<head>","<head>\n<base href=\"../../\">")  # vendor/, fonts/, bg/, board/ from the repo root
+rep("<head>","<head>\n<base href=\"../../\">")
+rep("renderer.setPixelRatio(Math.min(devicePixelRatio,IS_PHONE?1.5:2));","renderer.setPixelRatio(devicePixelRatio);")  # recordings: full resolution, the phone cap of 1.5 made 1080-wide stills blurry  # vendor/, fonts/, bg/, board/ from the repo root
 rep("function setNations(w,b){","window.__v=()=>({doMove,setNations,setupPieces,setMode:m=>{mode=m;},setCaric:c=>{caricatures=c;},ensureAudio,game,camera,controls,placeCamera,sqPos,pieceShot,CBURNETT,setBoard,setBackground,pieces:()=>pieces,T,scene,squareMeshes,floor:()=>FLOOR,frame,RIM,drawRim,innerCoords:()=>{ frame.visible=RIM.visible=false; COORD.visible=true; COORD.userData.black=null; }});\nfunction setNations(w,b){")
 # sounds are not played but logged (time, key, volume); capture.js writes them to sounds.json for the mix
 rep("function playSample(k,vol){","function playSample(k,vol){\n  if(window.__rec){ if(!(window.SFX&&window.SFX[k])) return false; window.__rec.push([performance.now(),k,vol]); return true; }")
