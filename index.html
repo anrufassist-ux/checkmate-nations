@@ -90,6 +90,16 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);overflow:hid
 .chev{width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 4px 4px;transition:transform .2s;flex:none}
 .console.collapsed .chev{transform:rotate(-135deg);margin-bottom:-4px}
 .cbody{display:grid;gap:10px}
+.coach{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:8px}
+.cAv{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:20px;background:linear-gradient(145deg,#3a4a2e,#1d2617);border:1px solid var(--sand)}
+.cMain{flex:1;min-width:0}
+.cOpen{font-family:var(--f-label);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sand);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cTxt{font-size:14px;line-height:1.3;min-height:2.6em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.coach.invite .cTxt{color:var(--muted)}
+.cBadge{flex:none;font-family:var(--f-display);font-size:18px;min-width:34px;text-align:center;padding:3px 6px;border-radius:6px;color:#fff;background:#5d6b5a}
+.cBadge[data-k='!!']{background:#1bada6}.cBadge[data-k='!']{background:#5c8bb0}.cBadge[data-k='★']{background:#7fa650}.cBadge[data-k='✓']{background:#6b7a5f}.cBadge[data-k='?!']{background:#d9a72b;color:#1a1810}.cBadge[data-k='?']{background:#e07b2f}.cBadge[data-k='??']{background:#c9372c}.cBadge[data-k='📖']{background:#8a6d4a}
+.coach .btn{flex:none;padding:7px 10px}
+.coach .cX{padding:7px 9px}
 .console.collapsed .cbody{display:none}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--usa);flex:none;box-shadow:0 0 10px currentColor}
 .dot.ru{background:var(--ru)}
@@ -284,6 +294,11 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
           <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
           <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
         </div>
+        <div class="vhead">Trainer</div>
+        <div class="vtog">
+          <button class="btn" id="coachBtn" type="button" aria-pressed="false">Trainer aus</button>
+          <button class="btn" id="toneBtn" type="button">Ton: Satire</button>
+        </div>
         <div class="vhead">Brett</div>
         <div class="vtog" id="boardBtns">
           <button class="btn" type="button" data-board="wood" aria-pressed="true">Holz</button>
@@ -310,6 +325,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 
 <section class="console" aria-live="polite">
   <button class="status" id="statusBar" type="button" aria-expanded="true" aria-controls="consoleBody"><span class="dot" id="dot"></span><span id="status">Du spielst USA. Tippe eine Figur an.</span><span class="chip" id="codeChip" hidden></span><span class="chip clk" id="clkChip" hidden></span><span class="chev" aria-hidden="true"></span></button>
+  <div class="coach" id="coach" hidden><span class="cAv" aria-hidden="true">🎖️</span><div class="cMain"><div class="cOpen" id="coachOpen" hidden></div><div class="cTxt" id="coachTxt"></div></div><span class="cBadge" id="coachBadge" hidden></span><button class="btn" id="coachHint" type="button" hidden>Tipp</button><button class="btn primary" id="coachYes" type="button">Einschalten</button><button class="btn cX" id="coachNo" type="button" aria-label="Nein danke">✕</button></div>
   <div class="cbody" id="consoleBody">
   <div class="online" id="online" hidden>
     <div class="onrow acct" id="onAcct"></div>
@@ -482,6 +498,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
     '2,99 €':'€2.99','4,99 €':'€4.99','0,99 €':'€0.99',
     'Neue Länder':'New nations','Länder freischalten':'Unlock nations','League-Pass':'League pass','Damit spielst du diese Saison mit USA oder Russland in der Nations League. Wer ein Land kauft, ist ohne Pass in jeder Saison dabei.':'Play this season of the Nations League with the USA or Russia. Anyone who buys a nation is in every season without a pass.','Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen, auch online. Jeder Länderkauf enthält die Nations League für alle Saisons.':'Own pieces, own queen, own flag pattern. Buy once, play forever, online too. Every nation purchase includes the Nations League for all seasons.','3 Länder nach Wahl':'3 nations of your choice','Du wählst gleich aus':'You pick them next','Alle Länder':'All nations','Auch alle, die später dazukommen':'Including every nation added later','Gilt bis zum Monatsende':'Valid until the end of the month','Weiter zur Zahlung':'Continue to payment','Ich möchte, dass die Freischaltung sofort erfolgt, und weiß, dass ich damit mein Widerrufsrecht verliere. Es gelten die':'I want the unlock to happen immediately and understand that I thereby lose my right of withdrawal. The following apply:','AGB':'Terms','Einmalige Zahlung, kein Abo, keine automatische Verlängerung. Endpreise, gemäß § 19 UStG ohne Umsatzsteuer. Bezahlt wird über Stripe.':'One-time payment, no subscription, no automatic renewal. Final prices, no VAT charged (small business, § 19 UStG). Payment via Stripe.','Du hast schon alle Länder.':'You already own every nation.','Bitte genau 3 Länder wählen.':'Please pick exactly 3 nations.','Bitte bestätige zuerst das Häkchen.':'Please tick the box first.','Einen Moment …':'One moment …','Verbindung zum Server fehlgeschlagen.':'Could not connect to the server.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.','Das hast du schon.':'You already have this.','Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.':'Could not start the purchase. Please try again.','Danke für deinen Kauf!':'Thanks for your purchase!','Die Zahlung wird noch bestätigt …':'Payment is being confirmed …','Freigeschaltet. Viel Spaß!':'Unlocked. Have fun!','Die Zahlung ist noch nicht bestätigt. Lade die Seite gleich nochmal.':'The payment is not confirmed yet. Reload the page in a moment.','Saison':'Season','League konnte nicht geladen werden.':'Could not load the league.','Für die League brauchst du ein Konto und ein gekauftes Land oder den League-Pass.':'For the league you need an account and a bought nation or the league pass.','Wähle zuerst einen Spielernamen.':'Choose a player name first.','Wähle dein Land für diese Saison. Es bleibt bis zum Monatsende fest.':'Choose your nation for this season. It stays fixed until the end of the month.','Dabei bist du mit jedem Länderkauf (gilt für alle Saisons) oder mit dem League-Pass für diese Saison.':'You are in with any nation purchase (valid for all seasons) or with the league pass for this season.','League-Pass · 0,99 €':'League pass · €0.99','Länder ansehen':'See nations','Länder':'Nations','Land':'Nation','Pkt/Partie':'Pts/game','Partien':'Games','Spieler':'Players','Punkte':'Points','Beste Spieler':'Top players','Noch keine League-Partien in dieser Saison.':'No league games this season yet.','3 Punkte für einen Sieg, 1 für ein Remis. Länder werden nach Punkten pro Partie gewertet. Neue Spieler (unter 20 Partien) und Spieler unter 1000 Elo zählen für ihr Land halb.':'3 points for a win, 1 for a draw. Nations are ranked by points per game. New players (under 20 games) and players under 1000 Elo count half for their nation.','Meister':'Champions','Titel':'Titles','Ewige Tabelle':'All-time table','Die erste Saison läuft noch. Am Monatsende steht hier der erste Meister.':'The first season is still running. At the end of the month the first champion appears here.','Du spielst diese Saison für':'You play this season for','Meister:':'Champion:',
+    'Trainer':'Trainer','Trainer an':'Trainer on','Trainer aus':'Trainer off','Ton: Satire':'Tone: satire','Ton: Sachlich':'Tone: plain','Tipp':'Hint','Mehr':'More','Einschalten':'Turn on','Nein danke':'No thanks',
     'Konto':'Account','🏆 Ranglisten':'🏆 Ranks',' Ranglisten':' Ranks','Ranglisten':'Ranks','Kostenloses Konto: dein Name auf der Rangliste und in der Hall of Fame.':'Free account: your name on the leaderboard and in the Hall of Fame.','Kostenlos anmelden':'Sign up free','Konto, Shop, League':'Account, shop, league','freischalten · ab 2,99 €':'unlock · from €2.99','Kostenlos':'Free','Du bist am Zug':'Your move','Schach! Du bist am Zug':'Check! Your move','Gegner ist am Zug':'Opponent to move','einmalig · kein Abo':'one-time · no subscription','spielbereit · kostenlos':'ready to play · free','gewählt':'taken','Spielbereit':'Ready to play','Freischalten · 3 Länder 2,99 € · alle 4,99 €':'Unlock · 3 nations €2.99 · all €4.99','2,99 €':'€2.99','Länder kaufen':'Buy nations','Weitere Länder kaufen':'Buy more nations',
     'Spielen ist ohne Konto kostenlos. Ein Konto brauchst du nur zum Kaufen, für gewertete Partien und die Nations League.':'Playing is free without an account. You only need one to buy, to play rated games and for the Nations League.',
     'Angemeldet, noch ohne Spielernamen.':'Signed in, no player name yet.','Deine Länder: ':'Your nations: ','Noch keine Länder gekauft.':'No nations bought yet.','League diese Saison: ':'League this season: ','League: Land noch nicht gewählt.':'League: nation not chosen yet.','League: nicht dabei.':'League: not entered.',
@@ -1919,8 +1936,10 @@ async function doMove(mv,remote,expectFen){
 async function doMoveInner(mv,remote,expectFen){
   const gen=boardGen;
   busy=true; selected=null; targets=[]; clearMarkers();
+  const fenB=game.fen();
   const res=game.move({from:mv.from,to:mv.to,promotion:mv.promotion||'q'});
   if(!res){ busy=false; if(remote) onlineResync(); return; }
+  if(!remote) coachOnMove(res,fenB);
   if(remote&&expectFen&&game.fen().split(' ')[0]!==expectFen.split(' ')[0]){ game.undo(); busy=false; onlineResync(); return; }
   if(mode==='online'&&!remote) onlinePush(res);
   const mover=pieces[res.from]; delete pieces[res.from];
@@ -1976,7 +1995,7 @@ async function afterMove(){
     const n=(turn===myColor?'Spieler 1':'Spieler 2')+' ('+CNAME[turn]+')';
     setStatus(game.in_check()?`Schach! ${n} muss den König retten.`:`${n} ist am Zug.`,turn);
     busy=false;
-    swingTo(turn);
+    swingTo(turn); coachTurn();
     return;
   }
   if(turn!==myColor){
@@ -1988,7 +2007,7 @@ async function afterMove(){
     await doMove(m);
   } else {
     setStatus(game.in_check()?'Schach! Rette deinen König.':'Dein Zug, '+CNAME[myColor]+'.',myColor);
-    busy=false;
+    busy=false; coachTurn();
   }
 }
 
@@ -2214,6 +2233,194 @@ function onPick(sq){
   } else { selected=null; targets=[]; clearMarkers(); }
 }
 
+/* ---------- Trainer "General Gambit": Stockfish 18 lite (GPLv3, vendor/stockfish/, runs in a Web Worker, loaded only
+   when the trainer is on) rates every human move (!! ! ★ ✓ ?! ? ??), gives hints in 3 steps and names the opening
+   (vendor/openings.json, lichess chess-openings, CC0). Only against the normal AI and in two-player mode,
+   never online or in the AI Challenge. Tone: satire (military piece names, quirky lines) or plain (chess names). ---------- */
+let coachOn=false, coachTone='satire', coachSeen=false;
+try{ coachOn=localStorage.getItem('wms-coach')==='on'; coachSeen=!!localStorage.getItem('wms-coach'); if(localStorage.getItem('wms-coach-tone')==='plain') coachTone='plain'; }catch(e){}
+const SF={w:null,q:[],cur:null,boot:null,cache:new Map()};
+function sfBoot(){
+  if(SF.boot) return SF.boot;
+  SF.boot=new Promise((res,rej)=>{
+    let w; try{ w=new Worker('vendor/stockfish/stockfish-18-lite-single.js'); }catch(e){ rej(e); return; }
+    SF.w=w; let up=false;
+    w.onmessage=e=>{
+      const l=String(e.data);
+      if(!up){ if(l==='uciok'){ w.postMessage('setoption name MultiPV value 2'); w.postMessage('isready'); } else if(l==='readyok'){ up=true; res(); } return; }
+      const j=SF.cur; if(!j) return;
+      if(l.startsWith('bestmove')){ SF.cur=null; j.res(j.lines.filter(Boolean)); sfNext(); return; }
+      if(!l.startsWith('info')||/ (upper|lower)bound/.test(l)) return;
+      const s=l.match(/ score (cp|mate) (-?\d+)/), pv=l.match(/ pv (.+)$/); if(!s||!pv) return;
+      const k=Number((l.match(/ multipv (\d+)/)||[0,1])[1]);
+      j.lines[k-1]={cp:s[1]==='cp'?Number(s[2]):null, mate:s[1]==='mate'?Number(s[2]):null, pv:pv[1].trim().split(' ')};
+    };
+    w.onerror=e=>{ SF.boot=null; rej(e); };
+    w.postMessage('uci');
+  });
+  return SF.boot;
+}
+function sfNext(){
+  if(SF.cur||!SF.q.length) return;
+  SF.cur=SF.q.shift(); SF.w.postMessage('position fen '+SF.cur.fen); SF.w.postMessage('go depth 12 movetime 1500');
+}
+function sfEval(fen){ // → lines [{cp|mate, pv}] from the side to move, best first (max 2)
+  if(SF.cache.has(fen)) return SF.cache.get(fen);
+  const p=sfBoot().then(()=>new Promise(res=>{ SF.q.push({fen,res,lines:[]}); sfNext(); }));
+  SF.cache.set(fen,p); return p;
+}
+function sfReset(){ SF.q.forEach(j=>j.res([])); SF.q.length=0; SF.cache.clear(); if(SF.cur&&SF.w) SF.w.postMessage('stop'); }
+let BOOK=null;
+function bookLoad(){ if(!BOOK) BOOK=fetch('vendor/openings.json').then(r=>r.json()).catch(()=>({})); return BOOK; }
+const fenKey=f=>f.split(' ').slice(0,4).join(' ');
+
+const scoreOf=l=>!l?0:l.mate!=null?(l.mate>0?1:-1)*(100000-Math.abs(l.mate)*100):l.cp;
+const winPct=cp=>50+50*(2/(1+Math.exp(-0.00368208*Math.max(-2000,Math.min(2000,cp))))-1);
+const PV={p:1,n:3,b:3,r:5,q:9,k:0};
+const EN=()=>window.LANG==='en';
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const cap1=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function pName(t,own){ // own piece with article (German) / bare name
+  const sat=coachTone==='satire';
+  if(EN()) return (own?'your ':'')+(sat?{p:'infantry',n:'drone',b:'fighter jet',r:'tank',q:'queen',k:'king'}:{p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'})[t];
+  if(!own) return (sat?{p:'Infanterie',n:'Drohne',b:'Kampfjet',r:'Panzer',q:'Dame',k:'König'}:{p:'Bauer',n:'Springer',b:'Läufer',r:'Turm',q:'Dame',k:'König'})[t];
+  return (sat?{p:'deine Infanterie',n:'deine Drohne',b:'dein Kampfjet',r:'dein Panzer',q:'deine Dame',k:'dein König'}:{p:'dein Bauer',n:'dein Springer',b:'dein Läufer',r:'dein Turm',q:'deine Dame',k:'dein König'})[t];
+}
+// one-liners per rating; {p} = the moved piece ("dein Panzer"), {P} = capitalised
+const QUIPS={
+  de:{
+    '??':['Soldat, das war kein Manöver, das war Fahnenflucht!','Das kommt in deine Akte. Rot unterstrichen.','Der Gegner bedankt sich schon per Telegramm.','Ich habe Kriegsspiele gesehen, die besser liefen. Im Sandkasten.','Alarmstufe Rot im Hauptquartier!'],
+    '?':['Soldat, {p} steht im Abseits!','Das Hauptquartier ist nicht amüsiert.','{P} marschiert mutig. In die falsche Richtung.','Ein Schritt vor, zwei zurück. Diplomatie nennt man das nicht.','Der Generalstab greift sich an die Stirn.'],
+    '?!':['Geht so. Der Generalstab runzelt die Stirn.','Nicht falsch, aber dafür gibt es keinen Orden.','{P} marschiert. Aber wohin eigentlich?','Hm. Das schreiben wir lieber nicht in die Memoiren.'],
+    '✓':['Solide. Weitermachen, Soldat.','Ordentlich. Der Feind notiert sich das.','Sauber gezogen. Kein Grund zur Panik. Noch nicht.','Akzeptabel. Der Kaffee im Stab bleibt warm.'],
+    '★':['Lehrbuch! Hätte ich selbst nicht besser befohlen.','Präzise wie ein Satellit.','Genau den Zug hätte der Computer auch gespielt. Unheimlich.','Treffer, versenkt. So sieht Strategie aus.'],
+    '!':['Der einzige gute Zug, und du hast ihn gefunden. Beförderung!','Stark! Genau das hat die Lage verlangt.','Nerven aus Stahl. Respekt, Soldat.'],
+    '!!':['Brillant! Dafür gibt es einen Orden. Aus echtem Blech.','Ein Opfer für den Sieg! Die Militärhistoriker werden davon schreiben.','Genial! Ich muss mich kurz setzen.'],
+    '📖':['Klassische Aufmarschroute.','Steht so in jedem Kriegshandbuch.','Theorie sitzt. Weiter so.']
+  },
+  en:{
+    '??':['Soldier, that was not a manoeuvre, that was desertion!','This goes in your file. Underlined in red.','Your opponent is already sending a thank-you telegram.','I have seen war games go better. In a sandbox.','Code red at headquarters!'],
+    '?':['Soldier, {p} is offside!','Headquarters is not amused.','{P} advances bravely. In the wrong direction.','One step forward, two steps back. That is not diplomacy.','The general staff facepalms.'],
+    '?!':['So-so. The general staff frowns.','Not wrong, but nobody gets a medal for it.','{P} is marching. But where to, exactly?','Hm. Let us leave that out of the memoirs.'],
+    '✓':['Solid. Carry on, soldier.','Decent. The enemy takes notes.','Clean move. No reason to panic. Not yet.','Acceptable. The coffee at headquarters stays warm.'],
+    '★':['Textbook! I could not have ordered it better.','Precise as a satellite.','That is exactly what the computer would have played. Spooky.','Direct hit. That is what strategy looks like.'],
+    '!':['The only good move, and you found it. Promotion!','Strong! Exactly what the situation demanded.','Nerves of steel. Respect, soldier.'],
+    '!!':['Brilliant! That earns you a medal. Real tin.','A sacrifice for victory! Military historians will write about this.','Genius! I need to sit down for a moment.'],
+    '📖':['Classic deployment route.','Straight out of every field manual.','Your theory is solid. Keep it up.']
+  }
+};
+const LABEL={de:{'!!':'Brillant','!':'Stark','★':'Bester Zug','✓':'Gut','?!':'Ungenau','?':'Fehler','??':'Patzer','📖':'Buchzug'},
+             en:{'!!':'Brilliant','!':'Great','★':'Best move','✓':'Good','?!':'Inaccuracy','?':'Mistake','??':'Blunder','📖':'Book move'}};
+function sanOf(fen,uci){ try{ const g=new Chess(fen), m=g.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||'q'}); return m; }catch(e){ return null; } }
+let coachGen=0, coachHintLvl=0, coachOpening='', coachLast=null;
+const hintGroup=new T.Group(); scene.add(hintGroup);
+const hintMat=new T.MeshBasicMaterial({color:0x4fe36f,transparent:true,opacity:.62});
+function hintClear(){ while(hintGroup.children.length) hintGroup.remove(hintGroup.children[0]); }
+function hintMark(sqs){ hintClear(); for(const sq of sqs){ const s=new T.Mesh(new T.PlaneGeometry(.92,.92),hintMat); s.rotation.x=-Math.PI/2; s.position.copy(sqPos(sq)); s.position.y=.006; hintGroup.add(s); } wake(800); }
+const coachAllowed=()=>(mode==='ai'&&!chal)||mode==='pvp';
+const humanSide=c=>mode==='pvp'||c===myColor;
+function coachSay(txt,badge){
+  $('coachTxt').textContent=txt;
+  const b=$('coachBadge'); b.hidden=!badge;
+  if(badge){ b.textContent=badge; b.dataset.k=badge; b.title=LABEL[EN()?'en':'de'][badge]||''; }
+}
+function coachSync(){
+  const show=coachAllowed()&&(coachOn||!coachSeen), el=$('coach'), was=!el.hidden;
+  el.hidden=!show; el.classList.toggle('invite',!coachOn);
+  $('coachHint').hidden=!coachOn; $('coachYes').hidden=coachOn; $('coachNo').hidden=coachOn;
+  $('coachOpen').hidden=!coachOn||!coachOpening; $('coachOpen').textContent='📖 '+coachOpening;
+  if(!coachOn) coachSay(EN()?'Play with a trainer? Ratings and hints for every move.':'Mit Trainer spielen? Bewertung und Tipps zu jedem Zug.');
+  $('coachBtn').textContent=coachOn?'Trainer an':'Trainer aus'; $('coachBtn').setAttribute('aria-pressed',String(coachOn));
+  $('toneBtn').textContent=coachTone==='satire'?'Ton: Satire':'Ton: Sachlich';
+  if(was!==show&&typeof refit==='function') setTimeout(refit,30);
+}
+function coachSet(on){
+  coachOn=on; coachSeen=true; try{ localStorage.setItem('wms-coach',on?'on':'off'); }catch(e){}
+  coachSync();
+  if(on){ bookLoad(); sfBoot().catch(()=>coachSay(EN()?'The trainer engine could not start on this device.':'Die Trainer-Engine startet auf diesem Gerät nicht.')); coachHello(); coachTurn(); }
+  else { sfReset(); hintClear(); }
+}
+function coachHello(){
+  coachSay(coachTone==='satire'
+    ?(EN()?'General Gambit reporting for duty. I rate every move of yours. Need a hint? Button on the right.':'General Gambit meldet sich zum Dienst. Ich bewerte jeden deiner Züge. Tipp gefällig? Knopf rechts.')
+    :(EN()?'Trainer on. Every move gets a rating, the button on the right gives a hint in three steps.':'Trainer an. Jeder Zug bekommt eine Bewertung, der Knopf rechts gibt einen Tipp in drei Stufen.'));
+}
+function coachReset(){ coachGen++; coachHintLvl=0; coachOpening=''; coachLast=null; hintClear(); sfReset(); if(coachOn&&coachAllowed()) coachHello(); coachSync(); }
+// it is a human's turn: analyse ahead so the hint is instant and the rating has its "before"
+function coachTurn(){
+  coachSync(); coachHintLvl=0; $('coachHint').textContent='Tipp';
+  if(!coachOn||!coachAllowed()||over||!humanSide(game.turn())) return;
+  sfEval(game.fen()).catch(()=>{});
+}
+async function coachOnMove(res,fenB){
+  if(!coachOn||!coachAllowed()) return;
+  const gen=coachGen, fenA=game.fen(), mover=res.color, human=humanSide(mover);
+  coachHintLvl=0; hintClear();
+  const book=await bookLoad(), op=book[fenKey(fenA)];
+  if(gen!==coachGen) return;
+  if(op){ coachOpening=op[1]; coachSync(); }
+  if(!human) return;
+  const L=EN()?'en':'de', sat=coachTone==='satire', who=mode==='pvp'?CNAME[mover]+': ':'';
+  if(op){ coachSay(who+(sat?pick(QUIPS[L]['📖'])+' ':'')+(EN()?'Book move: ':'Buchzug: ')+op[1]+'.','📖'); return; }
+  coachSay(who+(EN()?'Analysing …':'Analysiere …'),null);
+  let pre,post;
+  try{ [pre,post]=await Promise.all([sfEval(fenB),sfEval(fenA)]); }catch(e){ return; }
+  if(gen!==coachGen||!pre.length) return;
+  const g=new Chess(fenA);
+  const best=pre[0], bestSc=scoreOf(best);
+  const after=g.in_checkmate()?100000:(g.in_draw()||g.in_stalemate())?0:-scoreOf(post[0]);
+  const uci=res.from+res.to+(res.promotion||''), isBest=best.pv[0]===uci||after>=bestSc-8;
+  const drop=winPct(bestSc)-winPct(after);
+  let k;
+  if(drop>=30) k='??'; else if(drop>=20) k='?'; else if(drop>=10) k='?!';
+  else if(isBest){
+    const gap=pre[1]?winPct(bestSc)-winPct(scoreOf(pre[1])):0;
+    const hung=g.moves({verbose:true}).some(m=>m.to===res.to);
+    const sac=hung&&PV[res.piece]>(res.captured?PV[res.captured]:0)+1&&res.piece!=='k';
+    k=gap>=15&&sac?'!!':gap>=15?'!':'★';
+  } else k='✓';
+  // the factual part: why, and what was better
+  let why='';
+  const bm=sanOf(fenB,best.pv[0]), rep=post[0]&&sanOf(fenA,post[0].pv[0]);
+  if(k==='??'||k==='?'||k==='?!'){
+    if(post[0]&&post[0].mate>0) why=EN()?`Now the opponent has mate in ${post[0].mate}${rep?' ('+rep.san+')':''}.`:`Jetzt hat der Gegner Matt in ${post[0].mate}${rep?' ('+rep.san+')':''}.`;
+    else if(best.mate>0) why=EN()?`You had mate in ${best.mate}: ${bm.san}.`:`Du hattest Matt in ${best.mate}: ${bm.san}.`;
+    else if(rep&&rep.captured&&!(res.captured&&rep.to===res.to))
+      why=EN()?`${cap1(pName(rep.captured,true))} on ${rep.to} is hanging: ${rep.san}.`:`${cap1(pName(rep.captured,true))} auf ${rep.to} hängt: ${rep.san}.`;
+    else if(bm&&bm.captured) why=EN()?`On ${bm.to} there was loot (${pName(bm.captured)}): ${bm.san}.`:`Auf ${bm.to} lag Beute (${pName(bm.captured)}): ${bm.san}.`;
+    if(bm&&!why.includes(bm.san)) why+=(why?' ':'')+(EN()?`Better: ${bm.san}.`:`Besser: ${bm.san}.`);
+  } else if(g.in_checkmate()){ k='★'; why=''; }
+  else if(best.mate>0&&!g.in_checkmate()&&post[0]&&post[0].mate<0) why=EN()?`Mate in ${-post[0].mate} is on the board.`:`Matt in ${-post[0].mate} liegt in der Luft.`;
+  const p=pName(res.piece,true);
+  const q=g.in_checkmate()?(sat?pick(EN()?['Checkmate! Lock him up, the cell is ready.','Checkmate! The press conference is cancelled.','Checkmate! Mission accomplished, soldier.']:['Schachmatt! Abführen, die Zelle ist schon bereit.','Schachmatt! Die Pressekonferenz fällt aus.','Schachmatt! Mission erfüllt, Soldat.']):(EN()?'Checkmate!':'Schachmatt!'))
+    :sat?pick(QUIPS[L][k]).replace('{p}',p).replace('{P}',cap1(p)):LABEL[L][k]+'.';
+  coachLast={k,fen:fenB};
+  coachSay(who+q+(why?' '+why:''),k);
+}
+async function coachHint(){
+  if(!coachOn||!coachAllowed()||over||busy||!humanSide(game.turn())) return;
+  const fen=game.fen(), gen=coachGen;
+  coachSay(EN()?'Thinking …':'Ich denke nach …',null);
+  let lines; try{ lines=await sfEval(fen); }catch(e){ return; }
+  if(gen!==coachGen||fen!==game.fen()||!lines.length) return;
+  const m=sanOf(fen,lines[0].pv[0]); if(!m) return;
+  coachHintLvl=Math.min(3,coachHintLvl+1);
+  const sat=coachTone==='satire', en=EN(), lv=coachHintLvl;
+  const pre=sat?(en?['Intelligence report: ','Orders from the staff: ','Exact marching orders: ']:['Lagebericht: ','Befehl vom Stab: ','Exakter Marschbefehl: ']):(en?['Hint 1/3: ','Hint 2/3: ','Hint 3/3: ']:['Tipp 1/3: ','Tipp 2/3: ','Tipp 3/3: ']);
+  let t;
+  if(lv===1){
+    if(lines[0].mate>0) t=en?`There is a mate in ${lines[0].mate}. Look closely.`:`Da geht Matt in ${lines[0].mate}. Schau genau hin.`;
+    else if(m.flags.includes('k')||m.flags.includes('q')) t=en?'Get your king to safety.':'Bring deinen König in Sicherheit.';
+    else if(m.captured) t=en?'Something is standing around unprotected.':'Irgendwo steht etwas ungeschützt herum.';
+    else if(m.san.includes('+')) t=en?'The enemy king is vulnerable.':'Der gegnerische König ist verwundbar.';
+    else if(m.promotion) t=en?'One of your pawns wants a promotion.':'Ein Bauer will befördert werden.';
+    else t=en?'No capture needed. Which piece is still idle?':'Kein Schlagen nötig. Welche Figur steht noch untätig herum?';
+  } else if(lv===2){ t=en?`Your ${pName(m.piece)} on ${m.from} has the move.`:`Deine Figur auf ${m.from} ist dran (${pName(m.piece)}).`; hintMark([m.from]); }
+  else { t=en?`Best move: ${m.san} (${m.from} → ${m.to}).`:`Bester Zug: ${m.san} (${m.from} → ${m.to}).`; hintMark([m.from,m.to]); }
+  coachSay(pre[lv-1]+t,null);
+  $('coachHint').textContent=lv<3?'Mehr':'Tipp';
+  if(lv>=3) coachHintLvl=0;
+}
 let mode='ai', myColor='w', pickerOpen=false;
 const CNAME={get w(){ return TEAM.w.name; }, get b(){ return TEAM.b.name; }};
 // picker and shop flags: the real national flags from flag-icons (MIT, github.com/lipis/flag-icons, see vendor/THIRD_PARTY.md)
@@ -2283,6 +2490,7 @@ function applyColor(my,opp){
   if(chal&&chal.pending) chalStart(my,opp);
   if(mode==='ai') setStatus('Du spielst '+CNAME.w+'. Tippe eine Figur an.','w');
   else if(mode==='pvp') setStatus('Spieler 1: '+CNAME.w+', Spieler 2: '+CNAME.b+'. Spieler 1 beginnt.','w');
+  coachReset(); coachTurn();
 }
 function startText(){ return 'Wähle dein Land.'; }
 function resetBoard(){
@@ -2291,7 +2499,7 @@ function resetBoard(){
   capturedBy.w=[]; capturedBy.b=[]; renderCaps(); clearMarkers();
   while(lastGroup.children.length) lastGroup.remove(lastGroup.children[0]);
   $('banner').hidden=true; $('jail').hidden=true; $('jail').classList.remove('run','out');
-  setupPieces(); setStatus(startText(),'w');
+  setupPieces(); setStatus(startText(),'w'); coachReset();
 }
 function newGame(){
   if(mode==='online'&&on.id&&on.ready&&!over&&!busy){ // leaving a running online game counts as resignation
@@ -2369,6 +2577,11 @@ $('flags').addEventListener('click',e=>{
   selected=null; targets=[]; clearMarkers(); setupPieces();
 });
 $('mode').addEventListener('change',e=>chooseMode(e.target.value));
+$('coachBtn').addEventListener('click',()=>coachSet(!coachOn));
+$('coachYes').addEventListener('click',()=>coachSet(true));
+$('coachNo').addEventListener('click',()=>coachSet(false));
+$('coachHint').addEventListener('click',coachHint);
+$('toneBtn').addEventListener('click',()=>{ coachTone=coachTone==='satire'?'plain':'satire'; try{ localStorage.setItem('wms-coach-tone',coachTone); }catch(e){} coachSync(); if(coachOn&&coachAllowed()) coachHello(); });
 
 /* ---------- Online 1 gegen 1 (Supabase): guests play friendly games by code. Clients only read their games;
    every change goes through the "game" edge function, which checks each move with chess.js (supabase/). ---------- */
