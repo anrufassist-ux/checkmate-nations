@@ -187,7 +187,7 @@ const SCRIPTS={
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
  // "Can you beat the AI?": a real game against the Normal AI (the beginner's moves are scripted, every reply is what the
  // server AI played), the camera glides to every move, ends with the AI Challenge call to action
- beat_ai:{nations:['usa','rus'],board:'classic',bg:'classic',start:[['d4','e5'],11.5,16.5,0,0],hookTop:'9%',hook:'MOST PEOPLE LOSE<br>TO THIS AI 🤖',
+ beat_ai:{nations:['usa','rus'],board:'classic',bg:'earth',start:[['d4','e5'],11.5,16.5,0,0],hookTop:'9%',hook:'MOST PEOPLE LOSE<br>TO THIS AI 🤖',
    title:['<span class="u">YOU</span> vs. <span class="r">THE AI</span>','Normal level · can you beat it?'],play:async(mv,p,shoot)=>{
    // one calm wide shot for the whole game (every flight stays in view), texts pop up below the board
    await badges(p,true); await shoot(1200);
