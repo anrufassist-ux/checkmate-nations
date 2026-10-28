@@ -22,6 +22,8 @@ Chess content (puzzles, patterns, mistakes) goes out as photo carousels; videos 
 ## Layout rules (owner)
 - Format: always `PHONE=1` = 1080x2340 (phone ratio 9:19.5, full resolution). The old 720x1280 was blurry on the phone
   and TikTok cropped its sides.
+  The recorder must render the 3D board at the full pixel ratio (`make_video_page.py` lifts the game's phone cap of 1.5);
+  stills made before 28.10. (usa, ger, fra first version) had a soft, upscaled board.
 - Board: classic board, dark earth background (`bg:'earth'`), coordinates inside the edge squares. Framing as the owner
   set it on his phone: big board shifted a bit left (camera `.2,0,20.6,14.3` in the phone format), the bottom-left square may be cut a little,
   the right side stays free for TikTok's like/comment buttons.
