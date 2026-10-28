@@ -217,4 +217,4 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-27 | TikTok | V12 Excalibur, AD-Version, beworben (14 €) | | 7.445 bezahlt, fast 11.000 gesamt | | | | 39 Landingpage-Aufrufe laut TikTok, 44 Besucher von tiktok.com laut Vercel (27.–28.10.) | 55 Profilaufrufe, 0 neue Follower, 0 Käufe; Werbung lohnt sich bei ca. 0,36 € pro Klick vorerst nicht |
 | 2026-10-27 | Instagram, YouTube Shorts | V12 Excalibur, normale Version | | | | | | | |
 | 2026-10-28 | TikTok | Karussell Mate in 1, France to move (Ersticktes Matt) | | | | | | | |
-| 2026-10-28 | Instagram | V10 Welcome, Germany! (32 s) als Reel | | | | | | | nachgeholt |
+| vor 2026-10-28 | Instagram | V10 Welcome, Germany! (32 s) als Reel | | | | | | | schon gepostet, genaues Datum nicht notiert |
