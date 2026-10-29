@@ -171,6 +171,20 @@ const SCRIPTS={
    await stop('King: Macron, defender of the Élysée',['e1'],1.35,.65,.62,.25);
    await sub(p,'France vs. UK · round 1,000? 👇'); await fly(p,['d4','e4','d5','e5'],8.2,8.6,0,1600,.02); await shoot(1700);
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
+ welcome_ind:{nations:['ind','gbr'],end:'open',hook:'INDIA HAS<br>ENTERED THE CHAT 🇮🇳',
+   title:['<span style="color:#f39a3a">INDIA</span> vs. <span style="color:#a77be0">UK</span>','India joins Checkmate Nations'],play:async(mv,p,shoot)=>{
+   // one piece type after the other: glide in slowly (1.3 s), hold (1.6 s), name tag as subtitle
+   const stop=async(text,focus,dist,h,lift,side)=>{ await sub(p,text); await fly(p,focus,dist,h,lift,1300,side); await shoot(2900); };
+   // infantry first, seen from the far side (the back rank would hide them from the front), then up and over to the front
+   await stop('Infantry 🇮🇳',['c2','d2','e2'],-2.2,.95,.32,.25);
+   await fly(p,['d3'],2.6,6.2,0,1200); await shoot(1000);
+   await stop('Tanks',['a1'],1.75,.85,.3,.35);
+   await stop('Drones',['b1'],1.65,.9,.38,.35);
+   await stop('Fighter jets',['c1'],1.75,.9,.35,.45);
+   await stop('Queen: Rani Lakshmibai, the warrior queen',['d1'],1.45,.7,.5,.3);
+   await stop('King: Modi, the prime minister',['e1'],1.55,.6,.78,.25);
+   await sub(p,'India vs. UK · the rematch 🏏 who wins? 👇'); await fly(p,['d4','e4','d5','e5'],8.2,8.6,0,1600,.02); await shoot(1700);
+   await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
  welcome_ger:{nations:['ger','fra'],end:'open',hook:'GERMANY HAS<br>ENTERED THE CHAT 🇩🇪',
    title:['<span style="font-size:.8em"><span style="color:#ffce00">GERMANY</span> vs. <span style="color:#7ea6ff">FRANCE</span></span>','Germany joins Checkmate Nations'],play:async(mv,p,shoot)=>{
    // one piece type after the other: glide in slowly (1.3 s), hold (1.6 s), name tag as subtitle
@@ -187,7 +201,7 @@ const SCRIPTS={
    await mv('e2','e4',1300); await mv('e7','e5',1300); await mv('f1','c4',3000); }},
  // "Can you beat the AI?": a real game against the Normal AI (the beginner's moves are scripted, every reply is what the
  // server AI played), the camera glides to every move, ends with the AI Challenge call to action
- beat_ai:{nations:['usa','rus'],board:'classic',bg:'classic',start:[['d4','e5'],11.5,16.5,0,0],hookTop:'9%',hook:'MOST PEOPLE LOSE<br>TO THIS AI 🤖',
+ beat_ai:{nations:['usa','rus'],board:'classic',bg:'earth',start:[['d4','e5'],11.5,16.5,0,0],hookTop:'9%',hook:'MOST PEOPLE LOSE<br>TO THIS AI 🤖',
    title:['<span class="u">YOU</span> vs. <span class="r">THE AI</span>','Normal level · can you beat it?'],play:async(mv,p,shoot)=>{
    // one calm wide shot for the whole game (every flight stays in view), texts pop up below the board
    await badges(p,true); await shoot(1200);

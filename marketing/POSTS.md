@@ -190,6 +190,17 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Bezahlt (TikTok Promote, 13 €): nur die AD-Version, Ziel „Website-Besuche“, Link https://checkmatenations.com/?src=tiktok-ad
 - Nur „bisher niemand“ behaupten; sobald jemand gewinnt, wird das der nächste Post
 
+### V13 · Welcome, India! (Serie „Meet the nations“)
+- Datei: `marketing/welcome-india.mp4` (ca. 32 s), Hook „India has entered the chat 🇮🇳“, gleicher Aufbau wie V6/V10: Infantry, Tanks, Drones, Fighter jets, Rani Lakshmibai (würdevoll, keine Karikatur), Modi, dann erste Züge gegen UK, Endkarte. Erstes Video mit Effekten auf 30 % (`SFXVOL`, Standard in `mix.py`)
+- Instagram/TikTok-Text:
+  > Namaste, India! 🇮🇳 The queen is Rani Lakshmibai, the warrior queen of Jhansi ⚔️ And the king? Modi ♟️
+  > India vs. UK: the rematch. Who wins? 👇
+  > Play free: link in bio
+- Hashtags: #chess #chesstok #india #satire #gaming
+- Titelbild (Cover): Modi in Nahaufnahme (ca. Sekunde 21) oder Rani Lakshmibai (ca. Sekunde 17)
+- Erster eigener Kommentar: Which nation should join next? 🌍
+- YouTube-Shorts-Titel: India joins Checkmate Nations 🇮🇳 #shorts #chess
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
@@ -213,4 +224,9 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-24 | Instagram | V11 Puzzle mate in 1 als Karussell (neues Design, 3 Bilder) | | | | | | | Song „BENNY · i play chess“ aus der Instagram-Bibliothek, erster Kommentar mit Hinweis; kaum Aufrufe (Karussells laufen auf Instagram nicht) |
 | 2026-10-25 | TikTok | V10 Welcome, Germany! (32 s) | | | | | | | |
 | 2026-10-25 | YouTube Shorts | V10 Welcome, Germany! (32 s) | | | | | | | |
-| offen | Instagram | V10 Welcome, Germany! (32 s) | | | | | | | noch posten (als Reel) |
+| vor 2026-10-28 | TikTok, Instagram, YouTube Shorts | V6 Welcome, France! (32 s) | | | | | | | überall gepostet, genaues Datum nicht notiert |
+| ca. 2026-10-26 | TikTok | Karussell Mate in 2, Germany to move | | | 269 (Stand 28.10.) | | | | |
+| 2026-10-27 | TikTok | V12 Excalibur, AD-Version, beworben (14 €) | | 7.445 bezahlt, fast 11.000 gesamt | | | | 39 Landingpage-Aufrufe laut TikTok, 44 Besucher von tiktok.com laut Vercel (27.–28.10.) | 55 Profilaufrufe, 0 neue Follower, 0 Käufe; Werbung lohnt sich bei ca. 0,36 € pro Klick vorerst nicht |
+| 2026-10-27 | Instagram, YouTube Shorts | V12 Excalibur, normale Version | | | | | | | |
+| 2026-10-28 | TikTok | Karussell Mate in 1, France to move (Ersticktes Matt) | | | | | | | |
+| vor 2026-10-28 | Instagram | V10 Welcome, Germany! (32 s) als Reel | | | | | | | schon gepostet, genaues Datum nicht notiert |

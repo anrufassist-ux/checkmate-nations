@@ -8,7 +8,7 @@ Records a scripted game as a vertical video (720x1280, 24 fps) for TikTok / Reel
    (scholar: USA mates Russia in 4 moves; fool: Russia mates the USA in 2). The end zooms in front of the cell so the crying face is visible.
    Set `START=<frame>` to re-render only from that frame on (the run is deterministic: Playwright's paused fake clock).
 4. `python3 mix.py <clip> [out.mp4]` mixes the frames with the game music (`window.MUSIC`) and every sound the game played
-   (`window.SFX` keys, logged with their times in `sounds-<clip>.json`; synth explosions use `audio-extra/boom.wav`).
+   (`window.SFX` keys, logged with their times in `sounds-<clip>.json`; synth explosions use `audio-extra/boom.wav`). Effects are scaled to 30 % (`SFXVOL=0.3`, default) so they stay below the music.
 
 **Camera language (for every clip):** 1. establishing shot: the area of the action fills the frame, no empty table around it
 (`compact(p,true)` hides the title and puts the caption at the very top); 2. chase: the camera rides behind the piece that makes

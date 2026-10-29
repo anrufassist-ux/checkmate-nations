@@ -90,6 +90,10 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);overflow:hid
 .chev{width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 4px 4px;transition:transform .2s;flex:none}
 .console.collapsed .chev{transform:rotate(-135deg);margin-bottom:-4px}
 .cbody{display:grid;gap:10px}
+.pzbar{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:8px}
+.pzTop{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-label);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--sand)}
+.pzTxt{font-size:14px;line-height:1.3;min-height:2.6em}
+.pzBtns{display:flex;gap:8px}.pzBtns .btn{flex:1;padding:7px 8px}
 .coach{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:8px}
 .cAv{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:20px;background:linear-gradient(145deg,#3a4a2e,#1d2617);border:1px solid var(--sand)}
 .cMain{flex:1;min-width:0}
@@ -265,6 +269,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <option value="ai" selected>Gegen KI</option>
       <option value="pvp">Zwei Spieler</option>
       <option value="online">Online 1 gegen 1</option>
+      <option value="puzzle">Puzzles</option>
     </select>
     <select class="sel" id="level" aria-label="Spielstärke">
       <option value="0">Kinderleicht</option>
@@ -326,6 +331,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 
 <section class="console" aria-live="polite">
   <button class="status" id="statusBar" type="button" aria-expanded="true" aria-controls="consoleBody"><span class="dot" id="dot"></span><span id="status">Du spielst USA. Tippe eine Figur an.</span><span class="chip" id="codeChip" hidden></span><span class="chip clk" id="clkChip" hidden></span><span class="chev" aria-hidden="true"></span></button>
+  <div class="pzbar" id="pzBar" hidden><div class="pzTop"><span id="pzInfo"></span><span id="pzScore"></span></div><div class="pzTxt" id="pzTxt"></div><div class="pzBtns"><button class="btn" id="pzHintBtn" type="button">Tipp</button><button class="btn" id="pzSolBtn" type="button">Lösung</button><button class="btn primary" id="pzNext" type="button">Überspringen</button></div></div>
   <div class="coach" id="coach" hidden><span class="cAv" aria-hidden="true">🎖️</span><div class="cMain"><div class="cOpen" id="coachOpen" hidden></div><div class="cTxt" id="coachTxt"></div></div><span class="cBadge" id="coachBadge" hidden></span><button class="btn" id="coachHint" type="button" hidden>Tipp</button><button class="btn primary" id="coachYes" type="button">Einschalten</button><button class="btn cX" id="coachNo" type="button" aria-label="Nein danke">✕</button></div>
   <div class="cbody" id="consoleBody">
   <div class="online" id="online" hidden>
@@ -422,6 +428,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     <h2 id="modeTitle">Wie willst du spielen?</h2>
     <div class="modeList">
       <button class="modeBtn" type="button" data-m="ai"><span class="mt">Gegen KI</span><span class="ms">Du gegen den Computer</span></button>
+      <button class="modeBtn" type="button" data-m="puzzle"><span class="mt">Puzzles 🧩</span><span class="ms">Taktik-Aufgaben mit General Gambit</span></button>
       <button class="modeBtn" type="button" data-m="challenge"><span class="mt">KI-Challenge 🏆</span><span class="ms">Schlag die KI auf Normal und komm in die Hall of Fame</span></button>
       <button class="modeBtn" type="button" data-m="pvp"><span class="mt">Zwei Spieler</span><span class="ms">Abwechselnd am selben Gerät</span></button>
       <button class="modeBtn" type="button" data-m="online"><span class="mt">Online 1 gegen 1</span><span class="ms">Jeder an seinem Gerät, mit Spielcode</span></button>
@@ -499,7 +506,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Code senden':'Send code','Anmelden':'Sign in','Code aus der E-Mail':'Code from the e-mail','Wir schicken dir einen Anmeldecode per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in code. No password needed.','Code ist unterwegs. Gib ihn hier ein (oder tippe in der E-Mail auf den Link).':'The code is on its way. Enter it here (or tap the link in the e-mail).','Fordere zuerst einen Code an.':'Request a code first.','Bitte den Code aus der E-Mail eingeben.':'Please enter the code from the e-mail.','Prüfe …':'Checking …','Der Code stimmt nicht oder ist abgelaufen.':'The code is wrong or has expired.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmeldecode.':'You need an account to buy. We will e-mail you a sign-in code.',
     '2,99 €':'€2.99','4,99 €':'€4.99','0,99 €':'€0.99',
     'Neue Länder':'New nations','Länder freischalten':'Unlock nations','League-Pass':'League pass','Damit spielst du diese Saison mit USA oder Russland in der Nations League. Wer ein Land kauft, ist ohne Pass in jeder Saison dabei.':'Play this season of the Nations League with the USA or Russia. Anyone who buys a nation is in every season without a pass.','Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen, auch online. Jeder Länderkauf enthält die Nations League für alle Saisons.':'Own pieces, own queen, own flag pattern. Buy once, play forever, online too. Every nation purchase includes the Nations League for all seasons.','3 Länder nach Wahl':'3 nations of your choice','Du wählst gleich aus':'You pick them next','Alle Länder':'All nations','Auch alle, die später dazukommen':'Including every nation added later','Gilt bis zum Monatsende':'Valid until the end of the month','Weiter zur Zahlung':'Continue to payment','Ich möchte, dass die Freischaltung sofort erfolgt, und weiß, dass ich damit mein Widerrufsrecht verliere. Es gelten die':'I want the unlock to happen immediately and understand that I thereby lose my right of withdrawal. The following apply:','AGB':'Terms','Einmalige Zahlung, kein Abo, keine automatische Verlängerung. Endpreise, gemäß § 19 UStG ohne Umsatzsteuer. Bezahlt wird über Stripe.':'One-time payment, no subscription, no automatic renewal. Final prices, no VAT charged (small business, § 19 UStG). Payment via Stripe.','Du hast schon alle Länder.':'You already own every nation.','Bitte genau 3 Länder wählen.':'Please pick exactly 3 nations.','Bitte bestätige zuerst das Häkchen.':'Please tick the box first.','Einen Moment …':'One moment …','Verbindung zum Server fehlgeschlagen.':'Could not connect to the server.','Zum Kaufen brauchst du ein Konto. Wir schicken dir einen Anmelde-Link.':'You need an account to buy. We will e-mail you a sign-in link.','Das hast du schon.':'You already have this.','Kauf konnte nicht gestartet werden. Versuch es gleich nochmal.':'Could not start the purchase. Please try again.','Danke für deinen Kauf!':'Thanks for your purchase!','Die Zahlung wird noch bestätigt …':'Payment is being confirmed …','Freigeschaltet. Viel Spaß!':'Unlocked. Have fun!','Die Zahlung ist noch nicht bestätigt. Lade die Seite gleich nochmal.':'The payment is not confirmed yet. Reload the page in a moment.','Saison':'Season','League konnte nicht geladen werden.':'Could not load the league.','Für die League brauchst du ein Konto und ein gekauftes Land oder den League-Pass.':'For the league you need an account and a bought nation or the league pass.','Wähle zuerst einen Spielernamen.':'Choose a player name first.','Wähle dein Land für diese Saison. Es bleibt bis zum Monatsende fest.':'Choose your nation for this season. It stays fixed until the end of the month.','Dabei bist du mit jedem Länderkauf (gilt für alle Saisons) oder mit dem League-Pass für diese Saison.':'You are in with any nation purchase (valid for all seasons) or with the league pass for this season.','League-Pass · 0,99 €':'League pass · €0.99','Länder ansehen':'See nations','Länder':'Nations','Land':'Nation','Pkt/Partie':'Pts/game','Partien':'Games','Spieler':'Players','Punkte':'Points','Beste Spieler':'Top players','Noch keine League-Partien in dieser Saison.':'No league games this season yet.','3 Punkte für einen Sieg, 1 für ein Remis. Länder werden nach Punkten pro Partie gewertet. Neue Spieler (unter 20 Partien) und Spieler unter 1000 Elo zählen für ihr Land halb.':'3 points for a win, 1 for a draw. Nations are ranked by points per game. New players (under 20 games) and players under 1000 Elo count half for their nation.','Meister':'Champions','Titel':'Titles','Ewige Tabelle':'All-time table','Die erste Saison läuft noch. Am Monatsende steht hier der erste Meister.':'The first season is still running. At the end of the month the first champion appears here.','Du spielst diese Saison für':'You play this season for','Meister:':'Champion:',
-    'Trainer':'Trainer','Trainer an':'Trainer on','Trainer aus':'Trainer off','Ton: Satire':'Tone: satire','Ton: Sachlich':'Tone: plain','Tipp':'Hint','Stimme an':'Voice on','Stimme aus':'Voice off','Mehr':'More','Einschalten':'Turn on','Nein danke':'No thanks',
+    'Trainer':'Trainer','Trainer an':'Trainer on','Trainer aus':'Trainer off','Ton: Satire':'Tone: satire','Ton: Sachlich':'Tone: plain','Tipp':'Hint','Lösung':'Solution','Überspringen':'Skip','Nächste Aufgabe':'Next puzzle','Taktik-Aufgaben mit General Gambit':'Tactics puzzles with General Gambit','Puzzles':'Puzzles','Stimme an':'Voice on','Stimme aus':'Voice off','Mehr':'More','Einschalten':'Turn on','Nein danke':'No thanks',
     'Konto':'Account','🏆 Ranglisten':'🏆 Ranks',' Ranglisten':' Ranks','Ranglisten':'Ranks','Kostenloses Konto: dein Name auf der Rangliste und in der Hall of Fame.':'Free account: your name on the leaderboard and in the Hall of Fame.','Kostenlos anmelden':'Sign up free','Konto, Shop, League':'Account, shop, league','freischalten · ab 2,99 €':'unlock · from €2.99','Kostenlos':'Free','Du bist am Zug':'Your move','Schach! Du bist am Zug':'Check! Your move','Gegner ist am Zug':'Opponent to move','einmalig · kein Abo':'one-time · no subscription','spielbereit · kostenlos':'ready to play · free','gewählt':'taken','Spielbereit':'Ready to play','Freischalten · 3 Länder 2,99 € · alle 4,99 €':'Unlock · 3 nations €2.99 · all €4.99','2,99 €':'€2.99','Länder kaufen':'Buy nations','Weitere Länder kaufen':'Buy more nations',
     'Spielen ist ohne Konto kostenlos. Ein Konto brauchst du nur zum Kaufen, für gewertete Partien und die Nations League.':'Playing is free without an account. You only need one to buy, to play rated games and for the Nations League.',
     'Angemeldet, noch ohne Spielernamen.':'Signed in, no player name yet.','Deine Länder: ':'Your nations: ','Noch keine Länder gekauft.':'No nations bought yet.','League diese Saison: ':'League this season: ','League: Land noch nicht gewählt.':'League: nation not chosen yet.','League: nicht dabei.':'League: not entered.',
@@ -1940,6 +1947,7 @@ async function doMoveInner(mv,remote,expectFen){
   const fenB=game.fen();
   const res=game.move({from:mv.from,to:mv.to,promotion:mv.promotion||'q'});
   if(!res){ busy=false; if(remote) onlineResync(); return; }
+  if(mode==='puzzle'&&pz&&!pz.auto&&res.color===myColor){ if(pzCheck(res)) pz.step++; else { game.undo(); busy=false; pzWrong(); return; } }
   if(!remote) coachOnMove(res,fenB);
   if(remote&&expectFen&&game.fen().split(' ')[0]!==expectFen.split(' ')[0]){ game.undo(); busy=false; onlineResync(); return; }
   if(mode==='online'&&!remote) onlinePush(res);
@@ -1983,7 +1991,7 @@ async function doMoveInner(mv,remote,expectFen){
 
 async function afterMove(){
   const turn=game.turn();
-  if(game.in_checkmate()){ over=true; if(chal) await chalSend(); await mateSequence(turn); busy=false; if(mode==='online'){ onlineStatus(); onlineDrain(); } chalDone(); return; }
+  if(game.in_checkmate()){ over=true; if(chal) await chalSend(); if(mode==='puzzle'&&pz&&!pz.auto) pzSolved(); await mateSequence(turn); busy=false; if(mode==='online'){ onlineStatus(); onlineDrain(); } chalDone(); return; }
   if(game.in_draw()||game.in_stalemate()||game.in_threefold_repetition()){
     over=true; if(chal){ await chalSend(); chal=null; $('level').disabled=false; } banner('Remis','Gipfel ohne Ergebnis. Beide Seiten erklären sich zum Sieger.',true);
     setStatus('Remis. Neues Spiel starten?','w'); busy=false; if(mode==='online') onlineDrain(); return;
@@ -1992,6 +2000,7 @@ async function afterMove(){
   if(mode==='online'){
     busy=false; onlineStatus(); onlineDrain(); return;
   }
+  if(mode==='puzzle'){ busy=false; pzAfter(); return; }
   if(mode==='pvp'){
     const n=(turn===myColor?'Spieler 1':'Spieler 2')+' ('+CNAME[turn]+')';
     setStatus(game.in_check()?`Schach! ${n} muss den König retten.`:`${n} ist am Zug.`,turn);
@@ -2214,7 +2223,7 @@ renderer.domElement.addEventListener('pointerup',e=>{
   if(sq) onPick(sq);
 });
 function onPick(sq){
-  if(pickerOpen||busy||over||(mode==='ai'&&game.turn()!==myColor)) return;
+  if(pickerOpen||busy||over||(mode==='ai'&&game.turn()!==myColor)||(mode==='puzzle'&&(!pz||pz.done||pz.auto||game.turn()!==myColor))) return;
   if(mode==='online'&&(!on.id||!on.color||game.turn()!==on.color||!on.ready)) return;
   const t=targets.find(m=>m.to===sq);
   if(selected&&t){ doMove(t.promotion?targets.find(m=>m.to===sq&&m.promotion==='q'):t); return; }
@@ -2422,6 +2431,101 @@ async function coachHint(){
   $('coachHint').textContent=lv<3?'Mehr':'Tipp';
   if(lv>=3) coachHintLvl=0;
 }
+/* ---------- Puzzles with General Gambit: vendor/puzzles.json = [fen, "blunder sol1 reply1 sol2 …", rating, "themes"]
+   (made by tools/puzzles/ from engine games, every solver move checked to be the only good one). The first move is the
+   opponent's mistake and is played for you; then you find the rest. Any mate counts at a mating step. The puzzle rating
+   adapts like Elo (localStorage wms-pz: rating, solved, streak, recently seen). ---------- */
+let PZL=null, pz=null, pzNat=['usa','rus'];
+const pzState=(()=>{ let s={r:900,n:0,ok:0,streak:0,seen:[]}; try{ Object.assign(s,JSON.parse(localStorage.getItem('wms-pz')||'{}')); }catch(e){} return s; })();
+const pzSave=()=>{ try{ localStorage.setItem('wms-pz',JSON.stringify(pzState)); }catch(e){} };
+function pzLoad(){ if(!PZL) PZL=fetch('vendor/puzzles.json').then(r=>r.json()).catch(()=>{ PZL=null; return []; }); return PZL; }
+const PZ_THEME={de:{mate:'Matt',mateIn1:'Matt in 1',mateIn2:'Matt in 2',mateIn3:'Matt in 3',mateIn4:'Matt in 4',fork:'Gabel',hangingPiece:'Ungedeckte Figur',sacrifice:'Opfer',promotion:'Umwandlung',backRankMate:'Grundreihenmatt',advantage:'Vorteil holen',crushing:'Entscheidender Vorteil'},
+                en:{mate:'Mate',mateIn1:'Mate in 1',mateIn2:'Mate in 2',mateIn3:'Mate in 3',mateIn4:'Mate in 4',fork:'Fork',hangingPiece:'Hanging piece',sacrifice:'Sacrifice',promotion:'Promotion',backRankMate:'Back-rank mate',advantage:'Win material',crushing:'Crushing blow'}};
+const pzLevel=r=>EN()?(r<1000?'Easy':r<1500?'Medium':'Hard'):(r<1000?'Leicht':r<1500?'Mittel':'Schwer');
+function pzBar(txt){
+  const L=EN()?'en':'de', th=pz?pz.themes.filter(t=>t!=='mate'&&PZ_THEME[L][t]).map(t=>PZ_THEME[L][t]):[];
+  $('pzInfo').textContent=pz?`🧩 ${pzLevel(pz.rating)} · ${th.slice(0,2).join(' · ')}`:'🧩';
+  $('pzScore').textContent=(EN()?'Your rating ':'Deine Wertung ')+Math.round(pzState.r)+(pzState.streak>1?` · 🔥${pzState.streak}`:'');
+  if(txt!=null) $('pzTxt').textContent=txt;
+}
+async function pzStart(){
+  $('pzBar').hidden=false; pzBar(EN()?'Loading puzzles …':'Lade Aufgaben …');
+  const all=await pzLoad(); if(mode!=='puzzle') return;
+  if(!all.length){ pzBar(EN()?'Puzzles could not be loaded.':'Aufgaben konnten nicht geladen werden.'); return; }
+  // a puzzle near your rating that you have not seen lately
+  const seen=new Set(pzState.seen), near=w=>all.filter(p=>Math.abs(p[2]-pzState.r)<=w&&!seen.has(p[0]));
+  let pool=near(120); if(pool.length<5) pool=near(300); if(!pool.length) pool=all;
+  const p=pool[Math.floor(Math.random()*pool.length)];
+  pz={fen:p[0],moves:p[1].split(' '),rating:p[2],themes:(p[3]||'').split(' '),step:0,failed:false,hint:0};
+  pzState.seen.push(p[0]); if(pzState.seen.length>300) pzState.seen.splice(0,pzState.seen.length-300); pzSave();
+  resetBoard(); game.load(pz.fen);
+  const solver=game.turn()==='w'?'b':'w'; myColor=solver;
+  setNations(solver==='w'?pzNat[0]:pzNat[1],solver==='w'?pzNat[1]:pzNat[0]); setupPieces(); swingTo(solver);
+  $('pzNext').textContent=EN()?'Skip':'Überspringen';
+  pzBar(EN()?'Watch the enemy move …':'Achtung, der Gegner zieht …');
+  setStatus(CNAME[solver==='w'?'b':'w']+(EN()?' moves …':' zieht …'),solver==='w'?'b':'w',true);
+  await wait(900); if(mode!=='puzzle'||!pz) return;
+  busy=false; await pzPlay(pz.moves[0]);
+}
+function pzPlay(uci){ pz.step++; return doMove({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]}); }
+// called from doMoveInner for the player's move: true = expected (or a mate where mate was asked)
+function pzCheck(res){
+  const want=pz.moves[pz.step], uci=res.from+res.to+(res.promotion&&res.promotion!=='q'?res.promotion:'');
+  if(uci===want.slice(0,4)+(want[4]&&want[4]!=='q'?want[4]:'')) return true;
+  return game.in_checkmate()&&pz.step===pz.moves.length-1;
+}
+function pzWrong(){
+  hintClear(); setupPieces();
+  if(!pz.failed){ pz.failed=true; pzRate(false); }
+  const k=clPick('mi'); pzBar((coachTone==='satire'?CL[EN()?'en':'de'][k]+' ':'')+(EN()?'Not that one. Try again.':'Das war es nicht. Versuch es nochmal.'));
+  if(coachTone==='satire') coachVoice(k);
+  setStatus(EN()?'Try again.':'Nochmal versuchen.',myColor);
+}
+function pzRate(won){
+  const e=1/(1+Math.pow(10,(pz.rating-pzState.r)/400)), K=pzState.n<20?60:32;
+  pzState.r=Math.max(400,Math.min(2600,pzState.r+K*((won?1:0)-e))); pzState.n++;
+  if(won){ pzState.ok++; pzState.streak++; } else pzState.streak=0;
+  pzSave();
+}
+// after every move in puzzle mode (from afterMove)
+async function pzAfter(){
+  if(!pz||pz.auto) return;
+  if(pz.step>=pz.moves.length){ return pzSolved(); }
+  if(game.turn()!==myColor){ // the opponent's forced reply
+    await wait(450); if(mode!=='puzzle'||!pz) return; return pzPlay(pz.moves[pz.step]);
+  }
+  hintClear(); pz.hint=0;
+  const left=Math.ceil((pz.moves.length-pz.step)/2);
+  pzBar(pz.step===1?(EN()?`Your move: find the best move.${pz.themes.includes('mate')?'':' Win material!'}`:`Dein Zug: finde den besten Zug.${pz.themes.includes('mate')?'':' Hol dir Material!'}`)
+    :(EN()?`Good! Keep going (${left} more).`:`Gut! Weiter so (noch ${left}).`));
+  setStatus(EN()?'Your move.':'Dein Zug.',myColor);
+}
+function pzSolved(){
+  if(!pz.failed) pzRate(true);
+  const mate=game.in_checkmate(), k=mate?clPick('ma'):clPick(pz.failed?'in':pz.rating>=1400?'br':'gr');
+  const C=CL[EN()?'en':'de'];
+  pzBar((coachTone==='satire'&&k?C[k]+' ':'')+(pz.failed?(EN()?'Solved, at the second attempt.':'Gelöst, im zweiten Anlauf.'):(EN()?'Solved! ✅':'Gelöst! ✅')));
+  if(coachTone==='satire'&&k) coachVoice(k);
+  $('pzNext').textContent=EN()?'Next puzzle':'Nächste Aufgabe';
+  if(!mate) banner(EN()?'Solved!':'Gelöst!',pz.failed?'':(EN()?'Rating ':'Wertung ')+Math.round(pzState.r));
+  pz.done=true;
+}
+function pzHint(){
+  if(!pz||pz.done||busy||game.turn()!==myColor) return;
+  const want=pz.moves[pz.step]; pz.hint++;
+  if(!pz.failed&&pz.hint===1){ pz.failed=true; pzRate(false); } // a hint costs the rating points of this puzzle
+  if(pz.hint===1){ hintMark([want.slice(0,2)]); pzBar(EN()?'This piece has the move.':'Diese Figur ist dran.'); }
+  else { hintMark([want.slice(0,2),want.slice(2,4)]); pzBar(EN()?'From the first green square to the second.':'Vom ersten grünen Feld aufs zweite.'); }
+}
+async function pzSolution(){
+  if(!pz||pz.done||busy) return;
+  if(!pz.failed){ pz.failed=true; pzRate(false); }
+  pz.auto=true; hintClear();
+  while(pz&&pz.step<pz.moves.length&&mode==='puzzle'){ busy=false; await pzPlay(pz.moves[pz.step]); await wait(500); }
+  if(!pz) return; pz.done=true; $('pzNext').textContent=EN()?'Next puzzle':'Nächste Aufgabe';
+  pzBar(EN()?'That was the solution. Next one?':'Das war die Lösung. Nächste Aufgabe?');
+}
+function pzNext(){ if(!busy) pzStart(); }
 let mode='ai', myColor='w', pickerOpen=false;
 const CNAME={get w(){ return TEAM.w.name; }, get b(){ return TEAM.b.name; }};
 // picker and shop flags: the real national flags from flag-icons (MIT, github.com/lipis/flag-icons, see vendor/THIRD_PARTY.md)
@@ -2530,11 +2634,13 @@ function openModeScreen(){
 }
 function chooseMode(m){
   if(mode==='online') onlineLeave();
-  mode=m; $('mode').value=m;
+  mode=m; $('mode').value=m; pz=null;
+  { const was=!$('pzBar').hidden; $('pzBar').hidden=m!=='puzzle'; if(was!==(m==='puzzle')&&typeof refit==='function') setTimeout(refit,30); }
   $('level').disabled=m!=='ai'; $('level').hidden=m!=='ai';
   $('online').hidden=m!=='online';
   resetBoard(); gameStarted=true;
   if(m==='online'){ swingTo('w'); setCollapsed(false); onlineInit(); }   // countries are picked when creating a game
+  else if(m==='puzzle') openPicker((my,opp)=>{ pzNat=[my,opp]; pzStart(); });
   else openPicker(applyColor);
 }
 $('reset').addEventListener('click',newGame);
@@ -2582,6 +2688,9 @@ $('coachBtn').addEventListener('click',()=>coachSet(!coachOn));
 $('coachYes').addEventListener('click',()=>coachSet(true));
 $('coachNo').addEventListener('click',()=>coachSet(false));
 $('coachHint').addEventListener('click',coachHint);
+$('pzHintBtn').addEventListener('click',pzHint);
+$('pzSolBtn').addEventListener('click',pzSolution);
+$('pzNext').addEventListener('click',pzNext);
 $('voiceBtn').addEventListener('click',()=>{ coachVoiceOn=!coachVoiceOn; try{ localStorage.setItem('wms-coach-voice',coachVoiceOn?'on':'off'); }catch(e){} if(!coachVoiceOn&&voiceSrc) try{ voiceSrc.stop(); }catch(e){} coachSync(); });
 $('toneBtn').addEventListener('click',()=>{ coachTone=coachTone==='satire'?'plain':'satire'; try{ localStorage.setItem('wms-coach-tone',coachTone); }catch(e){} coachSync(); if(coachOn&&coachAllowed()) coachHello(); });
 

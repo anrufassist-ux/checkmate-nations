@@ -1,5 +1,5 @@
 """Mixes the recorded frames with the game music and the sound effects logged in sounds.json.
-Usage: python3 mix.py [scholar|fool] [out.mp4]  (after `CLIP=... node capture.js full`)"""
+Usage: python3 mix.py [scholar|fool] [out.mp4]  (after `CLIP=... node capture.js full`); SFXVOL=0.3 scales the effects (default)"""
 import base64, json, os, re, subprocess, sys
 here=os.path.dirname(os.path.abspath(__file__)); os.chdir(here)
 clip=sys.argv[1] if len(sys.argv)>1 else 'scholar'; out=sys.argv[2] if len(sys.argv)>2 else clip+'.mp4'; FR='frames-'+clip
@@ -14,12 +14,13 @@ for k,uri in sfx.items():
     ext=re.match(r'data:audio/(\w+)',uri).group(1).replace('mpeg','mp3'); files[k]=save(uri,f'snd/{k}.{ext}')
 files['boom']=files['boomBig']='audio-extra/boom.wav'
 music=save(blob('MUSIC'),'snd/music.mp3')
+SFX=float(os.environ.get('SFXVOL','0.3'))  # effects at 30 % (owner: the sounds were always too loud next to the music)
 frames=len([f for f in os.listdir(FR) if f.endswith('.jpg')]); dur=frames/24
 events=[e for e in json.load(open(f'sounds-{clip}.json')) if e[1] in files and e[0]<dur]
 inputs=['-framerate','24','-i',FR+'/f%05d.jpg','-stream_loop','-1','-i',music]
 flt=[f'[1:a]volume=0.35,afade=t=out:st={dur-1.5:.2f}:d=1.5[m]']; mix=['[m]']
 for i,(t,k,v) in enumerate(events):
-    inputs+=['-i',files[k]]; vol=v*(1.3 if k.startswith('boom') else 1)
+    inputs+=['-i',files[k]]; vol=v*SFX*(1.3 if k.startswith('boom') else 1)
     flt.append(f'[{i+2}:a]volume={vol:.2f},adelay={max(0,int(t*1000))}:all=1[s{i}]'); mix.append(f'[s{i}]')
 flt.append(''.join(mix)+f'amix=inputs={len(mix)}:normalize=0,alimiter=limit=0.9[a]')
 subprocess.run(['ffmpeg','-y',*inputs,'-filter_complex',';'.join(flt),'-map','0:v','-map','[a]','-t',f'{dur:.2f}',
