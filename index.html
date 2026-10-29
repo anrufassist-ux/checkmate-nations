@@ -242,7 +242,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 /* same crown as on the board: 80 % of the head width, its centre just below the top of the head, tilted like the 3D king */
 .jail .jcrown{position:absolute;left:10%;top:0;width:80%;margin-top:-16%;transform:rotate(var(--tilt,10deg))}
 .jail .glyph{font-size:180px;line-height:1;color:var(--sand);transform:scale(.3);opacity:0}
-.jail.classic .cell{background:radial-gradient(circle at 50% 40%,#f4f2da,#a9bb8c)}
+.jail.classic .cell{background:radial-gradient(circle at 50% 40%,#f4f2da,#a9bb8c)}.jail.classic .bars{display:none}
 .jail .glyph .jking{display:block;width:min(52vw,250px);height:auto}
 .jail .bars{position:absolute;inset:0;transform:translateY(-110%);
   background:
@@ -306,7 +306,6 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
         <div class="vtog">
           <button class="btn" id="flatBtn" type="button" aria-pressed="false">2D-Figuren aus</button>
           <button class="btn" id="flatStyleBtn" type="button">2D-Stil: Nations</button>
-          <button class="btn" id="flatBwBtn" type="button">2D-Farben: Länder</button>
           <button class="btn" id="heads" type="button" aria-pressed="true">Karikaturen an</button>
           <button class="btn" id="flags" type="button" aria-pressed="true">Flaggen an</button>
         </div>
@@ -545,7 +544,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Wenn du jetzt gehst, hast du diese Partie verloren. Dein Gegner gewinnt sofort.':'If you leave now, you lose this game. Your opponent wins right away.',
     'Aufgeben':'Resign','Neues Land':'New country','Kaufen':'Buy','Abbrechen':'Cancel',
     'Eigene Figuren, eigene Dame, eigenes Flaggenmuster. Einmal kaufen, für immer spielen.':'Its own pieces, its own queen, its own flag pattern. Buy once, play forever.',
-    'Ab ins Gefängnis!':'Off to jail!','Spielmodus':'Game mode','Spielstärke':'Difficulty','Der besiegte König':'The defeated king',
+    'Ab ins Gefängnis!':'Off to jail!','Hausarrest!':'House arrest!','Spielmodus':'Game mode','Spielstärke':'Difficulty','Der besiegte König':'The defeated king',
     'BUMM!':'BOOM!','KRACH!':'CRASH!','ZACK!':'ZAP!','WUMMS!':'WHAM!','PENG!':'BANG!',
     'Rochade!':'Castling!','Kurze Rochade: König in Sicherheit.':'Short castling: king in safety.','Lange Rochade: König in Sicherheit.':'Long castling: king in safety.',
     'Remis':'Draw','Gipfel ohne Ergebnis. Beide Seiten erklären sich zum Sieger.':'Summit without result. Both sides declare victory.',
@@ -580,6 +579,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     [/^Sieg für (.+)([!.])$/,m=>'Victory for '+N(m[1])+m[2]],
     [/^(.+) ist bedroht\.$/,m=>N(m[1])+' is in check.'],
     [/^(.+) wird abgeführt\.$/,m=>N(m[1])+' is being arrested.'],
+    [/^(Weiß|Schwarz) steht unter Hausarrest\.$/,m=>(m[1]==='Weiß'?'White':'Black')+' is under house arrest.'],
     [/^Du spielst für (.+)\. Gesucht werden nur Gegner aus der Liga, die Partie zählt für die Tabelle\.$/,m=>'You play for '+N(m[1])+'. Only opponents from the league are searched, the game counts for the table.'],
     [/^Du spielst (.+)\. Tippe eine Figur an\.$/,m=>'You play '+N(m[1])+'. Tap a piece.'],
     [/^Du spielst (.+)\. Warte auf Gegner\.$/,m=>'You play '+N(m[1])+'. Waiting for opponent.'],
@@ -1399,7 +1399,6 @@ const CBURNETT={"bB":"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"45\" hei
 function hexCss(h){ return '#'+h.toString(16).padStart(6,'0'); }
 // 2D "Nations" style: our own 3D pieces photographed once from the front (offscreen, transparent background),
 // fitted into the square with a dark outline so they stay readable at phone size
-let flatBW=false; try{ flatBW=localStorage.getItem('wms-flat-bw')==='1'; }catch(e){}
 let flatStyle='classic'; try{ if(localStorage.getItem('wms-flat-style')==='nations') flatStyle='nations'; }catch(e){}
 const shotTex={}; let shotRig=null;
 function pieceShot(type,color){
@@ -1447,33 +1446,22 @@ function pieceShot(type,color){
   shoot(); setTimeout(shoot,400); setTimeout(shoot,1500); // image heads and crowns load a moment later
   return tex;
 }
-// classic 2D in plain white and black: when the player picks it, or by itself when both nations would get the same set
-// (two dark or two light nations, e.g. Germany vs USA), because then the pieces are hard to tell apart
-const teamDark=t=>((((t.body>>16)&255)*.3+((t.body>>8)&255)*.59+(t.body&255)*.11)/255)<.35;
-const flatBwNow=()=>flatBW||teamDark(TEAM.w)===teamDark(TEAM.b);
+// classic 2D: our own AI-made glossy piece set (pieces/<w|b><type>.webp, ivory and black, always plain white/black,
+// nation colours are the Nations style's job); cburnett stays as the fallback if an image cannot be loaded
 function makeFlatPiece(type,color){
-  const team=TEAM[color], bw=flatBwNow(), key=(bw?'bw':team.key)+type+color;
+  const key='cl'+type+color;
   let tex=flatStyle==='nations'?pieceShot(type,color):flatTex[key];
   if(!tex){
-    // big classic piece filling the square: light nations use the white set, dark ones the black set (light inner lines), body in the nation colour
     const c=document.createElement('canvas'); c.width=c.height=256;
-    const dark=bw?color==='b':teamDark(team);
-    let svg=CBURNETT[(dark?'b':'w')+type.toUpperCase()];
-    if(!bw){ const fc='fill="'+hexCss(team.body)+'"'; // the black set leaves most fills at the default, so set it on the root too
-      svg=svg.replace(dark?/fill="#000"/g:/fill="#fff"/g,fc); if(dark) svg=svg.replace('<svg ','<svg '+fc+' '); }
     tex=flatTex[key]=new T.CanvasTexture(c); tex.encoding=T.sRGBEncoding; tex.anisotropy=4;
-    // drawn larger than the set's own padding allows (the pieces fill the square, pawns most), with a soft drop shadow
-    // and a light-from-top-left sheen so they look a little moulded instead of flat
-    const img=new Image(); img.onload=()=>{ const x=c.getContext('2d'), z=type==='p'?1.32:1.16, w=256*z, o=(256-w)/2;
-      if(dark&&!bw){ // a light rim so dark pieces stay visible on dark squares
-        const h=document.createElement('canvas'); h.width=h.height=256; const hx=h.getContext('2d');
-        hx.drawImage(img,o,o+4,w,w); hx.globalCompositeOperation='source-in'; hx.fillStyle='rgba(255,255,255,.75)'; hx.fillRect(0,0,256,256);
-        for(let k=0;k<12;k++){ const a=k/12*Math.PI*2; x.drawImage(h,Math.cos(a)*3.5,Math.sin(a)*3.5); } }
-      x.save(); x.shadowColor='rgba(0,0,0,.45)'; x.shadowBlur=10; x.shadowOffsetX=3; x.shadowOffsetY=6; x.drawImage(img,o,o+4,w,w); x.restore();
-      x.globalCompositeOperation='source-atop'; const gr=x.createLinearGradient(40,20,216,236);
-      gr.addColorStop(0,'rgba(255,255,255,.32)'); gr.addColorStop(.45,'rgba(255,255,255,0)'); gr.addColorStop(1,'rgba(0,0,0,.22)');
-      x.fillStyle=gr; x.fillRect(0,0,256,256); tex.needsUpdate=true; };
-    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    const draw=(img,z,dy)=>{ const x=c.getContext('2d'), w=256*z, o=(256-w)/2; x.clearRect(0,0,256,256);
+      x.save(); x.shadowColor='rgba(0,0,0,.4)'; x.shadowBlur=9; x.shadowOffsetX=2; x.shadowOffsetY=5; x.drawImage(img,o,o+dy,w,w); x.restore();
+      tex.needsUpdate=true; try{ wake(300); }catch(e){} };
+    const img=new Image();
+    img.onload=()=>draw(img,1,0);
+    img.onerror=()=>{ const f=new Image(); f.onload=()=>draw(f,type==='p'?1.32:1.16,4);
+      f.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(CBURNETT[color+type.toUpperCase()]); };
+    img.src='pieces/'+color+type+'.webp';
   }
   const g=new T.Group();
   const sz=flatStyle==='nations'?1.06:.98; // our pieces may reach a little over the square edge, like a sticker
@@ -1757,7 +1745,7 @@ function blip(freq){
 /* ---------- UI ---------- */
 const $=id=>document.getElementById(id);
 // plain white/black pieces in classic 2D: the dot and the side names follow the piece colour, not the nation
-const plainBW=()=>flat2d&&flatStyle==='classic'&&flatBwNow();
+const plainBW=()=>flat2d&&flatStyle==='classic';
 function setStatus(t,who,think){ $('status').textContent=t; const d=$('dot'), c=who==='b'?'b':'w'; d.className='dot'+(think?' think':'');
   d.style.background=plainBW()?(c==='w'?'#f4f1e6':'#1b1b1b'):TEAM[c].css; d.style.color=d.style.background; d.style.boxShadow=plainBW()&&c==='b'?'0 0 0 1.5px #d8d2bf':''; }
 // "White" / "Weiß", or "USA (White)" when the pieces carry the nation colours, so puzzle players always know their side
@@ -2055,10 +2043,10 @@ async function mateSequence(loser){
   const king=pieces[kingSq], p=king.position.clone();
   duckMusic(.25,9);
   const winner=loser==='w'?'b':'w';
-  banner('Schachmatt!', TEAM[loser].king+' wird abgeführt.', true);
+  banner('Schachmatt!', classicSfx()?(loser==='w'?'Weiß':'Schwarz')+' steht unter Hausarrest.':TEAM[loser].king+' wird abgeführt.', true); // classic 2D: house arrest, no prison
   setStatus('Sieg für '+TEAM[winner].winner+'!', winner);
   if(!(soundOn&&actx&&playSample('mate',1))) boom(true);
-  if(classicSfx()){ await wait(400); await showJail(loser); return; } // classic 2D: no police on a flat board, only the king piece behind bars
+  if(classicSfx()){ await wait(400); await showJail(loser); return; } // classic 2D: no police, no cage, just the king under house arrest
   const agents=[makeAgent(),makeAgent()];
   agents.forEach((a,i)=>{ a.position.set(p.x+(i?.75:-.75),5,p.z); a.rotation.y=i?-Math.PI/2:Math.PI/2; scene.add(a); extras.push(a); });
   await animate(.7,t=>{ const e=1-Math.pow(1-t,3); agents.forEach(a=>a.position.y=5*(1-e)); });
@@ -2146,15 +2134,16 @@ function showJail(loser){
   const face=$('jailFace');
   const g=$('jailGlyph'); g.textContent='';
   if(classicSfx()){ // classic 2D: the very king piece from the board
-    const tex=flatTex[(flatBwNow()?'bw':TEAM[loser].key)+'k'+loser]; face.hidden=true; g.hidden=false;
+    const tex=flatTex['clk'+loser]; face.hidden=true; g.hidden=false;
     if(tex&&tex.image){ const im=new Image(); im.src=tex.image.toDataURL(); im.alt=''; im.className='jking'; g.appendChild(im); } else g.textContent=loser==='w'?'♔':'♚'; }
   else if(h){ img.src=(window.CRY&&window.CRY[key])||h.uri||h; face.style.aspectRatio=String(h.aspect||.67); face.hidden=false; $('jailGlyph').hidden=true;
     // he keeps his crown behind the bars too, like on the board and when he is carried off
     const cr=$('jailCrown'); cr.src=crownTex(sideNation[loser]).image.toDataURL(); cr.style.setProperty('--tilt',loser==='w'?'10deg':'-10deg'); }
   else { face.hidden=true; $('jailGlyph').hidden=false; $('jailGlyph').textContent=loser==='w'?'♔':'♚'; }
   el.classList.toggle('classic',classicSfx());
+  el.querySelector('.jailText').textContent=classicSfx()?(EN()?'House arrest!':'Hausarrest!'):(EN()?'Off to jail!':'Ab ins Gefängnis!');
   el.hidden=false; el.classList.remove('run'); void el.offsetWidth; el.classList.add('run');
-  setTimeout(()=>clang(),reduceMotion?50:1050);
+  if(!classicSfx()) setTimeout(()=>clang(),reduceMotion?50:1050);
   return wait(reduceMotion?1200:3000).then(()=>{ el.classList.add('out'); return wait(400); }).then(()=>{ el.hidden=true; el.classList.remove('out','run'); });
 }
 
@@ -3597,7 +3586,6 @@ function setView(v){
   document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
   $('flatBtn').setAttribute('aria-pressed',String(flat2d)); $('flatBtn').textContent=flat2d?'2D-Figuren an':'2D-Figuren aus';
   $('flatStyleBtn').textContent=flatStyle==='classic'?'2D-Stil: Klassisch':'2D-Stil: Nations';
-  $('flatBwBtn').textContent=flatBW?'2D-Farben: Schwarz-Weiß':'2D-Farben: Länder';
   // snap to the side we are looking from (white or black), then fit
   const rel=camera.position.clone().sub(controls.target);
   const fromBlack=rel.length()>=1&&rel.z<0;
@@ -3661,10 +3649,6 @@ $('flatBtn').addEventListener('click',()=>{ if(busy) return; setFlat(!flat2d); s
 // 2D style: our pieces (default) or classic chess pieces with plain wooden sounds; picking a style switches 2D on
 $('flatStyleBtn').addEventListener('click',()=>{ if(busy) return; flatStyle=flatStyle==='classic'?'nations':'classic';
   try{ localStorage.setItem('wms-flat-style',flatStyle); }catch(e){}
-  if(flat2d){ selected=null; targets=[]; clearMarkers(); setupPieces(); } else setFlat(true); setView('top'); });
-// 2D colours: nation colours or classic white and black (classic pieces only, so this picks the classic style too)
-$('flatBwBtn').addEventListener('click',()=>{ if(busy) return; flatBW=!flatBW; flatStyle='classic';
-  try{ localStorage.setItem('wms-flat-bw',flatBW?'1':'0'); localStorage.setItem('wms-flat-style','classic'); }catch(e){}
   if(flat2d){ selected=null; targets=[]; clearMarkers(); setupPieces(); } else setFlat(true); setView('top'); });
 window.addEventListener('resize',resize);
 window.addEventListener('resize',()=>setTimeout(refit,50));
