@@ -1,0 +1,206 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// "General Gambit has joined" ad: every frame is a pure function of t (window.seek)
+const W = 1080, H = 1920, ctx = document.getElementById('c').getContext('2d');
+const OPS = '"BlackOps", Impact, sans-serif', BC = '"BarlowC", Arial Narrow, sans-serif';
+const GOLD = '#f2c94c', RED = '#e0533f', SAND = '#e8d9a8', NAVY = '#0b1426';
+
+// TIMELINE (voice: 0.2 "reporting for duty", 3.5 "other side?", 7.3 "gift with a bow", 11.6 "direct hit", 15.8 "chess hero", CTA 22.4)
+const T = { hookIn: -1.2, sub1: 1.2, s1out: 3.2,
+  eyeIn: 3.2, quip: 3.5, badge: 4.6, s2out: 6.6,
+  rateIn: 6.6, chips: 7.6, s3out: 11.2,
+  pzIn: 11.2, pzChips: 12.2, s4out: 15.4,
+  kidIn: 15.4, kidLine2: 16.6, s5out: 19.4,
+  freeIn: 19.4, s6out: 22.0,
+  ctaIn: 22.0, urlIn: 23.0, END: 26.5 };
+
+const img = {}, files = { gen: 'general.png', logo: 'logo.png', coach: 'coach.png', puzzle: 'puzzle.png' };
+const fonts = [['BlackOps','fonts/black-ops-one-latin-400-normal.woff2',400],['BarlowC','fonts/barlow-condensed-latin-700-normal.woff2',700],['BarlowC','fonts/barlow-condensed-latin-600-normal.woff2',600]];
+window.ready = Promise.all([
+  ...fonts.map(([n,u,w]) => new FontFace(n, `url(${u})`, { weight: String(w) }).load().then(f => document.fonts.add(f))),
+  ...Object.entries(files).map(([k,f]) => new Promise(r => { const i = new Image(); i.onload = r; i.src = f; img[k] = i; }))
+]).then(() => window.seek(0));
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+function spring(t, k = 170, d = 26) {
+  if (t <= 0) return 0;
+  const w0 = Math.sqrt(k), z = d / (2 * w0);
+  if (z < 1) { const wd = w0 * Math.sqrt(1 - z * z);
+    return 1 - Math.exp(-z * w0 * t) * (Math.cos(wd * t) + (z * w0 / wd) * Math.sin(wd * t)); }
+  return 1 - Math.exp(-w0 * t) * (1 + w0 * t);
+}
+const snap = t => spring(t, 260, 20), heavy = t => spring(t, 140, 26);
+const ease = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+const hash = i => { const s = Math.sin(i * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+const vis = (t, a, b) => t >= a - 0.2 && t <= b + 0.9;
+const win = (t, a, b, fi = .3, fo = .35) => clamp((t - a) / fi) * (1 - clamp((t - b) / fo));
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+
+// big centred headline, auto-fit, slams in (scale 1.25 -> 1) with a short shake
+function head(t, s, y, size, color, tIn, tOut, opt = {}) {
+  const { font = OPS, maxW = 960, glow = color, x = W / 2 } = opt;
+  const a = clamp((t - tIn) / .18) * (tOut == null ? 1 : 1 - clamp((t - tOut) / .3));
+  if (a <= .001) return;
+  ctx.save(); ctx.font = `${opt.weight || 400} ${size}px ${font}`;
+  const w = ctx.measureText(s).width, k = w > maxW ? maxW / w : 1;
+  const sc = k * (1 + .25 * (1 - snap(t - tIn))), sh = (1 - clamp((t - tIn) / .35)) * 9 * Math.sin((t - tIn) * 90);
+  ctx.translate(x + sh, y); ctx.scale(sc, sc); ctx.globalAlpha = a; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.shadowColor = glow; ctx.shadowBlur = 36; ctx.lineWidth = 14; ctx.strokeStyle = '#000'; ctx.strokeText(s, 0, 0);
+  ctx.fillStyle = color; ctx.fillText(s, 0, 0); ctx.restore();
+}
+// gold-bordered pill with text (scale-in)
+function pill(t, s, y, size, tIn, tOut, opt = {}) {
+  const { fg = GOLD, bg = 'rgba(10,12,16,.82)', border = SAND, x = W / 2 } = opt;
+  const k = snap(t - tIn), a = clamp((t - tIn) / .15) * (tOut == null ? 1 : 1 - clamp((t - tOut) / .3));
+  if (a <= .001) return;
+  ctx.save(); ctx.font = `700 ${size}px ${BC}`; const w = ctx.measureText(s).width + size * 1.3, h = size * 1.55;
+  ctx.translate(x, y); ctx.scale(.6 + .4 * k, .6 + .4 * k); ctx.globalAlpha = a;
+  rr(-w / 2, -h / 2, w, h, h / 2); ctx.fillStyle = bg; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = border; ctx.stroke();
+  ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(s, 0, size * .04); ctx.restore();
+}
+// the General: source point (fx,fy) of the cutout lands on screen (sx,sy) at scale s; slight breathing and sway
+function gen(t, s, fx, fy, sx, sy, alpha = 1, rot = 0) {
+  const im = img.gen; if (!im || alpha <= .001) return;
+  const br = 1 + .012 * Math.sin(t * 2.1), sw = .012 * Math.sin(t * 1.3) + rot;
+  ctx.save(); ctx.globalAlpha = alpha; ctx.translate(sx, sy); ctx.rotate(sw); ctx.scale(s * br, s * br);
+  ctx.drawImage(im, -fx, -fy); ctx.restore();
+}
+function bg(t) {
+  const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#101c33'); g.addColorStop(1, '#04070d'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // drifting glow: gold, red in the blunder scene, warm in the kids scene
+  const red = win(t, T.eyeIn, T.s2out), warm = win(t, T.kidIn, T.s5out);
+  const col = red > .01 ? `rgba(224,83,63,${.32 * red})` : warm > .01 ? `rgba(255,190,120,${.28 * warm})` : 'rgba(242,201,76,.18)';
+  const gx = W * (.5 + .12 * Math.sin(t * .4)), gy = H * (.42 + .05 * Math.cos(t * .33));
+  const rg = ctx.createRadialGradient(gx, gy, 40, gx, gy, H * .6); rg.addColorStop(0, col); rg.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+  // chessboard floor lines in perspective, very faint
+  ctx.save(); ctx.globalAlpha = .07; ctx.strokeStyle = SAND; ctx.lineWidth = 2;
+  for (let i = -8; i <= 8; i++) { ctx.beginPath(); ctx.moveTo(W / 2 + i * 40, H * .62); ctx.lineTo(W / 2 + i * 260, H); ctx.stroke(); }
+  for (let j = 0; j < 7; j++) { const y = H * .62 + Math.pow(j / 6, 1.8) * H * .38; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  ctx.restore();
+  for (let i = 0; i < 50; i++) { const x = (hash(i) * W + t * 12 * (hash(i + 9) - .5) + W) % W, y = (hash(i + 3) * H - t * 20 * (.4 + hash(i + 5)) + H * 9) % H;
+    ctx.fillStyle = `rgba(255,225,160,${.15 + .3 * hash(i + 7)})`; ctx.beginPath(); ctx.arc(x, y, 1.5 + 2.5 * hash(i + 2), 0, 7); ctx.fill(); }
+}
+function vignette(s = .7) { const g = ctx.createRadialGradient(W / 2, H * .45, H * .2, W / 2, H * .5, H * .78); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${s})`); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
+function flash(t, at, d = .22) { const a = 1 - clamp((t - at) / d); if (t >= at && a > 0) { ctx.fillStyle = `rgba(255,255,255,${a * .7})`; ctx.fillRect(0, 0, W, H); } }
+function logo(t, y, w, a) { const im = img.logo; if (!im || a <= .001) return; const h = w * im.height / im.width; ctx.save(); ctx.globalAlpha = a; ctx.drawImage(im, W / 2 - w / 2, y, w, h); ctx.restore(); }
+// rating badge like in the game
+const BADGE = { '!!': '#1bada6', '!': '#5c8bb0', '★': '#7fa650', '✓': '#6b7a5f', '?!': '#d9a72b', '?': '#e07b2f', '??': '#c9372c' };
+function badge(t, k, x, y, size, tIn) {
+  const s = snap(t - tIn); if (s <= .001) return;
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.rotate((1 - s) * .5);
+  ctx.font = `400 ${size * .52}px ${OPS}`; const w = Math.max(size, ctx.measureText(k).width + size * .5);
+  ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 20; rr(-w / 2, -size / 2, w, size, size * .18); ctx.fillStyle = BADGE[k]; ctx.fill(); ctx.shadowColor = 'transparent';
+  ctx.fillStyle = k === '?!' ? '#1a1810' : '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(k, 0, size * .04); ctx.restore();
+}
+// speech bubble with tail pointing up-left to the speaker
+function bubble(t, lines, x, y, w, size, tIn, tOut) {
+  const s = snap(t - tIn), a = clamp((t - tIn) / .15) * (1 - clamp((t - tOut) / .3)); if (a <= .001) return;
+  const h = lines.length * size * 1.18 + size * .9;
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y); ctx.scale(.7 + .3 * s, .7 + .3 * s);
+  ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 30;
+  rr(-w / 2, 0, w, h, 34); ctx.fillStyle = '#fbf6e8'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-w * .22, 2); ctx.lineTo(-w * .32, -54); ctx.lineTo(-w * .08, 2); ctx.fill(); ctx.shadowColor = 'transparent';
+  ctx.fillStyle = '#16120a'; ctx.font = `700 ${size}px ${BC}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  lines.forEach((l, i) => ctx.fillText(l, 0, size * .95 + i * size * 1.18)); ctx.restore();
+}
+// phone mockup with a game screenshot
+function phone(t, k, cx, cy, w, tIn, tOut, fromX, rot) {
+  const im = img[k]; if (!im) return; const s = heavy(t - tIn), o = heavy(t - tOut), a = clamp((t - tIn) / .2) * (1 - clamp((t - tOut) / .3));
+  if (a <= .001) return; const h = w * im.height / im.width, x = cx + (1 - s) * fromX - o * fromX * .6;
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(x, cy); ctx.rotate(rot * (1 - .4 * s) + .01 * Math.sin(t)); const b = 22;
+  ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 60; ctx.shadowOffsetY = 20; rr(-w / 2 - b, -h / 2 - b, w + 2 * b, h + 2 * b, 70); ctx.fillStyle = '#111'; ctx.fill();
+  ctx.shadowColor = 'transparent'; ctx.lineWidth = 4; ctx.strokeStyle = '#3a3a3a'; ctx.stroke();
+  ctx.save(); rr(-w / 2, -h / 2, w, h, 50); ctx.clip(); ctx.drawImage(im, -w / 2, -h / 2, w, h); ctx.restore(); ctx.restore();
+}
+
+// face landmarks in general.png (832x1248): face centre, monocle, mouth
+const FACE = [415, 430], EYE = [505, 400], MOUTH = [410, 560], BUST = [416, 640];
+
+// ---------- 1: hook ----------
+function s1(t) {
+  if (!vis(t, -2, T.s1out)) return;
+  const out = heavy(t - T.s1out), up = heavy(t - T.hookIn);
+  gen(t, 1.32 + .06 * ease((t + 1.2) / 4.4) + out * .8, BUST[0], BUST[1], W / 2, 1270 + (1 - up) * 700, 1 - clamp(out * 1.5));
+  vignette(.55);
+  logo(t, 70, 420, 1 - clamp((t - T.s1out) / .3));
+  head(t, 'ATTENTION,', 300, 150, GOLD, T.hookIn, T.s1out);
+  head(t, 'SOLDIER!', 450, 170, GOLD, T.hookIn + .15, T.s1out);
+  pill(t, 'A NEW COACH HAS JOINED THE ARMY', 1745, 46, T.sub1, T.s1out);
+}
+// ---------- 2: extreme close-up, the monocle, the quip ----------
+function s2(t) {
+  if (!vis(t, T.eyeIn, T.s2out)) return;
+  const a = win(t, T.eyeIn, T.s2out, .25, .3), z = 2.6 + .5 * ease((t - T.eyeIn) / 3.4);
+  gen(t, z, EYE[0] - 40, EYE[1] + 40, W / 2, 760, a);
+  flash(t, T.eyeIn, .18); vignette(.75);
+  bubble(t, ['“Did you just play', 'for the other side?”'], W / 2, 1300, 860, 70, T.quip, T.s2out);
+  badge(t, '??', 860, 1250, 150, T.badge); flash(t, T.badge, .12);
+  head(t, 'BLUNDER DETECTED', 250, 104, RED, T.badge, T.s2out, { glow: 'rgba(224,83,63,.6)' });
+}
+// ---------- 3: he rates every move ----------
+function s3(t) {
+  if (!vis(t, T.rateIn, T.s3out)) return;
+  phone(t, 'coach', 600, 1080, 560, T.rateIn, T.s3out, 700, .06);
+  head(t, 'HE RATES', 210, 130, '#fff', T.rateIn, T.s3out, { glow: 'rgba(255,255,255,.3)' });
+  head(t, 'EVERY MOVE', 350, 140, GOLD, T.rateIn + .12, T.s3out);
+  ['!!', '!', '★', '✓', '?!', '?', '??'].forEach((k, i) => badge(t, k, 120, 640 + i * 150, 104, T.chips + i * .22 - (t > T.s3out ? 99 : 0)));
+  // the General peeks in from the bottom-left corner
+  const p = heavy(t - T.rateIn - .5) * (1 - heavy(t - T.s3out));
+  gen(t, .82, FACE[0], FACE[1], 190 - (1 - p) * 420, 1690, p, -.08);
+}
+// ---------- 4: puzzles ----------
+function s4(t) {
+  if (!vis(t, T.pzIn, T.s4out)) return;
+  phone(t, 'puzzle', 470, 1090, 560, T.pzIn, T.s4out, -700, -.06);
+  head(t, '2,300', 200, 170, GOLD, T.pzIn, T.s4out);
+  head(t, 'PUZZLES', 360, 130, '#fff', T.pzIn + .12, T.s4out, { glow: 'rgba(255,255,255,.3)' });
+  pill(t, 'EASY', 720, 50, T.pzChips, T.s4out, { fg: '#7fd36a', x: 900 });
+  pill(t, 'MEDIUM', 860, 50, T.pzChips + .2, T.s4out, { fg: GOLD, x: 900 });
+  pill(t, 'HARD', 1000, 50, T.pzChips + .4, T.s4out, { fg: RED, x: 900 });
+  pill(t, 'KIDS', 1140, 50, T.pzChips + .6, T.s4out, { fg: '#ffb27a', x: 900 });
+  pill(t, 'HINTS · VOICE · YOUR OWN RATING', 1770, 44, T.pzChips + .8, T.s4out);
+}
+// ---------- 5: kids ----------
+function s5(t) {
+  if (!vis(t, T.kidIn, T.s5out)) return;
+  const a = win(t, T.kidIn, T.s5out, .3, .3), z = 1.9 + .25 * ease((t - T.kidIn) / 4);
+  gen(t, z, MOUTH[0], MOUTH[1] - 60, W / 2, 1130, a, .04 * Math.sin((t - T.kidIn) * 2));
+  vignette(.6);
+  head(t, 'GRUMPY WITH PROS.', 230, 104, '#fff', T.kidIn, T.s5out, { glow: 'rgba(255,255,255,.3)' });
+  head(t, 'SWEET WITH KIDS.', 370, 118, '#ffb27a', T.kidLine2, T.s5out, { glow: 'rgba(255,178,122,.6)' });
+  bubble(t, ['“Great job! You are', 'a real chess hero!”'], W / 2, 1480, 820, 64, T.kidLine2 + .3, T.s5out);
+}
+// ---------- 6: free stamp ----------
+function s6(t) {
+  if (!vis(t, T.freeIn, T.s6out)) return;
+  const a = win(t, T.freeIn, T.s6out, .2, .3);
+  gen(t, 1.2, BUST[0], BUST[1], W / 2, 1300, .18 * a);
+  const s = snap(t - T.freeIn - .1);
+  if (s > .001) { ctx.save(); ctx.globalAlpha = a; ctx.translate(W / 2, 760); ctx.rotate(-.12); ctx.scale(2.2 - 1.2 * s, 2.2 - 1.2 * s);
+    ctx.lineWidth = 16; ctx.strokeStyle = RED; rr(-380, -150, 760, 300, 30); ctx.stroke();
+    ctx.font = `400 210px ${OPS}`; ctx.fillStyle = RED; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('FREE', 0, 12); ctx.restore(); }
+  flash(t, T.freeIn + .25, .12);
+  head(t, 'NO LIMITS', 1130, 110, '#fff', T.freeIn + .5, T.s6out, { glow: 'rgba(255,255,255,.3)' });
+  head(t, 'NO DOWNLOAD', 1270, 110, '#fff', T.freeIn + .7, T.s6out, { glow: 'rgba(255,255,255,.3)' });
+  head(t, 'NO ACCOUNT NEEDED', 1410, 96, GOLD, T.freeIn + .9, T.s6out);
+}
+// ---------- 7: call to action ----------
+function s7(t) {
+  if (!vis(t, T.ctaIn, T.END)) return;
+  const up = heavy(t - T.ctaIn);
+  gen(t, 1.05, BUST[0], BUST[1], W / 2, 1150 + (1 - up) * 500, clamp((t - T.ctaIn) / .3), 0);
+  vignette(.5);
+  logo(t, 80, 520, clamp((t - T.ctaIn - .2) / .3));
+  head(t, 'REPORT FOR DUTY', 330, 124, GOLD, T.ctaIn + .1, null);
+  pill(t, 'checkmatenations.com', 1660, 66, T.urlIn, null, { fg: '#16120a', bg: GOLD, border: '#fff' });
+  pill(t, 'PLAY FREE IN YOUR BROWSER', 1790, 40, T.urlIn + .3, null);
+}
+
+window.seek = function (t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.shadowColor = 'transparent';
+  bg(t); s1(t); s2(t); s3(t); s4(t); s5(t); s6(t); s7(t);
+  const f = clamp((t - (T.END - .5)) / .5); if (f > 0) { ctx.fillStyle = `rgba(0,0,0,${f})`; ctx.fillRect(0, 0, W, H); }
+};
+</script></body></html>
