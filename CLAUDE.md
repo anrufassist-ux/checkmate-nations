@@ -68,6 +68,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 ## Working rules
 - After editing, syntax-check the main script with node before pushing.
 - Changes go to a branch and a pull request. While the owner is the only player he tests live: merge to `main` right away and tell him the Supabase steps (SQL migrations, function redeploy) needed first.
+- Supabase steps always come with links he can copy from, never "paste the content of file X": the GitHub link of every file to paste (`https://github.com/anrufassist-ux/checkmate-nations/blob/main/<path>`, he uses the copy button there) plus the dashboard page (SQL editor `https://supabase.com/dashboard/project/uerlobtrjmgveqeoykwk/sql/new`, functions `https://supabase.com/dashboard/project/uerlobtrjmgveqeoykwk/functions`).
 - Keep everything a nation needs together: `NATIONS` entry, flag texture branch, queen builder,
   queen scale, king lapel pin, picker flag SVG (`FLAGS`, the real flag from flag-icons 4x3, MIT, see vendor/THIRD_PARTY.md), crown pearls, hover CSS, English name and the server's `PAID_NATIONS`.
 
