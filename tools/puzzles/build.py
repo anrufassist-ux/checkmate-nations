@@ -14,7 +14,8 @@ for fn in sys.argv[1:]:
             for m in moves: b.push_uci(m)
         except ValueError: continue
         if 'mate' in p['themes'] and not b.is_checkmate(): continue
-        seen.add(key); rows.append([p['fen'], p['moves'], p['rating'], ' '.join(p['themes'])])
+        r = p['rating'] + (0 if 'kids' in p['themes'] else 300)  # gen.py's estimate runs low next to the kids set
+        seen.add(key); rows.append([p['fen'], p['moves'], r, ' '.join(p['themes'])])
 rows.sort(key=lambda r: r[2])
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../vendor/puzzles.json')
 json.dump(rows, open(out, 'w'), separators=(',', ':'))
