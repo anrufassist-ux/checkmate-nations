@@ -240,6 +240,8 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 /* same crown as on the board: 80 % of the head width, its centre just below the top of the head, tilted like the 3D king */
 .jail .jcrown{position:absolute;left:10%;top:0;width:80%;margin-top:-16%;transform:rotate(var(--tilt,10deg))}
 .jail .glyph{font-size:180px;line-height:1;color:var(--sand);transform:scale(.3);opacity:0}
+.jail.classic .cell{background:radial-gradient(circle at 50% 40%,#f4f2da,#a9bb8c)}
+.jail .glyph .jking{display:block;width:min(52vw,250px);height:auto}
 .jail .bars{position:absolute;inset:0;transform:translateY(-110%);
   background:
     linear-gradient(#24272a,#24272a) 0 8%/100% 14px no-repeat,
@@ -2047,6 +2049,7 @@ async function mateSequence(loser){
   banner('Schachmatt!', TEAM[loser].king+' wird abgeführt.', true);
   setStatus('Sieg für '+TEAM[winner].winner+'!', winner);
   if(!(soundOn&&actx&&playSample('mate',1))) boom(true);
+  if(classicSfx()){ await wait(400); await showJail(loser); return; } // classic 2D: no police on a flat board, only the king piece behind bars
   const agents=[makeAgent(),makeAgent()];
   agents.forEach((a,i)=>{ a.position.set(p.x+(i?.75:-.75),5,p.z); a.rotation.y=i?-Math.PI/2:Math.PI/2; scene.add(a); extras.push(a); });
   await animate(.7,t=>{ const e=1-Math.pow(1-t,3); agents.forEach(a=>a.position.y=5*(1-e)); });
@@ -2132,10 +2135,15 @@ function showJail(loser){
   // close-up behind the bars: the sad face with tears when there is one
   const el=$('jail'), img=$('jailImg'), key=TEAM[loser].head, h=caricatures&&window.HEADS&&key&&window.HEADS[key];
   const face=$('jailFace');
-  if(h){ img.src=(window.CRY&&window.CRY[key])||h.uri||h; face.style.aspectRatio=String(h.aspect||.67); face.hidden=false; $('jailGlyph').hidden=true;
+  const g=$('jailGlyph'); g.textContent='';
+  if(classicSfx()){ // classic 2D: the very king piece from the board
+    const tex=flatTex[(flatBwNow()?'bw':TEAM[loser].key)+'k'+loser]; face.hidden=true; g.hidden=false;
+    if(tex&&tex.image){ const im=new Image(); im.src=tex.image.toDataURL(); im.alt=''; im.className='jking'; g.appendChild(im); } else g.textContent=loser==='w'?'♔':'♚'; }
+  else if(h){ img.src=(window.CRY&&window.CRY[key])||h.uri||h; face.style.aspectRatio=String(h.aspect||.67); face.hidden=false; $('jailGlyph').hidden=true;
     // he keeps his crown behind the bars too, like on the board and when he is carried off
     const cr=$('jailCrown'); cr.src=crownTex(sideNation[loser]).image.toDataURL(); cr.style.setProperty('--tilt',loser==='w'?'10deg':'-10deg'); }
   else { face.hidden=true; $('jailGlyph').hidden=false; $('jailGlyph').textContent=loser==='w'?'♔':'♚'; }
+  el.classList.toggle('classic',classicSfx());
   el.hidden=false; el.classList.remove('run'); void el.offsetWidth; el.classList.add('run');
   setTimeout(()=>clang(),reduceMotion?50:1050);
   return wait(reduceMotion?1200:3000).then(()=>{ el.classList.add('out'); return wait(400); }).then(()=>{ el.hidden=true; el.classList.remove('out','run'); });
