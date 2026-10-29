@@ -10,6 +10,6 @@ Open ideas and small decisions the owner wants to revisit. Newest at the top; re
 - Trainer stage 2: LLM chat with General Gambit via edge function, daily limit (sign-up incentive).
 
 ## Marketing
-- Ad video "General Gambit" rendered (`marketing/general-gambit.mp4`, V14 in POSTS.md). Note: the phone screenshots in it still show the old 3D board with the wide rim; re-shoot them for a next version.
+- Ad video "General Gambit" rendered (`marketing/general-gambit.mp4`, V14 in POSTS.md). Note: the phone screenshots in it still show the old 3D board with the wide rim; re-shot (2D phone screenshot plus a 3D close-up of the scholar's mate position).
 - Tracking: in-game counters (cookieless) plus a matched landing for `?src=tiktok-ad` (likely approved, not built).
 - Re-render the USA carousel sharp before posting it; post V9 beat-the-ai-earth.
