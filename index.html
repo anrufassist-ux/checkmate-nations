@@ -96,6 +96,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);overflow:hid
 .pzTop{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-label);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--sand)}
 .pzTxt{font-size:14px;line-height:1.3;min-height:2.6em}
 .pzBtns{display:flex;gap:8px}.pzBtns .btn{flex:1;padding:7px 8px}
+.pzSave{display:block;margin:8px auto 0;font-size:14px}
 #pzLvl .btn{font-size:12px;letter-spacing:.04em;padding:8px 6px;line-height:1.15}
 .pzScore{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
 .coach{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:8px;min-width:0} /* min-width: a long opening name must not widen the console grid */
@@ -341,7 +342,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
 
 <section class="console" aria-live="polite">
   <button class="status" id="statusBar" type="button" aria-expanded="true" aria-controls="consoleBody"><span class="dot" id="dot"></span><span id="status">Du spielst USA. Tippe eine Figur an.</span><span class="chip" id="codeChip" hidden></span><span class="chip clk" id="clkChip" hidden></span><span class="chev" aria-hidden="true"></span></button>
-  <div class="pzbar" id="pzBar" hidden><div class="pzTop"><span id="pzInfo"></span><button class="pzScore" id="pzScore" type="button" title="Stufe ändern"></button></div><div class="pzRow"><img class="cAv" src="brand/general/avatar.webp" alt="" width="40" height="40" loading="lazy"><div class="pzTxt" id="pzTxt"></div></div><div class="pzBtns" id="pzLvl" hidden><button class="btn" type="button" data-lvl="kid">Kind / Anfänger</button><button class="btn" type="button" data-lvl="mid">Ich kann etwas Schach</button><button class="btn" type="button" data-lvl="pro">Fortgeschritten</button></div><div class="pzBtns" id="pzBtns"><button class="btn" id="pzHintBtn" type="button">Tipp</button><button class="btn" id="pzSolBtn" type="button">Lösung</button><button class="btn primary" id="pzNext" type="button">Überspringen</button></div></div>
+  <div class="pzbar" id="pzBar" hidden><div class="pzTop"><span id="pzInfo"></span><button class="pzScore" id="pzScore" type="button" title="Stufe ändern"></button></div><div class="pzRow"><img class="cAv" src="brand/general/avatar.webp" alt="" width="40" height="40" loading="lazy"><div class="pzTxt" id="pzTxt"></div></div><div class="pzBtns" id="pzLvl" hidden><button class="btn" type="button" data-lvl="kid">Kind / Anfänger</button><button class="btn" type="button" data-lvl="mid">Ich kann etwas Schach</button><button class="btn" type="button" data-lvl="pro">Fortgeschritten</button></div><div class="pzBtns" id="pzBtns"><button class="btn" id="pzHintBtn" type="button">Tipp</button><button class="btn" id="pzSolBtn" type="button">Lösung</button><button class="btn primary" id="pzNext" type="button">Überspringen</button></div><button class="linkBtn pzSave" id="pzSave" type="button" hidden>💾 Wertung sichern: kostenlos anmelden</button></div>
   <div class="coach" id="coach" hidden><img class="cAv" src="brand/general/avatar.webp" alt="" width="40" height="40" loading="lazy"><div class="cMain"><div class="cOpen" id="coachOpen" hidden></div><div class="cTxt" id="coachTxt"></div></div><span class="cBadge" id="coachBadge" hidden></span><button class="btn" id="coachHint" type="button" hidden>Tipp</button><button class="btn primary" id="coachYes" type="button">Einschalten</button><button class="btn cX" id="coachNo" type="button" aria-label="Nein danke">✕</button></div>
   <div class="cbody" id="consoleBody">
   <div class="online" id="online" hidden>
@@ -418,9 +419,11 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
       <p class="testNote" id="acctNatNote"></p>
       <p class="testNote"><a href="/hilfe" target="_blank" rel="noopener">Regeln nachlesen: Wann zählt eine Partie?</a></p>
     </div>
-    <div class="tabs" id="ranksTabs" hidden><button class="btn tab" type="button" data-rk="board">Rangliste</button><button class="btn tab" type="button" data-rk="league">Nations League</button><button class="btn tab" type="button" data-rk="aihall">KI-Challenge</button></div>
+    <div class="tabs" id="ranksTabs" hidden><button class="btn tab" type="button" data-rk="board">Rangliste</button><button class="btn tab" type="button" data-rk="league">Nations League</button><button class="btn tab" type="button" data-rk="aihall">KI-Challenge</button><button class="btn tab" type="button" data-rk="pzboard">Puzzles</button></div>
     <div class="box ranksCta" id="ranksCta" hidden><div>Kostenloses Konto: dein Name auf der Rangliste und in der Hall of Fame.</div><div class="row"><button class="btn primary" id="ranksLogin" type="button">Kostenlos anmelden</button></div></div>
     <div class="acctPane" id="acctBoard" hidden><ol class="board" id="boardList"></ol><p class="pickSub boardNote">Auf der Rangliste steht jeder mit mindestens einer gewerteten Partie. ? = vorläufige Wertung, unter 20 Partien.</p></div>
+    <div class="acctPane" id="acctPzboard" hidden><ol class="board" id="pzBoardList"></ol>
+      <p class="pickSub boardNote">Puzzle-Wertung aller Spieler mit Konto und mindestens 10 gespielten Aufgaben. Ohne Konto bleibt deine Wertung nur auf deinem Gerät.</p></div>
     <div class="acctPane" id="acctAihall" hidden><p class="pickSub" id="aiHallStat"></p><ol class="board" id="aiHallList"></ol>
       <p class="pickSub boardNote">Hier steht jeder, der die KI auf Normal in der KI-Challenge besiegt hat, mit seinem kürzesten Sieg. Die KI rechnet dabei auf unserem Server, deshalb zählt jeder Sieg wirklich.</p>
       <button class="btn primary" id="aiHallGo" type="button">Challenge starten</button></div>
@@ -524,7 +527,7 @@ summary{cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing
     'Weltmacht Schach':'Checkmate Nations','gegen':'vs.','· Prototyp':'· Prototype',
     'Gegen KI':'vs. AI','Zwei Spieler':'Two players','Online 1 gegen 1':'Online 1 vs 1',
     'Kinderleicht':'Kid mode','Leicht':'Easy','Normal':'Normal',
-    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Gewertete Partie suchen · 15+10':'Find a rated game · 15+10','Gerade sucht niemand eine gewertete Partie.':'Nobody is looking for a rated game right now.','1 Spieler sucht gerade eine gewertete Partie.':'1 player is looking for a rated game right now.','Freundschaftsspiel per Code (ungewertet)':'Friendly game by code (unrated)','Anmelden':'Sign in','Abmelden':'Sign out','Rangliste':'Leaderboard','Konto löschen':'Delete account','Angemeldet':'Signed in','Spielernamen wählen':'Choose a player name','Gast · Gewertete Partien brauchen ein Konto.':'Guest · Rated games need an account.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','E-Mail-Adresse':'E-mail address','Link senden':'Send link','Spielername':'Player name','Speichern':'Save','Schließen':'Close','Dein Spielername erscheint in der Rangliste. 3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'Your player name appears on the leaderboard. 3 to 20 characters: letters, digits or _.','Mit welchem Land spielst du? Jeder hat 15 Minuten für die ganze Partie, nach jedem Zug kommen 10 Sekunden dazu. Wessen Zeit abläuft, verliert.':'Which country do you play? Each side has 15 minutes for the whole game, plus 10 seconds after every move. Whoever runs out of time loses.','Gewertete Partie':'Rated game','Gewertet':'Rated','Bitte eine gültige E-Mail-Adresse eingeben.':'Please enter a valid e-mail address.','Sende …':'Sending …','Das hat nicht geklappt. Versuch es in ein paar Minuten nochmal.':'That did not work. Please try again in a few minutes.','Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link.':'The link is on its way. Open the e-mail on this device and tap the link.','3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'3 to 20 characters: letters, digits or _.','Dieser Name ist schon vergeben.':'This name is already taken.','Speichern fehlgeschlagen. Versuch es nochmal.':'Saving failed. Please try again.','Konto und Elo-Wertung endgültig löschen?':'Delete your account and rating for good?','Löschen fehlgeschlagen. Versuch es nochmal.':'Deleting failed. Please try again.','Dein Konto wurde gelöscht.':'Your account has been deleted.','Lade …':'Loading …','Rangliste konnte nicht geladen werden.':'Could not load the leaderboard.','Noch steht niemand auf der Rangliste.':'Nobody on the leaderboard yet.','Auf der Rangliste steht jeder mit mindestens einer gewerteten Partie. ? = vorläufige Wertung, unter 20 Partien.':'The leaderboard lists everyone with at least one rated game. ? = provisional rating, fewer than 20 games.','Zu kurz für die Wertung: Elo zählt erst ab 10 Zügen pro Seite.':'Too short to be rated: Elo only counts from 10 moves per side.','Auch normale Gegner zulassen':'Allow all opponents','Zählt nicht für die Liga: dein Gegner ist nicht in der Liga.':'Does not count for the league: your opponent is not in the league.','Zählt nicht für die Liga.':'Does not count for the league.','Zählt auch nicht für die Liga.':'Does not count for the league either.','Zählt nicht für die Liga: Tageslimit von 10 Ligapartien erreicht.':'Does not count for the league: daily limit of 10 league games reached.','Liga-Partie suchen':'Find a league game','Hilfe':'Help','Hilfe & Regeln':'Help & rules','Regeln nachlesen: Wann zählt eine Partie?':'Read the rules: when does a game count?','Normale gewertete Partie':'Regular rated game','Zählt für deine Elo. Für die Liga nur, wenn der Gegner zufällig auch in der Liga ist.':'Counts for your Elo. For the league only if your opponent happens to be in the league too.','Suche fehlgeschlagen. Versuch es nochmal.':'Search failed. Please try again.','KI-Challenge 🏆':'AI Challenge 🏆','KI-Challenge':'AI Challenge','Schlag die KI auf Normal und komm in die Hall of Fame':'Beat the AI on Normal and get into the Hall of Fame','Hier steht jeder, der die KI auf Normal in der KI-Challenge besiegt hat, mit seinem kürzesten Sieg. Die KI rechnet dabei auf unserem Server, deshalb zählt jeder Sieg wirklich.':'Everyone who beat the AI on Normal in the AI Challenge is listed here, with their shortest win. The AI runs on our server, so every win is real.','Challenge starten':'Start the challenge','Für die KI-Challenge brauchst du ein kostenloses Konto.':'The AI Challenge needs a free account.','Die Challenge konnte nicht gestartet werden. Du spielst normal gegen die KI.':'The challenge could not be started. You are playing the normal AI.','Verbindung zum Server unterbrochen. Diese Partie zählt nicht für die Hall of Fame.':'Lost the connection to the server. This game does not count for the Hall of Fame.','Hall of Fame! 🏆':'Hall of Fame! 🏆','Du hast die KI auf Normal geschlagen.':'You beat the AI on Normal.','Hall of Fame konnte nicht geladen werden.':'Could not load the Hall of Fame.','Noch hat niemand die Challenge gespielt.':'Nobody has played the challenge yet.','Noch hat niemand die KI besiegt. Sei der Erste!':'Nobody has beaten the AI yet. Be the first!','Ihr habt diese Woche schon 3 gewertete Partien gegeneinander gespielt. Weitere gegen denselben Gegner gibt es erst nächste Woche, spielt solange ein Freundschaftsspiel per Code.':'You two have already played 3 rated games against each other this week. More against the same opponent only next week, play a friendly game by code until then.','Partie abgebrochen':'Game aborted','Kein erster Zug innerhalb von 60 Sekunden. Keine Wertung.':'No first move within 60 seconds. Not rated.','Keine Wertung.':'Not rated.','Zeit abgelaufen':'Time is up','Partie vorbei. „Neues Spiel“ für die nächste Partie.':'Game over. "New game" for the next one.','Der Anmelde-Link ist abgelaufen oder ungültig. Fordere einen neuen an.':'The sign-in link has expired or is invalid. Request a new one.','Verbindung zum Server fehlgeschlagen. Versuch es gleich nochmal.':'Could not reach the server. Please try again in a moment.','Erstelle Spiel …':'Creating game …','Trete bei …':'Joining …','Spiel konnte nicht erstellt werden. Versuch es nochmal.':'Could not create the game. Please try again.','Beitreten fehlgeschlagen. Versuch es nochmal.':'Could not join. Please try again.','Der Server hat den Zug abgelehnt.':'The server rejected the move.','Zug konnte nicht gesendet werden. Lade neu …':'Could not send the move. Reloading …','Impressum':'Legal notice','Datenschutz':'Privacy','Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.':'Satire. Not affiliated with any person or country shown, no political statement.','2D-Figuren an':'2D pieces on','Lieber das klassische Brett von oben? Schalte auf 2D um.':'Prefer the classic board from above? Switch to 2D.','2D an':'2D on','2D-Figuren aus':'2D pieces off','2D-Stil: Nations':'2D style: Nations','2D-Stil: Klassisch':'2D style: Classic','2D-Farben: Länder':'2D colours: Nations','2D-Farben: Schwarz-Weiß':'2D colours: Black & white','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
+    'Lautstärke':'Volume','Töne':'Sounds','Musik':'Music','Ansicht':'View','Kamera':'Camera','Figuren':'Pieces','3D frei':'Free 3D','Schräg von vorn, drehen und zoomen erlaubt':'Angled view, rotate and zoom allowed','Spielansicht':'Play view','Steiler Blick, ganzes Brett, feste Kamera':'Steep angle, whole board, fixed camera','Draufsicht':'Top view','Gewertete Partie suchen · 15+10':'Find a rated game · 15+10','Gerade sucht niemand eine gewertete Partie.':'Nobody is looking for a rated game right now.','1 Spieler sucht gerade eine gewertete Partie.':'1 player is looking for a rated game right now.','Freundschaftsspiel per Code (ungewertet)':'Friendly game by code (unrated)','Anmelden':'Sign in','Abmelden':'Sign out','Rangliste':'Leaderboard','Konto löschen':'Delete account','Angemeldet':'Signed in','Spielernamen wählen':'Choose a player name','Gast · Gewertete Partien brauchen ein Konto.':'Guest · Rated games need an account.','Wir schicken dir einen Anmelde-Link per E-Mail. Kein Passwort nötig.':'We e-mail you a sign-in link. No password needed.','E-Mail-Adresse':'E-mail address','Link senden':'Send link','Spielername':'Player name','Speichern':'Save','Schließen':'Close','Dein Spielername erscheint in der Rangliste. 3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'Your player name appears on the leaderboard. 3 to 20 characters: letters, digits or _.','Mit welchem Land spielst du? Jeder hat 15 Minuten für die ganze Partie, nach jedem Zug kommen 10 Sekunden dazu. Wessen Zeit abläuft, verliert.':'Which country do you play? Each side has 15 minutes for the whole game, plus 10 seconds after every move. Whoever runs out of time loses.','Gewertete Partie':'Rated game','Gewertet':'Rated','Bitte eine gültige E-Mail-Adresse eingeben.':'Please enter a valid e-mail address.','Sende …':'Sending …','Das hat nicht geklappt. Versuch es in ein paar Minuten nochmal.':'That did not work. Please try again in a few minutes.','Link ist unterwegs. Öffne die E-Mail auf diesem Gerät und tippe auf den Link.':'The link is on its way. Open the e-mail on this device and tap the link.','3 bis 20 Zeichen: Buchstaben, Zahlen oder _.':'3 to 20 characters: letters, digits or _.','Dieser Name ist schon vergeben.':'This name is already taken.','Speichern fehlgeschlagen. Versuch es nochmal.':'Saving failed. Please try again.','Konto und Elo-Wertung endgültig löschen?':'Delete your account and rating for good?','Löschen fehlgeschlagen. Versuch es nochmal.':'Deleting failed. Please try again.','Dein Konto wurde gelöscht.':'Your account has been deleted.','Lade …':'Loading …','Rangliste konnte nicht geladen werden.':'Could not load the leaderboard.','Noch steht niemand auf der Rangliste.':'Nobody on the leaderboard yet.','Auf der Rangliste steht jeder mit mindestens einer gewerteten Partie. ? = vorläufige Wertung, unter 20 Partien.':'The leaderboard lists everyone with at least one rated game. ? = provisional rating, fewer than 20 games.','Zu kurz für die Wertung: Elo zählt erst ab 10 Zügen pro Seite.':'Too short to be rated: Elo only counts from 10 moves per side.','Auch normale Gegner zulassen':'Allow all opponents','Zählt nicht für die Liga: dein Gegner ist nicht in der Liga.':'Does not count for the league: your opponent is not in the league.','Zählt nicht für die Liga.':'Does not count for the league.','Zählt auch nicht für die Liga.':'Does not count for the league either.','Zählt nicht für die Liga: Tageslimit von 10 Ligapartien erreicht.':'Does not count for the league: daily limit of 10 league games reached.','Liga-Partie suchen':'Find a league game','Hilfe':'Help','Hilfe & Regeln':'Help & rules','Regeln nachlesen: Wann zählt eine Partie?':'Read the rules: when does a game count?','Normale gewertete Partie':'Regular rated game','Zählt für deine Elo. Für die Liga nur, wenn der Gegner zufällig auch in der Liga ist.':'Counts for your Elo. For the league only if your opponent happens to be in the league too.','Suche fehlgeschlagen. Versuch es nochmal.':'Search failed. Please try again.','KI-Challenge 🏆':'AI Challenge 🏆','KI-Challenge':'AI Challenge','Schlag die KI auf Normal und komm in die Hall of Fame':'Beat the AI on Normal and get into the Hall of Fame','Hier steht jeder, der die KI auf Normal in der KI-Challenge besiegt hat, mit seinem kürzesten Sieg. Die KI rechnet dabei auf unserem Server, deshalb zählt jeder Sieg wirklich.':'Everyone who beat the AI on Normal in the AI Challenge is listed here, with their shortest win. The AI runs on our server, so every win is real.','Challenge starten':'Start the challenge','Für die KI-Challenge brauchst du ein kostenloses Konto.':'The AI Challenge needs a free account.','Die Challenge konnte nicht gestartet werden. Du spielst normal gegen die KI.':'The challenge could not be started. You are playing the normal AI.','Verbindung zum Server unterbrochen. Diese Partie zählt nicht für die Hall of Fame.':'Lost the connection to the server. This game does not count for the Hall of Fame.','Hall of Fame! 🏆':'Hall of Fame! 🏆','Du hast die KI auf Normal geschlagen.':'You beat the AI on Normal.','Hall of Fame konnte nicht geladen werden.':'Could not load the Hall of Fame.','Noch hat niemand die Challenge gespielt.':'Nobody has played the challenge yet.','Noch hat niemand die KI besiegt. Sei der Erste!':'Nobody has beaten the AI yet. Be the first!','Ihr habt diese Woche schon 3 gewertete Partien gegeneinander gespielt. Weitere gegen denselben Gegner gibt es erst nächste Woche, spielt solange ein Freundschaftsspiel per Code.':'You two have already played 3 rated games against each other this week. More against the same opponent only next week, play a friendly game by code until then.','Partie abgebrochen':'Game aborted','Kein erster Zug innerhalb von 60 Sekunden. Keine Wertung.':'No first move within 60 seconds. Not rated.','Keine Wertung.':'Not rated.','Zeit abgelaufen':'Time is up','Partie vorbei. „Neues Spiel“ für die nächste Partie.':'Game over. "New game" for the next one.','Der Anmelde-Link ist abgelaufen oder ungültig. Fordere einen neuen an.':'The sign-in link has expired or is invalid. Request a new one.','Verbindung zum Server fehlgeschlagen. Versuch es gleich nochmal.':'Could not reach the server. Please try again in a moment.','Erstelle Spiel …':'Creating game …','Trete bei …':'Joining …','Spiel konnte nicht erstellt werden. Versuch es nochmal.':'Could not create the game. Please try again.','Beitreten fehlgeschlagen. Versuch es nochmal.':'Could not join. Please try again.','Der Server hat den Zug abgelehnt.':'The server rejected the move.','Zug konnte nicht gesendet werden. Lade neu …':'Could not send the move. Reloading …','Impressum':'Legal notice','Datenschutz':'Privacy','Satire. Keine Verbindung zu den dargestellten Personen oder Staaten, keine politische Wertung.':'Satire. Not affiliated with any person or country shown, no political statement.','2D-Figuren an':'2D pieces on','Lieber das klassische Brett von oben? Schalte auf 2D um.':'Prefer the classic board from above? Switch to 2D.','2D an':'2D on','2D-Figuren aus':'2D pieces off','2D-Stil: Nations':'2D style: Nations','2D-Stil: Klassisch':'2D style: Classic','2D-Farben: Länder':'2D colours: Nations','💾 Wertung sichern: kostenlos anmelden':'💾 Keep your rating: sign up free','Mit kostenlosem Konto bleibt deine Puzzle-Wertung gespeichert, auf jedem Gerät, und du kommst in die Puzzle-Rangliste.':'With a free account your puzzle rating is saved on every device and you join the puzzle ranking.','Puzzle-Wertung aller Spieler mit Konto und mindestens 10 gespielten Aufgaben. Ohne Konto bleibt deine Wertung nur auf deinem Gerät.':'Puzzle rating of every player with an account and at least 10 puzzles played. Without an account your rating stays on your device only.','Noch steht niemand in der Puzzle-Rangliste.':'Nobody on the puzzle ranking yet.','Puzzles':'Puzzles','2D-Farben: Schwarz-Weiß':'2D colours: Black & white','Fast senkrecht von oben, wie klassisches Schach':'Almost straight from above, like classic chess',
     'Karikaturen an':'Caricatures on','Karikaturen aus':'Caricatures off','Flaggen an':'Flags on','Flaggen aus':'Flags off',
     'Neues Spiel':'New game','Spiel erstellen':'Create game','oder':'or','Beitreten':'Join','Spielcode':'Game code',
     'Kopieren':'Copy','Verlassen':'Leave','Erstelle ein Spiel und schick den Code deinem Gegner.':'Create a game and send the code to your opponent.',
@@ -2176,6 +2179,18 @@ function chalDone(){
   if(!chal) return; const won=chal.status==='won'; chal=null; $('level').disabled=false;
   if(won) setTimeout(()=>{ banner('Hall of Fame! 🏆','Du hast die KI auf Normal geschlagen.',true); setTimeout(()=>openAcct('aihall'),2600); },600);
 }
+async function loadPzBoard(){
+  const ol=$('pzBoardList'), item=(t,cls)=>{ const li=document.createElement('li'); li.textContent=t; if(cls) li.className=cls; ol.appendChild(li); return li; };
+  ol.textContent=''; item('Lade …');
+  try{ await ensureSb(false); }catch(e){} $('ranksCta').hidden=isReg(on.user);
+  let res; try{ res=await on.sb.rpc('puzzle_board'); }catch(e){ res={error:e}; }
+  ol.textContent='';
+  if(res.error||!res.data||!res.data.length){ item(res.error?'Rangliste konnte nicht geladen werden.':'Noch steht niemand in der Puzzle-Rangliste.'); return; }
+  for(const p of res.data){
+    const li=item(p.username,on.profile&&p.id===on.profile.id?'me':'');
+    const sp=document.createElement('span'); sp.textContent=p.rating+' · '+p.solved+' ✓'; li.appendChild(sp);
+  }
+}
 async function loadAiHall(){
   const ol=$('aiHallList'), st=$('aiHallStat'), item=(t,cls)=>{ const li=document.createElement('li'); li.textContent=t; if(cls) li.className=cls; ol.appendChild(li); return li; };
   ol.textContent=''; st.textContent='Lade …';
@@ -2465,7 +2480,24 @@ async function coachHint(){
    adapts like Elo (localStorage wms-pz: rating, solved, streak, recently seen). ---------- */
 let PZL=null, pz=null, pzNat=['usa','rus'];
 const pzState=(()=>{ let s={r:900,n:0,ok:0,streak:0,seen:[],lvl:null}; try{ Object.assign(s,JSON.parse(localStorage.getItem('wms-pz')||'{}')); }catch(e){} return s; })();
-const pzSave=()=>{ try{ localStorage.setItem('wms-pz',JSON.stringify(pzState)); }catch(e){} };
+// signed in: rating, counts and streak come from the server (puzzle_stats) and are never written over the guest's own
+// browser rating, so after signing out the guest rating is back
+let pzAcct=false;
+const PZ_OWN=['r','n','ok','streak'];
+const pzSave=()=>{ try{ const st=Object.assign({},pzState);
+  if(pzAcct){ const g=JSON.parse(localStorage.getItem('wms-pz')||'{}'); PZ_OWN.forEach(k=>{ st[k]=g[k]!=null?g[k]:{r:900,n:0,ok:0,streak:0}[k]; }); }
+  localStorage.setItem('wms-pz',JSON.stringify(st)); }catch(e){} };
+function pzApply(p){ pzAcct=true; pzState.r=p.r; pzState.n=p.n; pzState.ok=p.ok; pzState.streak=p.streak; if(mode==='puzzle') pzBar(); $('pzSave').hidden=true; }
+function pzGuest(){ pzAcct=false; try{ const g=JSON.parse(localStorage.getItem('wms-pz')||'{}'); PZ_OWN.forEach(k=>{ pzState[k]=g[k]!=null?g[k]:{r:900,n:0,ok:0,streak:0}[k]; }); }catch(e){} if(mode==='puzzle') pzBar(); }
+// loads Supabase only for someone who has signed in on this device before; the first sync carries the guest rating over
+async function pzSync(){
+  try{
+    if(!on.sb){ if(!localStorage.getItem('wms-auth')) return; await ensureSb(false); }
+    if(!isReg(on.user)){ if(pzAcct) pzGuest(); return; }
+    if(pzAcct) return;
+    const r=await api('pz_sync',{local:{r:pzState.r,n:pzState.n,ok:pzState.ok}}); if(r&&r.pz) pzApply(r.pz);
+  }catch(e){}
+}
 function pzLoad(){ if(!PZL) PZL=fetch('vendor/puzzles.json').then(r=>r.json()).catch(()=>{ PZL=null; return []; }); return PZL; }
 const PZ_THEME={de:{mate:'Matt',mateIn1:'Matt in 1',mateIn2:'Matt in 2',mateIn3:'Matt in 3',mateIn4:'Matt in 4',fork:'Gabel',hangingPiece:'Ungedeckte Figur',sacrifice:'Opfer',promotion:'Umwandlung',backRankMate:'Grundreihenmatt',advantage:'Vorteil holen',crushing:'Entscheidender Vorteil'},
                 en:{mate:'Mate',mateIn1:'Mate in 1',mateIn2:'Mate in 2',mateIn3:'Mate in 3',mateIn4:'Mate in 4',fork:'Fork',hangingPiece:'Hanging piece',sacrifice:'Sacrifice',promotion:'Promotion',backRankMate:'Back-rank mate',advantage:'Win material',crushing:'Crushing blow'}};
@@ -2485,7 +2517,7 @@ function pzChoose(){
   $('pzScore').textContent=''; $('pzTxt').textContent=EN()?'Who is playing? Pick a level to start.':'Wer spielt? Wähle eine Stufe zum Start.';
 }
 function pzSetLevel(l){
-  pzState.lvl=l; pzState.r=PZ_LVL[l]; pzState.streak=0; pzSave();
+  pzState.lvl=l; if(!pzAcct){ pzState.r=PZ_LVL[l]; pzState.streak=0; } pzSave(); // an account keeps its server rating
   $('pzLvl').hidden=true; $('pzBtns').hidden=false; pzStart();
 }
 async function pzStart(){
@@ -2493,7 +2525,8 @@ async function pzStart(){
   if(!pzState.lvl){ pzChoose(); return; }
   $('pzLvl').hidden=true; $('pzBtns').hidden=false;
   pzBar(EN()?'Loading puzzles …':'Lade Aufgaben …');
-  const all=await pzLoad(); if(mode!=='puzzle') return;
+  await pzSync(); const all=await pzLoad(); if(mode!=='puzzle') return;
+  $('pzSave').hidden=pzAcct||pzState.ok<3;
   if(!all.length){ pzBar(EN()?'Puzzles could not be loaded.':'Aufgaben konnten nicht geladen werden.'); return; }
   // a puzzle near your rating that you have not seen lately
   const seen=new Set(pzState.seen), near=w=>all.filter(p=>Math.abs(p[2]-pzState.r)<=w&&!seen.has(p[0]));
@@ -2530,6 +2563,7 @@ function pzRate(won){
   pzState.r=Math.max(400,Math.min(2600,pzState.r+K*((won?1:0)-e))); pzState.n++;
   if(won){ pzState.ok++; pzState.streak++; } else pzState.streak=0;
   pzSave();
+  if(pzAcct){ const fen=pz.fen; api('pz_result',{fen,ok:won}).then(r=>{ if(r&&r.pz) pzApply(r.pz); }); } // the server's number wins
 }
 // after every move in puzzle mode (from afterMove)
 async function pzAfter(){
@@ -2554,6 +2588,10 @@ function pzSolved(){
   $('pzNext').textContent=EN()?'Next puzzle':'Nächste Aufgabe';
   if(!mate) banner(EN()?'Solved!':'Gelöst!',pz.failed?'':(EN()?'Rating ':'Wertung ')+Math.round(pzState.r));
   pz.done=true;
+  // guests: after a few wins the General asks them to keep their rating (an account stores it and puts them on the ranking)
+  if(!pzAcct&&!pz.failed&&(pzState.ok===5||(pzState.ok>5&&pzState.ok%15===0))){
+    $('pzTxt').textContent+=EN()?' Soldier, your rating only lives on this device. Sign up free to keep it and join the puzzle ranking.':' Soldat, deine Wertung steht nur auf diesem Gerät. Melde dich kostenlos an, dann bleibt sie und du kommst in die Puzzle-Rangliste.'; }
+  $('pzSave').hidden=pzAcct||pzState.ok<3;
 }
 function pzHint(){
   if(!pz||pz.done||busy||game.turn()!==myColor) return;
@@ -2737,6 +2775,7 @@ $('pzHintBtn').addEventListener('click',pzHint);
 $('pzSolBtn').addEventListener('click',pzSolution);
 $('pzNext').addEventListener('click',pzNext);
 $('pzScore').addEventListener('click',()=>{ if(!busy) pzChoose(); });
+$('pzSave').addEventListener('click',()=>{ openAcct('login'); $('acctNote').textContent='Mit kostenlosem Konto bleibt deine Puzzle-Wertung gespeichert, auf jedem Gerät, und du kommst in die Puzzle-Rangliste.'; });
 document.querySelectorAll('#pzLvl [data-lvl]').forEach(b=>b.addEventListener('click',()=>pzSetLevel(b.dataset.lvl)));
 $('voiceBtn').addEventListener('click',()=>{ coachVoiceOn=!coachVoiceOn; try{ localStorage.setItem('wms-coach-voice',coachVoiceOn?'on':'off'); }catch(e){} if(!coachVoiceOn&&voiceSrc) try{ voiceSrc.stop(); }catch(e){} coachSync(); });
 $('toneBtn').addEventListener('click',()=>{ coachTone=coachTone==='satire'?'plain':'satire'; try{ localStorage.setItem('wms-coach-tone',coachTone); }catch(e){} coachSync(); if(coachOn&&coachAllowed()) coachHello(); });
@@ -2788,7 +2827,7 @@ async function refreshAccount(){
   try{ const {data}=await on.sb.auth.getUser(); on.user=data.user||null; }catch(e){ on.user=null; }
   on.profile=null;
   if(isReg(on.user)){ try{ const {data}=await on.sb.from('profiles').select('*').eq('id',on.user.id).maybeSingle(); on.profile=data||null; }catch(e){} }
-  renderAccount();
+  renderAccount(); pzSync();
   if(isReg(on.user)&&!on.profile) openAcct('name');
 }
 function renderAccount(){
@@ -2808,8 +2847,8 @@ function renderAccount(){
   if(!on.search) $('onSearchAll').hidden=true;
 }
 function openAcct(v){
-  ['menu','login','name','nation','board','league','aihall'].forEach(k=>{ $('acct'+k[0].toUpperCase()+k.slice(1)).hidden=k!==v; });
-  const rk=v==='board'||v==='league'||v==='aihall'; // leaderboard, league and AI challenge live together under "Ranglisten"
+  ['menu','login','name','nation','board','league','aihall','pzboard'].forEach(k=>{ $('acct'+k[0].toUpperCase()+k.slice(1)).hidden=k!==v; });
+  const rk=v==='board'||v==='league'||v==='aihall'||v==='pzboard'; // leaderboard, league and AI challenge live together under "Ranglisten"
   $('acctTitle').textContent=rk?'🏆 Ranglisten':{menu:'Konto',login:'Anmelden',name:'Spielername',nation:'Gewertete Partie'}[v];
   $('ranksTabs').hidden=!rk; document.querySelectorAll('#ranksTabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.rk===v));
   $('ranksCta').hidden=!rk||v==='league'||isReg(on.user); // the league pane has its own sign-in box
@@ -2820,6 +2859,7 @@ function openAcct(v){
   if(v==='nation') renderNatPane();
   if(v==='league') renderLeague('season');
   if(v==='aihall') loadAiHall();
+  if(v==='pzboard') loadPzBoard();
   if(v==='menu') renderMenu();
 }
 async function renderMenu(){

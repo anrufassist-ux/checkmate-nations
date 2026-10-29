@@ -646,11 +646,62 @@ async function aiResign(u: User, body: Game) {
   return reply({ ok: true });
 }
 
+// ---------- Puzzles: rating for signed-in players. The puzzle's own rating comes from our puzzle file (by FEN),
+// the client only says solved or not, so nobody can claim a hard puzzle that does not exist. Same Elo as the client.
+const PUZZLE_URL = Deno.env.get("PUZZLE_URL") || "https://checkmatenations.com/vendor/puzzles.json";
+const PZ_PER_DAY = 300;
+let pzRatings: Map<string, number> | null = null;
+async function puzzleRating(fen: string) {
+  if (!pzRatings) {
+    const r = await fetch(PUZZLE_URL);
+    if (!r.ok) throw new Error("puzzles not loaded");
+    const rows = (await r.json()) as [string, string, number, string][];
+    pzRatings = new Map(rows.map((x) => [x[0], Number(x[2])]));
+  }
+  return pzRatings.get(fen);
+}
+const pzView = (s: Game | undefined) =>
+  s ? { r: Number(s.rating), n: s.played, ok: s.solved, streak: s.streak, best: s.best_streak } : null;
+
+// returns the server rating; on the very first sync the rating from this browser is carried over (capped, so an
+// edited localStorage cannot buy a top rank)
+async function pzSync(u: User, body: Game) {
+  if (!registered(u)) return fail("account needed", 403);
+  let [s] = await sql`select * from public.puzzle_stats where user_id = ${u.id}`;
+  if (!s) {
+    const l = body.local || {}, int = (x: unknown, max: number) => Math.max(0, Math.min(max, Math.floor(Number(x) || 0)));
+    const r = Math.max(400, Math.min(1400, Number(l.r) || 900)), n = int(l.n, 500), ok = Math.min(int(l.ok, 500), n);
+    [s] = await sql`insert into public.puzzle_stats (user_id, rating, played, solved) values (${u.id}, ${r}, ${n}, ${ok})
+      on conflict (user_id) do update set updated_at = now() returning *`;
+  }
+  return reply({ pz: pzView(s) });
+}
+
+async function pzResult(u: User, body: Game) {
+  if (!registered(u)) return fail("account needed", 403);
+  const pr = await puzzleRating(String(body.fen || ""));
+  if (pr == null) return fail("unknown puzzle", 400);
+  const won = body.ok === true;
+  return sql.begin(async (tx) => {
+    await tx`insert into public.puzzle_stats (user_id) values (${u.id}) on conflict (user_id) do nothing`;
+    const [s] = await tx`select *, day = current_date as today from public.puzzle_stats where user_id = ${u.id} for update`;
+    const count = s.today ? s.day_count : 0;
+    if (count >= PZ_PER_DAY) return reply({ error: "daily limit", pz: pzView(s) }, 429);
+    const r = Number(s.rating), e = 1 / (1 + Math.pow(10, (pr - r) / 400)), k = s.played < 20 ? 60 : 32;
+    const nr = Math.max(400, Math.min(2600, r + k * ((won ? 1 : 0) - e))), streak = won ? s.streak + 1 : 0;
+    const [n] = await tx`update public.puzzle_stats set rating = ${nr}, played = played + 1, solved = solved + ${won ? 1 : 0},
+      streak = ${streak}, best_streak = greatest(best_streak, ${streak}), day = current_date, day_count = ${count + 1},
+      updated_at = now() where user_id = ${u.id} returning *`;
+    return reply({ pz: pzView(n) });
+  });
+}
+
 const ACTIONS: Record<string, (u: User, body: Game) => Promise<Response> | Response> = {
   create, join, move, resign, claim, rematch, profile, queue, unqueue, stats: () => stats(), ping, abandon,
   me, checkout, league, league_join: leagueJoin, league_status: leagueStatus,
   delete_account: (u) => deleteAccount(u),
   ai_start: aiStart, ai_move: aiMove, ai_resign: aiResign,
+  pz_sync: pzSync, pz_result: pzResult,
 };
 
 Deno.serve(async (req) => {
