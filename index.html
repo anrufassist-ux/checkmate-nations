@@ -795,7 +795,7 @@ function steelTex(base,hi){
   const t=new T.CanvasTexture(c); t.encoding=T.sRGBEncoding; t.anisotropy=8; return t;
 }
 function setBoard(k){
-  if(!(k in BOARDS)) k='classic'; boardKey=k; try{ localStorage.setItem('wms-board',k); }catch(e){}
+  if(!(k in BOARDS)) k='classic'; boardKey=k; try{ localStorage.setItem(flat2d?'wms-board-2d':'wms-board',k); }catch(e){} // 2D keeps its own board (green by default)
   document.querySelectorAll('[data-board]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.board===k)));
   const o=BOARDS[k];
   drawRim(o);
@@ -3595,7 +3595,7 @@ $('tip2dX').addEventListener('click',tip2dDone);
 function setFlat(f){
   if(f===flat2d) return;
   flat2d=f; try{ localStorage.setItem('wms-flat',f?'1':'0'); }catch(e){}
-  boardDecor();
+  boardDecor(); if(typeof savedBoard==='function') setBoard(savedBoard());
   selected=null; targets=[]; clearMarkers(); setupPieces();
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{
@@ -3626,7 +3626,9 @@ renderer.domElement.addEventListener('pointermove',()=>wake(800));
 controls.addEventListener('change',()=>{ wake(600); fogToCamera(); });
 window.addEventListener('resize',()=>wake(1000));
 // after the render-loop state above exists: setBoard() may call wake() right away (steel, classic)
-setBoard(boardKey);
+// 2D and 3D remember their boards separately: 3D wood by default, 2D the green tournament board
+function savedBoard(){ let k=null; try{ k=localStorage.getItem(flat2d?'wms-board-2d':'wms-board'); }catch(e){} return k in BOARDS?k:(flat2d?'classic':'wood'); }
+setBoard(savedBoard());
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ drawRim(BOARDS[boardKey]); wake(300); });
 function loop(){
   requestAnimationFrame(loop);
