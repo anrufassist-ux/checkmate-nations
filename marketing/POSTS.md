@@ -201,6 +201,19 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Erster eigener Kommentar: Which nation should join next? 🌍
 - YouTube-Shorts-Titel: India joins Checkmate Nations 🇮🇳 #shorts #chess
 
+### V14 · General Gambit reports for duty (Trainer + Puzzles, mit Stimme)
+- Datei: `marketing/general-gambit.mp4` (ca. 26 s), Motion-Design (Quelle `marketing/general/video/`), Musik „Quis Erimus Primus“ (Suno), Stimme Roderich aus dem Spiel plus neuer Schlusssatz „Report for duty, soldier! Checkmate Nations dot com.“
+- Aufbau: Hook „Attention, soldier!“ → Nahaufnahme Monokel „Did you just play for the other side?“ ?? → „He rates every move“ → „2,300 puzzles“ (Easy/Medium/Hard/Kids) → „Grumpy with pros. Sweet with kids.“ → FREE → CTA
+- Instagram/TikTok-Text:
+  > Attention, soldier! 🎖️ General Gambit just joined Checkmate Nations.
+  > He rates every move you make – and he has opinions 🧐
+  > 2,300 puzzles, hints, a voice, and a soft spot for kids ♟️
+  > Free, no download, no account: link in bio
+- Hashtags: #chess #chesstok #chesspuzzle #learnchess #gaming
+- Titelbild (Cover): Monokel-Nahaufnahme mit „??“ (ca. Sekunde 5) oder der General mit „Attention, soldier!“ (ca. Sekunde 2)
+- Erster eigener Kommentar: What would the General say about your last move? 👇
+- YouTube-Shorts-Titel: Meet General Gambit, your grumpy chess coach 🎖️ #shorts #chess
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |
