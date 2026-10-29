@@ -190,6 +190,17 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Bezahlt (TikTok Promote, 13 €): nur die AD-Version, Ziel „Website-Besuche“, Link https://checkmatenations.com/?src=tiktok-ad
 - Nur „bisher niemand“ behaupten; sobald jemand gewinnt, wird das der nächste Post
 
+### V13 · Welcome, India! (Serie „Meet the nations“)
+- Datei: `marketing/welcome-india.mp4` (ca. 32 s), Hook „India has entered the chat 🇮🇳“, gleicher Aufbau wie V6/V10: Infantry, Tanks, Drones, Fighter jets, Rani Lakshmibai (würdevoll, keine Karikatur), Modi, dann erste Züge gegen UK, Endkarte. Erstes Video mit Effekten auf 30 % (`SFXVOL`, Standard in `mix.py`)
+- Instagram/TikTok-Text:
+  > Namaste, India! 🇮🇳 The queen is Rani Lakshmibai, the warrior queen of Jhansi ⚔️ And the king? Modi ♟️
+  > India vs. UK: the rematch. Who wins? 👇
+  > Play free: link in bio
+- Hashtags: #chess #chesstok #india #satire #gaming
+- Titelbild (Cover): Modi in Nahaufnahme (ca. Sekunde 21) oder Rani Lakshmibai (ca. Sekunde 17)
+- Erster eigener Kommentar: Which nation should join next? 🌍
+- YouTube-Shorts-Titel: India joins Checkmate Nations 🇮🇳 #shorts #chess
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |

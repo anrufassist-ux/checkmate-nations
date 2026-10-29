@@ -70,5 +70,6 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 
 ## Marketing clips
 - `tools/clip/` records scripted games as vertical videos (see its README). The game page itself stays untouched; `make_video_page.py` patches a copy.
+- Sound in clips: effects at 30 % next to the music (`SFXVOL=0.3`, the default in `tools/clip/mix.py`); the owner found the effects always too loud.
 - Every clip must be chess-correct and look correct: run `node tools/clip/capture.js check` (chess.js replay: legal moves, ends in checkmate, warns when only a single off-camera move prevents stalemate; `full` refuses to render otherwise). Every move of the losing side must be on camera. Never call something checkmate that is not.
 - Owner's wish for every clip: close-ups of the caricature heads, not only in the jail (e.g. an orbit around the board at the start with the heads looking into the camera). Ready texts and the post log live in `marketing/POSTS.md`.
