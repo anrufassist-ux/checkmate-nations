@@ -738,15 +738,15 @@ RIM.rotation.x=-Math.PI/2; RIM.position.y=-.095; RIM.receiveShadow=true; scene.a
 function drawRim(o){
   const S=1024, g=RIM_C.getContext('2d'), u=S/9.3, off=(9.3-8)/2*u;
   if(o&&o.rim==='wood'){ g.fillStyle='#2b160a'; g.fillRect(0,0,S,S); for(let y=0;y<S;y+=3){ g.fillStyle=`rgba(0,0,0,${.1+.15*Math.abs(Math.sin(y*.05))})`; g.fillRect(0,y,S,3); } }
-  else { g.fillStyle=o?o.rim:'#2a2419'; g.fillRect(0,0,S,S); }
+  else { g.fillStyle=o?o.rim:'#2b3a23'; g.fillRect(0,0,S,S); }
   if(o){ g.strokeStyle=o.inlay; g.lineWidth=6; g.strokeRect(off-10,off-10,S-2*off+20,S-2*off+20); g.lineWidth=2; g.strokeRect(off-22,off-22,S-2*off+44,S-2*off+44); }
-  g.fillStyle=o?o.ink:'rgba(232,226,210,.75)'; g.font='600 40px "Barlow Condensed", Arial Narrow, sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+  g.fillStyle=o?o.ink:'#e6e4c6'; g.font='600 40px "Barlow Condensed", Arial Narrow, sans-serif'; g.textAlign='center'; g.textBaseline='middle';
   for(let i=0;i<8;i++){
     const p=off+(i+.5)*u;
     g.fillText(FILES[i].toUpperCase(),p,S-off/2); g.fillText(FILES[i].toUpperCase(),p,off/2);
     g.fillText(String(8-i),off/2,p); g.fillText(String(8-i),S-off/2,p);
   }
-  const t=RIM.material.map; t.encoding=o?T.sRGBEncoding:T.LinearEncoding; t.needsUpdate=true;
+  const t=RIM.material.map; t.encoding=T.sRGBEncoding; t.needsUpdate=true;
   RIM.material.roughness=o?.55:.8; RIM.material.needsUpdate=true;
 }
 
@@ -766,7 +766,8 @@ function coordTex(black){ // drawn as seen on screen: rank numbers in the left c
 function boardDecor(){ frame.visible=RIM.visible=!flat2d; COORD.visible=flat2d; COORD.userData.black=null; }
 
 const squareMeshes=[];
-const LIGHT=mat(0xc9b98f,.75), DARK=mat(0x47513f,.75);
+const LIGHT=mat(0xf2eec0,.75), DARK=mat(0x587a3a,.75); // tournament green and cream (a bit darker than on screen: the lights brighten them)
+LIGHT.color.convertSRGBToLinear(); DARK.color.convertSRGBToLinear(); // so the squares show exactly these colours
 for(let f=0;f<8;f++) for(let r=0;r<8;r++){
   const m=new T.Mesh(new T.BoxGeometry(1,.2,1),(f+r)%2?LIGHT:DARK);
   m.position.set(f-3.5,-.1,3.5-r); m.receiveShadow=true;
@@ -809,7 +810,7 @@ function setBoard(k){
       uv.needsUpdate=true; });
     wake(800); };
   if(!o) apply();
-  else if(!o.tex) apply(...(steelTexs=steelTexs||[steelTex('#9aa7b4','255,255,255'),steelTex('#1c2836','140,200,255')]));
+  else if(!o.tex) apply(...(steelTexs=steelTexs||[steelTex('#9aa7b4','255,255,255'),steelTex('#3a4756','140,200,255')]));
   else Promise.all(o.tex.map(u=>boardImg[u]||(boardImg[u]=new Promise(res=>new T.TextureLoader().load(u,t=>{
       t.encoding=T.sRGBEncoding; t.anisotropy=renderer.capabilities.getMaxAnisotropy(); res(t); },undefined,()=>res(null))))))
     .then(([a,b])=>{ if(a&&b) apply(a,b); else if(boardKey===k) setBoard('classic'); });
@@ -1390,7 +1391,7 @@ const CBURNETT={"bB":"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"45\" hei
 function hexCss(h){ return '#'+h.toString(16).padStart(6,'0'); }
 // 2D "Nations" style: our own 3D pieces photographed once from the front (offscreen, transparent background),
 // fitted into the square with a dark outline so they stay readable at phone size
-let flatStyle='nations'; try{ if(localStorage.getItem('wms-flat-style')==='classic') flatStyle='classic'; }catch(e){}
+let flatStyle='classic'; try{ if(localStorage.getItem('wms-flat-style')==='nations') flatStyle='nations'; }catch(e){}
 const shotTex={}; let shotRig=null;
 function pieceShot(type,color){
   const key=TEAM[color].key+type+color+(caricatures?'c':'');
@@ -1451,6 +1452,10 @@ function makeFlatPiece(type,color){
     // drawn larger than the set's own padding allows (the pieces fill the square, pawns most), with a soft drop shadow
     // and a light-from-top-left sheen so they look a little moulded instead of flat
     const img=new Image(); img.onload=()=>{ const x=c.getContext('2d'), z=type==='p'?1.32:1.16, w=256*z, o=(256-w)/2;
+      if(dark){ // a light rim so dark pieces stay visible on dark squares
+        const h=document.createElement('canvas'); h.width=h.height=256; const hx=h.getContext('2d');
+        hx.drawImage(img,o,o+4,w,w); hx.globalCompositeOperation='source-in'; hx.fillStyle='rgba(255,255,255,.75)'; hx.fillRect(0,0,256,256);
+        for(let k=0;k<12;k++){ const a=k/12*Math.PI*2; x.drawImage(h,Math.cos(a)*3.5,Math.sin(a)*3.5); } }
       x.save(); x.shadowColor='rgba(0,0,0,.45)'; x.shadowBlur=10; x.shadowOffsetX=3; x.shadowOffsetY=6; x.drawImage(img,o,o+4,w,w); x.restore();
       x.globalCompositeOperation='source-atop'; const gr=x.createLinearGradient(40,20,216,236);
       gr.addColorStop(0,'rgba(255,255,255,.32)'); gr.addColorStop(.45,'rgba(255,255,255,0)'); gr.addColorStop(1,'rgba(0,0,0,.22)');
