@@ -15,6 +15,7 @@ chess.js auf dem Server prüft.
 - `migrations/008_league_search.sql`: Spalte `league_only` in `match_queue`. Wer in der Liga ist, kann gezielt einen Liga-Gegner suchen (`queue` mit `league: true`, nur Gegner aus der Liga mit ihrem Liga-Land, andere Nation). Die Aktion `league_status` sagt dem Spiel, ob eine gewertete Partie für die Liga zählt und wie viele Punkte sie gebracht hat.
 - `migrations/009_open_leaderboard.sql`: Rangliste schon ab einer gewerteten Partie (statt 5 verschiedenen Gegnern).
 - `migrations/010_ai_challenge.sql`: KI-Challenge. Tabelle `ai_games` (nur die Funktion schreibt), die KI auf Normal rechnet in der Funktion (`ai_start`, `ai_move`, `ai_resign`), öffentliche Hall of Fame `ai_hall()`.
+- `migrations/011_puzzles.sql`: Puzzle-Wertung für Konten. Tabelle `puzzle_stats` (nur die Funktion schreibt), Aktionen `pz_sync` (lädt die Wertung, übernimmt beim ersten Mal die Browser-Wertung, gedeckelt auf 1400) und `pz_result` (die Funktion rechnet die Elo selbst, die Puzzle-Stärke kommt aus `vendor/puzzles.json` der Website, höchstens 300 Ergebnisse pro Tag), öffentliche Rangliste `puzzle_board()` (ab 10 Aufgaben).
 - `functions/game/index.ts`: die Server-Funktion.
 
 ## Einmal einrichten (im Supabase-Dashboard, kein Programm nötig)
