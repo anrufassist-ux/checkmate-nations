@@ -2507,6 +2507,7 @@ function pzBar(txt){
   $('pzInfo').textContent=pz?`🧩 ${pzLevel(pz.rating)} · ${th.slice(0,2).join(' · ')}`:'🧩';
   $('pzScore').textContent=(EN()?'Your rating ':'Deine Wertung ')+Math.round(pzState.r)+(pzState.streak>1?` · 🔥${pzState.streak}`:'');
   if(txt!=null) $('pzTxt').textContent=txt;
+  $('pzSolBtn').textContent=(EN()?'Solution':'Lösung')+(!pzAcct&&!pzKid()?' ('+pzSolLeft()+')':'');
 }
 const PZ_LVL={kid:450,mid:900,pro:1400};
 const pzKid=()=>pzState.lvl==='kid';
@@ -2600,8 +2601,16 @@ function pzHint(){
   if(pz.hint===1){ hintMark([want.slice(0,2)]); pzBar(EN()?'This piece has the move.':'Diese Figur ist dran.'); }
   else { hintMark([want.slice(0,2),want.slice(2,4)]); pzBar(EN()?'From the first green square to the second.':'Vom ersten grünen Feld aufs zweite.'); }
 }
+// guests get 3 solutions a day (counted in this browser), more with a free account; the kids level never runs out
+const PZ_SOL_FREE=3, pzToday=()=>new Date().toLocaleDateString('en-CA');
+function pzSolLeft(){ let c={}; try{ c=JSON.parse(localStorage.getItem('wms-pz-sol')||'{}'); }catch(e){} return c.d===pzToday()?Math.max(0,PZ_SOL_FREE-c.n):PZ_SOL_FREE; }
+function pzSolUse(){ const n=PZ_SOL_FREE-pzSolLeft()+1; try{ localStorage.setItem('wms-pz-sol',JSON.stringify({d:pzToday(),n})); }catch(e){} }
 async function pzSolution(){
   if(!pz||pz.done||busy) return;
+  if(!pzAcct&&!pzKid()){
+    if(!pzSolLeft()){ pzBar(EN()?'That was your 3 free solutions for today, soldier. Sign up free for unlimited solutions, or try again tomorrow. Hints stay free.':'Das waren deine 3 freien Lösungen für heute, Soldat. Mit kostenlosem Konto gibt es unbegrenzt Lösungen, sonst wieder morgen. Tipps bleiben frei.'); $('pzSave').hidden=false; return; }
+    pzSolUse();
+  }
   if(!pz.failed){ pz.failed=true; pzRate(false); }
   pz.auto=true; hintClear();
   while(pz&&pz.step<pz.moves.length&&mode==='puzzle'){ busy=false; await pzPlay(pz.moves[pz.step]); await wait(500); }
