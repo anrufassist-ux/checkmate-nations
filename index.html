@@ -1756,7 +1756,12 @@ function blip(freq){
 
 /* ---------- UI ---------- */
 const $=id=>document.getElementById(id);
-function setStatus(t,who,think){ $('status').textContent=t; const d=$('dot'); d.className='dot'+(think?' think':''); d.style.background=TEAM[who==='b'?'b':'w'].css; d.style.color=d.style.background; }
+// plain white/black pieces in classic 2D: the dot and the side names follow the piece colour, not the nation
+const plainBW=()=>flat2d&&flatStyle==='classic'&&flatBwNow();
+function setStatus(t,who,think){ $('status').textContent=t; const d=$('dot'), c=who==='b'?'b':'w'; d.className='dot'+(think?' think':'');
+  d.style.background=plainBW()?(c==='w'?'#f4f1e6':'#1b1b1b'):TEAM[c].css; d.style.color=d.style.background; d.style.boxShadow=plainBW()&&c==='b'?'0 0 0 1.5px #d8d2bf':''; }
+// "White" / "Weiß", or "USA (White)" when the pieces carry the nation colours, so puzzle players always know their side
+function sideName(c){ const col=EN()?(c==='w'?'White':'Black'):(c==='w'?'Weiß':'Schwarz'); return plainBW()?col:window.T(CNAME[c])+' ('+col+')'; }
 const GLYPH={w:{p:'♙',n:'♘',b:'♗',r:'♖',q:'♕'},b:{p:'♟',n:'♞',b:'♝',r:'♜',q:'♛'}};
 function renderCaps(){ $('capW').textContent=capturedBy.w.map(t=>GLYPH.b[t]).join(''); $('capB').textContent=capturedBy.b.map(t=>GLYPH.w[t]).join(''); }
 let bannerTimer=null;
@@ -2540,7 +2545,7 @@ async function pzStart(){
   setNations(solver==='w'?pzNat[0]:pzNat[1],solver==='w'?pzNat[1]:pzNat[0]); setupPieces(); swingTo(solver);
   $('pzNext').textContent=EN()?'Skip':'Überspringen';
   pzBar(EN()?'Watch the enemy move …':'Achtung, der Gegner zieht …');
-  setStatus(CNAME[solver==='w'?'b':'w']+(EN()?' moves …':' zieht …'),solver==='w'?'b':'w',true);
+  setStatus(sideName(solver==='w'?'b':'w')+(EN()?' moves …':' zieht …'),solver==='w'?'b':'w',true);
   await wait(900); if(mode!=='puzzle'||!pz) return;
   busy=false; await pzPlay(pz.moves[0]);
 }
@@ -2575,9 +2580,9 @@ async function pzAfter(){
   }
   hintClear(); pz.hint=0;
   const left=Math.ceil((pz.moves.length-pz.step)/2);
-  pzBar(pz.step===1?(EN()?`Your move: find the best move.${pz.themes.includes('mate')?'':' Win material!'}`:`Dein Zug: finde den besten Zug.${pz.themes.includes('mate')?'':' Hol dir Material!'}`)
+  pzBar(pz.step===1?(EN()?`You play ${sideName(myColor)}: find the best move.${pz.themes.includes('mate')?'':' Win material!'}`:`Du spielst ${sideName(myColor)}: finde den besten Zug.${pz.themes.includes('mate')?'':' Hol dir Material!'}`)
     :(EN()?`Good! Keep going (${left} more).`:`Gut! Weiter so (noch ${left}).`));
-  setStatus(EN()?'Your move.':'Dein Zug.',myColor);
+  setStatus(EN()?`${sideName(myColor)} to move: your move.`:`${sideName(myColor)} am Zug: dein Zug.`,myColor);
 }
 function pzSolved(){
   if(!pz.failed) pzRate(true);
