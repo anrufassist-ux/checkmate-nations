@@ -37,3 +37,13 @@ Software rendering takes about 20 minutes per 28-second clip.
 - Rules and workflow for carousels: .claude/skills/chess-carousel/SKILL.md.
 - Carousel stills: `PZ=<key> SLIDE=1|2|3 CLIP=car_<key> TESTBADGES=1 TESTJS=carousel.js node capture.js test` writes `test.png`
   (puzzles, texts and highlight squares live in `carousel.js`; check every puzzle has exactly one solution with chess.js first).
+
+## Explainer clips ("General Gambit explains")
+- Script `explain_kq` in `capture.js`: captions `cap()` timed to the voice (`CAPS` with video seconds), `ov()` draws the
+  lone king's box as red squares on the board plus arrows, `mv('undo')` takes a move back (the stalemate trap).
+- The talking General (top left, speech bubble with the captions): `gen(p,dir,true)`; mouth frames
+  `marketing/<dir>/general/m0..m5.png` from `make_general.py` (smooth jaw warp under the moustache), picked per frame from
+  `general/env.json` (`envelope.py`, loudness of the voice at its place in the clip). Keep the top ~30 % of the frame free
+  of pieces (camera a bit lower).
+- Sound: `python3 mix.py explain_kq`, then `marketing/<dir>/mix.sh` puts the voice on top (music ducks).
+- Preview: `EVERY=48` writes only every 48th frame (about 20 minutes instead of 45).

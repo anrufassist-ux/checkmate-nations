@@ -11,7 +11,9 @@ const pop=(p,t,sq)=>p.evaluate(([t,sq])=>{ const old=document.getElementById('vi
   e.style.top=((1-q.y)/2*innerHeight)+'px'; document.body.appendChild(e);
   const w=e.firstChild.offsetWidth, x=Math.max(w/2+10,Math.min(innerWidth-w/2-10,(q.x+1)/2*innerWidth)); e.style.left=x+'px'; },[t,sq]);
 // spoken caption at the bottom (wraps); empty text hides it
-const cap=(p,t)=>p.evaluate(t=>{ let e=document.getElementById('vidCap'); if(!e){ e=document.createElement('div'); e.id='vidCap'; document.body.appendChild(e); }
+const cap=(p,t)=>p.evaluate(t=>{ const g=document.getElementById('vidGen'), bub=document.getElementById('vidBub');
+  if(g&&g.style.display==='block'){ bub.innerHTML=t||''; bub.style.display=t?'block':'none'; return; }
+  let e=document.getElementById('vidCap'); if(!e){ e=document.createElement('div'); e.id='vidCap'; document.body.appendChild(e); }
   e.innerHTML=t||''; e.style.display=t?'block':'none'; },t);
 // drawn over the board every frame: box = the squares the lone black king is confined to by the white queen (red),
 // arrows = [[from,to,colour]]
@@ -32,6 +34,17 @@ const ov=(p,o)=>p.evaluate(o=>{ let svg=document.getElementById('vidOv'); if(!sv
       h+='<polygon points="'+Z.join(',')+' '+(E[0]-uy*20)+','+(E[1]+ux*20)+' '+(E[0]+uy*20)+','+(E[1]-ux*20)+'" fill="'+(c||'#3fd16b')+'" opacity=".9"/>'; }
     svg.innerHTML=h; };
   window.__ovTick(); },o);
+// the talking General with his speech bubble (explainer clips): six mouth frames (marketing/<dir>/general/m0..m5.png,
+// made by make_general.py) picked per video frame from env.json (envelope.py), plus a small bobble while he talks
+const gen=(p,dir,on)=>p.evaluate(async([dir,on])=>{ let g=document.getElementById('vidGen');
+  if(!g){ g=document.createElement('div'); g.id='vidGen'; for(let k=0;k<6;k++){ const i=new Image(); i.src='/marketing/'+dir+'/general/m'+k+'.png'; g.appendChild(i); }
+    document.body.appendChild(g); const b=document.createElement('div'); b.id='vidBub'; document.body.appendChild(b);
+    window.__env=await (await fetch('/marketing/'+dir+'/general/env.json')).json(); await Promise.all([...g.children].map(i=>i.decode())); }
+  g.style.display=on?'block':'none'; if(!on){ document.getElementById('vidBub').style.display='none'; window.__genTick=null; return; }
+  window.__genTick=()=>{ const t=(performance.now()-window.__t0)/1000, f=Math.round(t*24), k=window.__env[f]||0;
+    [...g.children].forEach((im,i)=>im.style.visibility=i===k?'visible':'hidden');
+    g.style.transform='rotate('+(k?Math.sin(t*9)*1.6*k/5:0)+'deg) translateY('+(-k*.6)+'px)'; };
+  window.__genTick(); },[dir,on]);
 const hideTitle=p=>p.evaluate(()=>{document.getElementById('vidTitle').style.display='none';});
 const VS='<span class="u">USA</span> vs. <span class="r">RUSSIA</span>';
 // camera flight around the board at the start, close past the kings (their heads turn to the camera); it ends in a
@@ -280,21 +293,21 @@ const SCRIPTS={
      [19.67,'He is trapped on the edge.'],[21.46,'And now, the classic blunder:'],[23.68,'Queen to c7?? ❌'],
      [26.35,'He has no legal move …'],[28.46,'… but he is <b>not in check</b>.'],[30.07,'<b>STALEMATE.</b> It\'s a draw! 🤝'],[33.1,'Somewhere, a general is crying. 😢'],
      [35.4,''],[36.3,'Again. 🔄'],[37.35,'<b>Rule 2:</b> once he is on the edge, the queen stops chasing.'],[41.78,'Your king marches to the front. 👑'],
-     [44.62,'King to b6.'],[46.3,'Queen to d8: <b>CHECKMATE!</b> ✅'],[48.9,'Off to jail, comrade. 🚔'],[51.5,'']];
+     [44.62,'King to b6.'],[46.3,'Queen to d8: <b>CHECKMATE!</b> ✅'],[48.9,'Off to jail, comrade. 🚔'],[51.5,''],[59.2,'Now you try! 👉']];
    let el=1500, ci=-1; const capAt=async t=>{ let k=-1; for(let i=0;i<CAPS.length;i++) if(CAPS[i][0]<=t+1e-6) k=i; if(k!==ci){ ci=k; await cap(p,k<0?'':CAPS[k][1]); } };
    const S=async(ms,e)=>{ const a=el; el+=ms; await shoot(ms,async u=>{ await capAt((a+u*ms)/1000); if(e) await e(u); }); };
    const M=async(f,t,h,e)=>{ const a=el; el+=h; await mv(f,t,h,async(u,to)=>{ await capAt((a+u*h)/1000); if(e) await e(u,to); }); };
    const till=async(s,e)=>{ const ms=Math.round(s*1000-el); if(ms>0) await S(ms,e); };
-   await orbit(p,(ms,f)=>S(ms,f),7000,['d5','f4','e1'],.95);
-   await fly(p,['d5','d4'],9.6,12,0,1800,.1); await till(10.3);
+   await gen(p,'explain-kq',true); await orbit(p,(ms,f)=>S(ms,f),7000,['d5','f4','e1'],.95);
+   await fly(p,['d6','d5'],9.6,12,0,1800,.1); await till(10.3);
    await ov(p,{box:true}); await till(11.0);
    for(const [f,t] of [['d5','c6'],['f4','e5'],['c6','b7'],['e5','d6'],['b7','c8'],['d6','e7'],['c8','b8'],['e7','d7'],['b8','a8']]) await M(f,t,1100);
-   await till(20.9); await fly(p,['a8','b7','c7'],5.6,7.2,0,2400,.12); await till(22.5);
+   await till(20.9); await fly(p,['a8','b8','c8','c7'],5.8,7.4,0,2400,.12); await till(22.5);
    await ov(p,{box:true,arrows:[['d7','c7','#ff4b3e']]}); await till(24.0);
    await ov(p,{}); await M('d7','c7',2000); await till(30.0);
    await pop(p,'STALEMATE = DRAW 🤝'); await till(36.3);
    await pop(p,''); await mv('undo'); await ov(p,{box:true});
-   await fly(p,['c5','c4'],8.6,11,0,2400,.1);
+   await fly(p,['c6','c5'],8.6,11,0,2400,.1);
    await till(38.0);
    for(const [f,t] of [['e1','d2'],['a8','b8'],['d2','c3'],['b8','a8'],['c3','b4'],['a8','b8'],['b4','b5'],['b8','a8']]) await M(f,t,900);
    await till(44.7); await M('b5','b6',900); await M('a8','b8',700);
@@ -348,8 +361,8 @@ const SCRIPTS={
  const CL=process.env.CLIP||'scholar', FR='frames-'+CL; fs.mkdirSync(FR,{recursive:true});
  const START=+(process.env.START||0);
  const ONLY=+(process.env.ONLY||0); // re-render just the first ONLY frames (e.g. after changing the hook), keep the rest
- const t0=await p.evaluate(()=>{ window.__rec.length=0; return performance.now(); });
- const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)||(process.env.EVERY&&n%+process.env.EVERY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); if(window.__capTick) window.__capTick(); if(window.__ovTick) window.__ovTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
+ const t0=await p.evaluate(()=>{ window.__rec.length=0; window.__t0=performance.now(); return performance.now(); });
+ const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)||(process.env.EVERY&&n%+process.env.EVERY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); if(window.__capTick) window.__capTick(); if(window.__ovTick) window.__ovTick(); if(window.__genTick) window.__genTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold,each)=>{ if(from==='undo'){ await p.evaluate(()=>window.__v().undo()); return shoot(hold||0); } log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__mover=window.__v().pieces()[a]; window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold,each&&(u=>each(u,to))); };
  if(SC.start) await fly(p,...SC.start.slice(0,4),1,SC.start[4]);
