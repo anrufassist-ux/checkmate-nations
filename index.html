@@ -2483,11 +2483,11 @@ const pzState=(()=>{ let s={r:900,n:0,ok:0,streak:0,seen:[],lvl:null}; try{ Obje
 // signed in: rating, counts and streak come from the server (puzzle_stats) and are never written over the guest's own
 // browser rating, so after signing out the guest rating is back
 let pzAcct=false;
-const PZ_OWN=['r','n','ok','streak'];
+const PZ_OWN=['r','n','ok','streak','lvl'];
 const pzSave=()=>{ try{ const st=Object.assign({},pzState);
   if(pzAcct){ const g=JSON.parse(localStorage.getItem('wms-pz')||'{}'); PZ_OWN.forEach(k=>{ st[k]=g[k]!=null?g[k]:{r:900,n:0,ok:0,streak:0}[k]; }); }
   localStorage.setItem('wms-pz',JSON.stringify(st)); }catch(e){} };
-function pzApply(p){ pzAcct=true; pzState.r=p.r; pzState.n=p.n; pzState.ok=p.ok; pzState.streak=p.streak; if(mode==='puzzle') pzBar(); $('pzSave').hidden=true; }
+function pzApply(p){ pzAcct=true; if(p.lvl) pzState.lvl=p.lvl; pzState.r=p.r; pzState.n=p.n; pzState.ok=p.ok; pzState.streak=p.streak; if(mode==='puzzle') pzBar(); $('pzSave').hidden=true; }
 function pzGuest(){ pzAcct=false; try{ const g=JSON.parse(localStorage.getItem('wms-pz')||'{}'); PZ_OWN.forEach(k=>{ pzState[k]=g[k]!=null?g[k]:{r:900,n:0,ok:0,streak:0}[k]; }); }catch(e){} if(mode==='puzzle') pzBar(); }
 // loads Supabase only for someone who has signed in on this device before; the first sync carries the guest rating over
 async function pzSync(){
@@ -2511,26 +2511,30 @@ function pzBar(txt){
 }
 const PZ_LVL={kid:450,mid:900,pro:1400};
 const pzKid=()=>pzState.lvl==='kid';
-// the kids level has its own rating, kept only in this browser (kr): on a shared device a child can play kids puzzles
-// with a parent's account signed in, without touching the account's rating; kids results are never sent to the server
-if(pzState.lvl==='kid'&&pzState.kr==null) pzState.kr=pzState.r;
-const pzR=()=>pzKid()?(pzState.kr??PZ_LVL.kid):pzState.r;
+const pzR=()=>pzState.r;
 // first visit (or a tap on the rating): who is playing? sets the starting rating and the kids' friendly tone
 function pzChoose(){
   pz=null; $('pzLvl').hidden=false; $('pzBtns').hidden=true; $('pzInfo').textContent='🧩';
   setStatus(EN()?'Pick a level.':'Wähle eine Stufe.','w');
   $('pzScore').textContent=''; $('pzTxt').textContent=EN()?'Who is playing? Pick a level to start.':'Wer spielt? Wähle eine Stufe zum Start.';
 }
-function pzSetLevel(l){
-  pzState.lvl=l; if(l==='kid') pzState.kr=PZ_LVL.kid; else if(!pzAcct){ pzState.r=PZ_LVL[l]; pzState.streak=0; } pzSave(); // an account keeps its server rating
+// the level belongs to the account like the rating: picking one starts the rating again at that level (on the server
+// for an account, after asking, since the earned rating is gone then)
+async function pzSetLevel(l){
+  if(pzAcct&&l!==pzState.lvl){
+    if(!confirm(EN()?`Switch to this level? Your puzzle rating starts again at ${PZ_LVL[l]}.`:`Stufe wechseln? Deine Puzzle-Wertung beginnt dann wieder bei ${PZ_LVL[l]}.`)) return;
+    try{ const r=await api('pz_level',{lvl:l}); if(r&&r.pz) pzApply(r.pz); else return; }catch(e){ return; }
+  } else if(!pzAcct){ pzState.r=PZ_LVL[l]; pzState.streak=0; }
+  pzState.lvl=l; pzSave();
   $('pzLvl').hidden=true; $('pzBtns').hidden=false; pzStart();
 }
 async function pzStart(){
   $('pzBar').hidden=false;
+  await pzSync(); if(mode!=='puzzle') return; // an account brings its own level
   if(!pzState.lvl){ pzChoose(); return; }
   $('pzLvl').hidden=true; $('pzBtns').hidden=false;
   pzBar(EN()?'Loading puzzles …':'Lade Aufgaben …');
-  await pzSync(); const all=await pzLoad(); if(mode!=='puzzle') return;
+  const all=await pzLoad(); if(mode!=='puzzle') return;
   $('pzSave').hidden=pzAcct||pzState.ok<3;
   if(!all.length){ pzBar(EN()?'Puzzles could not be loaded.':'Aufgaben konnten nicht geladen werden.'); return; }
   // a puzzle near your rating that you have not seen lately
@@ -2564,8 +2568,6 @@ function pzWrong(){
   setStatus(EN()?'Try again.':'Nochmal versuchen.',myColor);
 }
 function pzRate(won){
-  if(pzKid()){ const e=1/(1+Math.pow(10,(pz.rating-pzR())/400)); pzState.kr=Math.max(300,Math.min(1200,pzR()+40*((won?1:0)-e)));
-    if(won) pzState.streak++; else pzState.streak=0; pzSave(); return; }
   const e=1/(1+Math.pow(10,(pz.rating-pzState.r)/400)), K=pzState.n<20?60:32;
   pzState.r=Math.max(400,Math.min(2600,pzState.r+K*((won?1:0)-e))); pzState.n++;
   if(won){ pzState.ok++; pzState.streak++; } else pzState.streak=0;

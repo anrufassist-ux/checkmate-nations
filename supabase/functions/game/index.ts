@@ -661,7 +661,7 @@ async function puzzleRating(fen: string) {
   return pzRatings.get(fen);
 }
 const pzView = (s: Game | undefined) =>
-  s ? { r: Number(s.rating), n: s.played, ok: s.solved, streak: s.streak, best: s.best_streak } : null;
+  s ? { r: Number(s.rating), n: s.played, ok: s.solved, streak: s.streak, best: s.best_streak, lvl: s.lvl ?? null } : null;
 
 // returns the server rating; on the very first sync the rating from this browser is carried over (capped, so an
 // edited localStorage cannot buy a top rank)
@@ -674,6 +674,18 @@ async function pzSync(u: User, body: Game) {
     [s] = await sql`insert into public.puzzle_stats (user_id, rating, played, solved) values (${u.id}, ${r}, ${n}, ${ok})
       on conflict (user_id) do update set updated_at = now() returning *`;
   }
+  return reply({ pz: pzView(s) });
+}
+
+// picking a level on an account starts the puzzle rating again at that level (kids 450, some chess 900, advanced 1400)
+const PZ_LVL: Record<string, number> = { kid: 450, mid: 900, pro: 1400 };
+async function pzLevel(u: User, body: Game) {
+  if (!registered(u)) return fail("account needed", 403);
+  const lvl = String(body.lvl || ""), r = PZ_LVL[lvl];
+  if (!r) return fail("bad level", 400);
+  await sql`insert into public.puzzle_stats (user_id) values (${u.id}) on conflict (user_id) do nothing`;
+  const [s] = await sql`update public.puzzle_stats set lvl = ${lvl}, rating = ${r}, streak = 0, updated_at = now()
+    where user_id = ${u.id} returning *`;
   return reply({ pz: pzView(s) });
 }
 
@@ -701,7 +713,7 @@ const ACTIONS: Record<string, (u: User, body: Game) => Promise<Response> | Respo
   me, checkout, league, league_join: leagueJoin, league_status: leagueStatus,
   delete_account: (u) => deleteAccount(u),
   ai_start: aiStart, ai_move: aiMove, ai_resign: aiResign,
-  pz_sync: pzSync, pz_result: pzResult,
+  pz_sync: pzSync, pz_result: pzResult, pz_level: pzLevel,
 };
 
 Deno.serve(async (req) => {
