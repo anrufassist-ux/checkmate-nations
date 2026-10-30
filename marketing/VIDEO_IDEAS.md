@@ -32,6 +32,21 @@ Close-up turntable of the queen, 3–4 short fact cards. Historic queens with di
 - "Rated games": 15+10, Elo, leaderboard, the 10-moves rule in one line.
 - "Unlock nations": 3 for €2.99 or all (incl. future ones) for €4.99, no subscription.
 
+## "Don't play for your Elo. Play for your nation." (20-30 s, status: idea, owner's idea 30.10.2026)
+Our unique point: nobody else has a nations league. Fast cuts of rated games where a win adds points to a nation's
+league table, end with the table and "Your nation needs you."
+- Hook text: "Don't play for your Elo. Play for your nation. 🇩🇪🇺🇸🇮🇳"
+- Show: pick your nation, a win, "+3 for India", the league table moving, champion nation of the month.
+- Careful: the real table is still nearly empty. Use a staged table only if marked as an example, or frame it as
+  "Season 1 starts now: put your nation on top" so an empty table becomes the invitation.
+- Mention that playing is free; the league needs a bought nation or the 0.99 EUR league pass (no hidden-cost surprise).
+- Germany is never the losing side; no Ukraine vs Russia.
+
+## Series "General Gambit explains" (40-60 s, voice, arrows, status: idea)
+Explainer clips for chess players, voiced by the General. Episode 1 script agreed in chat 30.10.2026: queen + king vs king,
+box the king with the queen a knight's move away, the stalemate trap (Ka8, Qd7-c7?? stalemate), king marches up, Qb7#.
+Next: rook + king vs king, the fork, scholar's mate and how to stop it, back-rank mate, why not bring the queen out early.
+
 ## Other
 - "Which nation are you?" poll clip: 4 kings side by side, comment your pick.
 - Monthly league recap: winning nation and best player of the season (from `hall_of_fame()`).
