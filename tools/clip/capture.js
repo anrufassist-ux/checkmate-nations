@@ -51,7 +51,10 @@ const gen=(p,dir,on)=>p.evaluate(async([dir,on])=>{ let g=document.getElementByI
       // scalloped cloud around the text box plus a short pointed tail to the General on the left
       const r=13, side=(x0,y0,x1,y1)=>{ const L=Math.hypot(x1-x0,y1-y0), n=Math.max(2,Math.round(L/(2*r))); let d='';
         for(let i=1;i<=n;i++){ const x=x0+(x1-x0)*i/n, y=y0+(y1-y0)*i/n, R=L/n*.62; d+=` A ${R} ${R} 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}`; } return d; };
-      const ty=Math.min(h*.45,40), d=`M 0 ${ty+10}`+` L -22 ${ty+20} L 0 ${ty}`+side(0,ty,0,0).replace(/^/,'')+side(0,0,w,0)+side(w,0,w,h)+side(w,h,0,h)+side(0,h,0,ty+10)+' Z';
+      // the tail leaves the cloud's lower edge near the left and points at the General's mouth
+      const gr=document.getElementById('vidGen').getBoundingClientRect(), bl=bub.getBoundingClientRect().left-P, bt=bub.getBoundingClientRect().top-P;
+      const tx2=(gr.left+gr.width*.64-bl).toFixed(1), ty2=(gr.top+gr.height*.63-bt).toFixed(1), B0=16, B1=46;
+      const d='M 0 0'+side(0,0,w,0)+side(w,0,w,h)+side(w,h,B1,h)+` L ${tx2} ${ty2} L ${B0} ${h}`+side(B0,h,0,h)+side(0,h,0,0)+' Z';
       const sv=bub.firstChild; sv.setAttribute('width',w); sv.setAttribute('height',h); sv.style.left=(-P)+'px'; sv.style.top=(-P)+'px';
       sv.innerHTML='<path d="'+d+'" fill="#fffaf0" stroke="#15130f" stroke-width="3" stroke-linejoin="round"/>';
       let acc=0; const total=words.reduce((a,x)=>a+x.textContent.length+1,0);
