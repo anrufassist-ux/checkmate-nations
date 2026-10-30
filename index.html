@@ -2505,12 +2505,16 @@ const pzLevel=r=>EN()?(r<1000?'Easy':r<1500?'Medium':'Hard'):(r<1000?'Leicht':r<
 function pzBar(txt){
   const L=EN()?'en':'de', th=pz?pz.themes.filter(t=>t!=='mate'&&PZ_THEME[L][t]).map(t=>PZ_THEME[L][t]):[];
   $('pzInfo').textContent=pz?`🧩 ${pzLevel(pz.rating)} · ${th.slice(0,2).join(' · ')}`:'🧩';
-  $('pzScore').textContent=(EN()?'Your rating ':'Deine Wertung ')+Math.round(pzState.r)+(pzState.streak>1?` · 🔥${pzState.streak}`:'');
+  $('pzScore').textContent=(EN()?'Your rating ':'Deine Wertung ')+Math.round(pzR())+(pzState.streak>1?` · 🔥${pzState.streak}`:'');
   if(txt!=null) $('pzTxt').textContent=txt;
   $('pzSolBtn').textContent=(EN()?'Solution':'Lösung')+(!pzAcct&&!pzKid()?' ('+pzSolLeft()+')':'');
 }
 const PZ_LVL={kid:450,mid:900,pro:1400};
 const pzKid=()=>pzState.lvl==='kid';
+// the kids level has its own rating, kept only in this browser (kr): on a shared device a child can play kids puzzles
+// with a parent's account signed in, without touching the account's rating; kids results are never sent to the server
+if(pzState.lvl==='kid'&&pzState.kr==null) pzState.kr=pzState.r;
+const pzR=()=>pzKid()?(pzState.kr??PZ_LVL.kid):pzState.r;
 // first visit (or a tap on the rating): who is playing? sets the starting rating and the kids' friendly tone
 function pzChoose(){
   pz=null; $('pzLvl').hidden=false; $('pzBtns').hidden=true; $('pzInfo').textContent='🧩';
@@ -2518,7 +2522,7 @@ function pzChoose(){
   $('pzScore').textContent=''; $('pzTxt').textContent=EN()?'Who is playing? Pick a level to start.':'Wer spielt? Wähle eine Stufe zum Start.';
 }
 function pzSetLevel(l){
-  pzState.lvl=l; if(!pzAcct){ pzState.r=PZ_LVL[l]; pzState.streak=0; } pzSave(); // an account keeps its server rating
+  pzState.lvl=l; if(l==='kid') pzState.kr=PZ_LVL.kid; else if(!pzAcct){ pzState.r=PZ_LVL[l]; pzState.streak=0; } pzSave(); // an account keeps its server rating
   $('pzLvl').hidden=true; $('pzBtns').hidden=false; pzStart();
 }
 async function pzStart(){
@@ -2530,7 +2534,7 @@ async function pzStart(){
   $('pzSave').hidden=pzAcct||pzState.ok<3;
   if(!all.length){ pzBar(EN()?'Puzzles could not be loaded.':'Aufgaben konnten nicht geladen werden.'); return; }
   // a puzzle near your rating that you have not seen lately
-  const seen=new Set(pzState.seen), near=w=>all.filter(p=>Math.abs(p[2]-pzState.r)<=w&&!seen.has(p[0]));
+  const seen=new Set(pzState.seen), near=w=>all.filter(p=>Math.abs(p[2]-pzR())<=w&&!seen.has(p[0]));
   let pool=near(120); if(pool.length<5) pool=near(300); if(!pool.length) pool=all;
   const p=pool[Math.floor(Math.random()*pool.length)];
   pz={fen:p[0],moves:p[1].split(' '),rating:p[2],themes:(p[3]||'').split(' '),step:0,failed:false,hint:0};
@@ -2560,6 +2564,8 @@ function pzWrong(){
   setStatus(EN()?'Try again.':'Nochmal versuchen.',myColor);
 }
 function pzRate(won){
+  if(pzKid()){ const e=1/(1+Math.pow(10,(pz.rating-pzR())/400)); pzState.kr=Math.max(300,Math.min(1200,pzR()+40*((won?1:0)-e)));
+    if(won) pzState.streak++; else pzState.streak=0; pzSave(); return; }
   const e=1/(1+Math.pow(10,(pz.rating-pzState.r)/400)), K=pzState.n<20?60:32;
   pzState.r=Math.max(400,Math.min(2600,pzState.r+K*((won?1:0)-e))); pzState.n++;
   if(won){ pzState.ok++; pzState.streak++; } else pzState.streak=0;
@@ -2602,7 +2608,7 @@ function pzSolved(){
   pzBar((talk?C[k]+' ':'')+res+why);
   if(talk) coachVoice(k);
   $('pzNext').textContent=EN()?'Next puzzle':'Nächste Aufgabe';
-  if(!mate) banner(EN()?'Solved!':'Gelöst!',pz.failed?'':(EN()?'Rating ':'Wertung ')+Math.round(pzState.r));
+  if(!mate) banner(EN()?'Solved!':'Gelöst!',pz.failed?'':(EN()?'Rating ':'Wertung ')+Math.round(pzR()));
   pz.done=true;
   // guests: after a few wins the General asks them to keep their rating (an account stores it and puts them on the ranking)
   if(!pzAcct&&!pz.failed&&(pzState.ok===5||(pzState.ok>5&&pzState.ok%15===0))){
