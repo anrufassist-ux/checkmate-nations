@@ -257,3 +257,6 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-27 | Instagram, YouTube Shorts | V12 Excalibur, normale Version | | | | | | | |
 | 2026-10-28 | TikTok | Karussell Mate in 1, France to move (Ersticktes Matt) | | | | | | | |
 | vor 2026-10-28 | Instagram | V10 Welcome, Germany! (32 s) als Reel | | | | | | | schon gepostet, genaues Datum nicht notiert |
+| 2026-10-30 | TikTok | V15 General Gambit explains #1: King + Queen vs King (63 s) | | | | | | | erstes Erklärvideo, sprechender General mit Sprechblasen-Wolke |
+| 2026-10-30 | Instagram | V15 General Gambit explains #1: King + Queen vs King (63 s) | | | | | | | erstes Erklärvideo, sprechender General mit Sprechblasen-Wolke |
+| 2026-10-30 | YouTube Shorts | V15 General Gambit explains #1: King + Queen vs King (63 s) | | | | | | | erstes Erklärvideo, sprechender General mit Sprechblasen-Wolke |
