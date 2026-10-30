@@ -51,10 +51,13 @@ const gen=(p,dir,on)=>p.evaluate(async([dir,on])=>{ let g=document.getElementByI
       // scalloped cloud around the text box plus a short pointed tail to the General on the left
       const r=13, side=(x0,y0,x1,y1)=>{ const L=Math.hypot(x1-x0,y1-y0), n=Math.max(2,Math.round(L/(2*r))); let d='';
         for(let i=1;i<=n;i++){ const x=x0+(x1-x0)*i/n, y=y0+(y1-y0)*i/n, R=L/n*.62; d+=` A ${R} ${R} 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}`; } return d; };
-      // the tail leaves the cloud's lower edge near the left and points at the General's mouth
+      // a short, curved tail with a round tip from the cloud's lower edge towards the General's mouth (only half way)
       const gr=document.getElementById('vidGen').getBoundingClientRect(), bl=bub.getBoundingClientRect().left-P, bt=bub.getBoundingClientRect().top-P;
-      const tx2=(gr.left+gr.width*.64-bl).toFixed(1), ty2=(gr.top+gr.height*.63-bt).toFixed(1), B0=16, B1=46;
-      const d='M 0 0'+side(0,0,w,0)+side(w,0,w,h)+side(w,h,B1,h)+` L ${tx2} ${ty2} L ${B0} ${h}`+side(B0,h,0,h)+side(0,h,0,0)+' Z';
+      const B0=14, B1=60, mxp=gr.left+gr.width*.62-bl, myp=gr.top+gr.height*.62-bt, bx=(B0+B1)/2;
+      const Tx=bx+(mxp-bx)*.5, Ty=h+(myp-h)*.5, f=v=>v.toFixed(1);
+      const d='M 0 0'+side(0,0,w,0)+side(w,0,w,h)+side(w,h,B1,h)
+        +` Q ${f(B1-4)} ${f(h+(Ty-h)*.7)} ${f(Tx+4)} ${f(Ty-1)} A 5 5 0 0 1 ${f(Tx-2)} ${f(Ty+3)} Q ${f(B0+(Tx-B0)*.15)} ${f(h+(Ty-h)*.45)} ${B0} ${h}`
+        +side(B0,h,0,h)+side(0,h,0,0)+' Z';
       const sv=bub.firstChild; sv.setAttribute('width',w); sv.setAttribute('height',h); sv.style.left=(-P)+'px'; sv.style.top=(-P)+'px';
       sv.innerHTML='<path d="'+d+'" fill="#fffaf0" stroke="#15130f" stroke-width="3" stroke-linejoin="round"/>';
       let acc=0; const total=words.reduce((a,x)=>a+x.textContent.length+1,0);
