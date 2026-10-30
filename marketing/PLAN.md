@@ -43,3 +43,10 @@ Fertige Texte, Kanäle und das Protokoll aller Posts stehen in `marketing/POSTS.
 - [ ] Konten auf TikTok, Instagram, YouTube anlegen (gleicher Name, Logo, Link checkmatenations.com in der Bio).
 - [ ] Video 1 posten.
 - [ ] Video 2 (Fool's Mate) produzieren.
+
+## 8-Wochen-Test (31.10.2026 bis 25.12.2026)
+- Kaum neue Funktionen; 3-4 Clips pro Woche auf TikTok und Instagram (Claude produziert, Michael postet).
+- Neu: Erklärvideos „General Gambit erklärt“ (Stimme Roderich, Züge mit Pfeilen, z. B. Dame + König gegen König ohne Patt).
+- Messung jeden Freitag: Vercel Web Analytics, Besucher von tiktok.com / instagram.com pro Woche.
+  Startwerte: Woche ab 12.10.: 40 Besucher, ab 19.10.: 49, ab 26.10.: 73; Oktober gesamt 44 von TikTok, 8 von Instagram.
+- Nach 8 Wochen: steigen die Zahlen nicht deutlich, bleibt das Spiel als Hobby online und es fließt keine Zeit mehr hinein.
