@@ -214,6 +214,19 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 - Erster eigener Kommentar: What would the General say about your last move? 👇
 - YouTube-Shorts-Titel: Meet General Gambit, your grumpy chess coach 🎖️ #shorts #chess
 
+### V15 · General Gambit explains #1: King + Queen vs King (Erklärvideo, mit Stimme)
+- Datei: `marketing/explain-kq.mp4` (ca. 63 s), Clip `explain_kq` in `tools/clip/capture.js`, Stimme Roderich (Quelle `marketing/explain-kq/`), USA (Trump, Freiheitsstatue) gegen Putin allein.
+- Aufbau: Kamerafahrt um die Köpfe → Regel 1 (Dame einen Rösselsprung entfernt, rote Box schrumpft) → Patt-Falle Dc7?? („Stalemate = draw“) → zurück → Regel 2 (König marschiert) → Kb6, Dd8 matt → Putin im Käfig → Endkarte
+- Instagram/TikTok-Text:
+  > King + Queen vs King. Easy win? 👑
+  > Beginners throw it away all the time 😬
+  > General Gambit shows you the trap ⚠️ and the clean mate ✅
+  > Save it for your next game 📌 Free to play, no download: link in bio
+- Hashtags: #chess #chesstok #learnchess #chesstips #checkmate
+- Titelbild (Cover): Patt-Moment mit „STALEMATE = DRAW“ (ca. Sekunde 30) oder die rote Box (ca. Sekunde 16)
+- Erster eigener Kommentar: Did you ever stalemate a won game? Be honest 👇
+- YouTube-Shorts-Titel: Don't stalemate this! King + Queen vs King explained 👑 #shorts #chess
+
 ## Protokoll
 
 | Datum | Kanal | Paket | Link | Aufrufe 2 Tage | Aufrufe 7 Tage | Likes | Kommentare | Besucher Website (utm) | Notiz |

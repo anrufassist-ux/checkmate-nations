@@ -8,7 +8,7 @@ def rep(a,b):
     assert a in h, 'patch anchor missing: '+a[:60]; h=h.replace(a,b,1)
 rep("<head>","<head>\n<base href=\"../../\">")
 rep("renderer.setPixelRatio(Math.min(devicePixelRatio,IS_PHONE?1.5:2));","renderer.setPixelRatio(devicePixelRatio);")  # recordings: full resolution, the phone cap of 1.5 made 1080-wide stills blurry  # vendor/, fonts/, bg/, board/ from the repo root
-rep("function setNations(w,b){","window.__v=()=>({doMove,setNations,setupPieces,setMode:m=>{mode=m;},setCaric:c=>{caricatures=c;},ensureAudio,game,camera,controls,placeCamera,sqPos,pieceShot,CBURNETT,setBoard,setBackground,pieces:()=>pieces,T,scene,squareMeshes,floor:()=>FLOOR,frame,RIM,drawRim,innerCoords:()=>{ frame.visible=RIM.visible=false; COORD.visible=true; COORD.userData.black=null; }});\nfunction setNations(w,b){")
+rep("function setNations(w,b){","window.__v=()=>({doMove,setNations,setupPieces,setMode:m=>{mode=m;},undo:()=>{ game.undo(); over=false; busy=false; $('banner').hidden=true; setupPieces(); },setCaric:c=>{caricatures=c;},ensureAudio,game,camera,controls,placeCamera,sqPos,pieceShot,CBURNETT,setBoard,setBackground,pieces:()=>pieces,T,scene,squareMeshes,floor:()=>FLOOR,frame,RIM,drawRim,innerCoords:()=>{ frame.visible=RIM.visible=false; COORD.visible=true; COORD.userData.black=null; }});\nfunction setNations(w,b){")
 # sounds are not played but logged (time, key, volume); capture.js writes them to sounds.json for the mix
 rep("function playSample(k,vol){","function playSample(k,vol){\n  if(window.__rec){ if(!(window.SFX&&window.SFX[k])) return false; window.__rec.push([performance.now(),k,vol]); return true; }")
 rep("function boom(big){","function boom(big){\n  if(window.__rec){ window.__rec.push([performance.now(),big?'boomBig':'boom',1]); return; }")
@@ -20,7 +20,7 @@ rep("// size balance:",open(os.path.join(here,'car.js')).read()+open(os.path.joi
 rep("  const g=polish(makePieceRaw(type,color)), u=g.userData||{};","  const g=polish(window.__car&&type==='n'&&color===window.__car?makeCar(color):window.__farm&&color===window.__farm&&(type==='p'||type==='k')?makeFarmPiece(type,color):makePieceRaw(type,color)), u=g.userData||{};")
 rep("             : res.piece==='n' ? droneHop(mover,res.to)","             : res.piece==='n' ? (mover.userData.car?carFlip(mover,res.to):droneHop(mover,res.to))")
 rep("  vehicleSound(res.piece);","  if(mover.userData.car){ if(window.__rec) window.__rec.push([performance.now(),'boom',.45]); } else vehicleSound(res.piece);")
-rep("  g.font='700 40px \"Barlow Condensed\"","  g.font='700 56px \"Barlow Condensed\"")  # inner coordinates: bigger for phone screens
+rep("  g.font='700 52px \"Barlow Condensed\"","  g.font='700 56px \"Barlow Condensed\"")  # inner coordinates: bigger for phone screens
 h+=open(os.path.join(here,'overlay.html')).read()
 open(os.path.join(here,'video.html'),'w').write(h)
 print('video.html written')
