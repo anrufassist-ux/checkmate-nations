@@ -2649,6 +2649,7 @@ async function opStart(){
   op=null; hintClear(); $('opBar').hidden=false; $('opBtns').hidden=true; $('opPlay').hidden=true; $('opList').hidden=false;
   opBar(EN()?'Which opening do you want to learn? I play the opponent, you play the main line, and I tell you why each move is played.'
     :'Welche Eröffnung willst du lernen? Ich spiele den Gegner, du die Hauptlinie, und ich sage dir zu jedem Zug, warum man ihn spielt.');
+  setStatus(EN()?'Choose an opening.':'Wähle eine Eröffnung.','w');
   const all=await opLoad(), box=$('opList'); box.textContent='';
   for(const side of ['w','b']){
     const h=document.createElement('div'); h.className='opHead'; h.textContent=side==='w'?(EN()?'With White':'Mit Weiß'):(EN()?'With Black':'Mit Schwarz'); box.appendChild(h);
@@ -2826,7 +2827,7 @@ function chooseMode(m){
   resetBoard(); gameStarted=true;
   if(m==='online'){ swingTo('w'); setCollapsed(false); onlineInit(); }   // countries are picked when creating a game
   else if(m==='puzzle') openPicker((my,opp)=>{ pzNat=[my,opp]; pzStart(); });
-  else if(m==='opening') openPicker((my,opp)=>{ opNat=[my,opp]; opStart(); });
+  else if(m==='opening'){ const me=myColor==='b'?'b':'w'; opNat=[sideNation[me],sideNation[me==='w'?'b':'w']]; opStart(); }
   else openPicker(applyColor);
 }
 $('reset').addEventListener('click',newGame);
