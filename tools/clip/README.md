@@ -41,9 +41,9 @@ Software rendering takes about 20 minutes per 28-second clip.
 ## Explainer clips ("General Gambit explains")
 - Script `explain_kq` in `capture.js`: captions `cap()` timed to the voice (`CAPS` with video seconds), `ov()` draws the
   lone king's box as red squares on the board plus arrows, `mv('undo')` takes a move back (the stalemate trap).
-- The talking General (top left, speech bubble with the captions): `gen(p,dir,true)`; mouth frames
+- The talking General (top left, a speech cloud with a short curved tail towards his mouth; the words of each caption pop in one by one, ~15 letters a second; the moustache never moves, `make_general.py` keeps it unwarped): `gen(p,dir,true)`; mouth frames
   `marketing/<dir>/general/m0..m5.png` from `make_general.py` (smooth jaw warp under the moustache), picked per frame from
   `general/env.json` (`envelope.py`, loudness of the voice at its place in the clip). Keep the top ~30 % of the frame free
   of pieces (camera a bit lower).
 - Sound: `python3 mix.py explain_kq`, then `marketing/<dir>/mix.sh` puts the voice on top (music ducks).
-- Preview: `EVERY=48` writes only every 48th frame (about 20 minutes instead of 45).
+- Preview: `EVERY=48` writes only every 48th frame (about 20 minutes instead of 45); `STOPAT=n` stops after n frames (test cut of the start).
