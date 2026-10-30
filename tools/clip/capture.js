@@ -299,15 +299,15 @@ const SCRIPTS={
    const M=async(f,t,h,e)=>{ const a=el; el+=h; await mv(f,t,h,async(u,to)=>{ await capAt((a+u*h)/1000); if(e) await e(u,to); }); };
    const till=async(s,e)=>{ const ms=Math.round(s*1000-el); if(ms>0) await S(ms,e); };
    await gen(p,'explain-kq',true); await orbit(p,(ms,f)=>S(ms,f),7000,['d5','f4','e1'],.95);
-   await fly(p,['d5','d4'],9.6,12,0,1800,.1); await till(10.3);
+   await fly(p,['d6','d5'],9.6,12,0,1800,.1); await till(10.3);
    await ov(p,{box:true}); await till(11.0);
    for(const [f,t] of [['d5','c6'],['f4','e5'],['c6','b7'],['e5','d6'],['b7','c8'],['d6','e7'],['c8','b8'],['e7','d7'],['b8','a8']]) await M(f,t,1100);
-   await till(20.9); await fly(p,['a8','b7','c7'],5.6,7.2,0,2400,.12); await till(22.5);
+   await till(20.9); await fly(p,['a8','b8','c8','c7'],5.8,7.4,0,2400,.12); await till(22.5);
    await ov(p,{box:true,arrows:[['d7','c7','#ff4b3e']]}); await till(24.0);
    await ov(p,{}); await M('d7','c7',2000); await till(30.0);
    await pop(p,'STALEMATE = DRAW 🤝'); await till(36.3);
    await pop(p,''); await mv('undo'); await ov(p,{box:true});
-   await fly(p,['c5','c4'],8.6,11,0,2400,.1);
+   await fly(p,['c6','c5'],8.6,11,0,2400,.1);
    await till(38.0);
    for(const [f,t] of [['e1','d2'],['a8','b8'],['d2','c3'],['b8','a8'],['c3','b4'],['a8','b8'],['b4','b5'],['b8','a8']]) await M(f,t,900);
    await till(44.7); await M('b5','b6',900); await M('a8','b8',700);
