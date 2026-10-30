@@ -216,6 +216,7 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 
 ### V15 · General Gambit explains #1: King + Queen vs King (Erklärvideo, mit Stimme)
 - Datei: `marketing/explain-kq.mp4` (ca. 63 s), Clip `explain_kq` in `tools/clip/capture.js`, Stimme Roderich (Quelle `marketing/explain-kq/`), USA (Trump, Freiheitsstatue) gegen Putin allein.
+- General Gambit oben links mit Sprechblase, Mund bewegt sich zur Stimme.
 - Aufbau: Kamerafahrt um die Köpfe → Regel 1 (Dame einen Rösselsprung entfernt, rote Box schrumpft) → Patt-Falle Dc7?? („Stalemate = draw“) → zurück → Regel 2 (König marschiert) → Kb6, Dd8 matt → Putin im Käfig → Endkarte
 - Instagram/TikTok-Text:
   > King + Queen vs King. Easy win? 👑
