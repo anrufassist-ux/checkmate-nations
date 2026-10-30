@@ -8,7 +8,8 @@ Open ideas and small decisions the owner wants to revisit. Newest at the top; re
 - 2D classic pieces in nation colours may still look cheap; options: richer, calmer tones, or white/black with only a small nation-colour accent.
 - Career ranks Rekrut → Feldmarschall (proposal made; open: ranks and points, shown on the public leaderboard?). Needs a Supabase migration and a function redeploy.
 - Puzzles: more mate-in-2/3 puzzles (optional).
-- Trainer stage 2: LLM chat with General Gambit via edge function, daily limit (sign-up incentive).
+- Trainer stage 2: chat with General Gambit (LLM via edge function, daily limit, sign-up incentive), e.g. "I want to practise the Sicilian". Owner wants this.
+- Opening trainer: pick an opening and practise its main lines against the AI (the General names deviations). Owner wants this.
 
 ## Marketing
 - Ad video "General Gambit" rendered (`marketing/general-gambit.mp4`, V14 in POSTS.md). Note: the phone screenshots in it still show the old 3D board with the wide rim; re-shot (2D phone screenshot plus a 3D close-up of the scholar's mate position).
