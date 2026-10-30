@@ -12,7 +12,7 @@ const pop=(p,t,sq)=>p.evaluate(([t,sq])=>{ const old=document.getElementById('vi
   const w=e.firstChild.offsetWidth, x=Math.max(w/2+10,Math.min(innerWidth-w/2-10,(q.x+1)/2*innerWidth)); e.style.left=x+'px'; },[t,sq]);
 // spoken caption at the bottom (wraps); empty text hides it
 const cap=(p,t)=>p.evaluate(t=>{ const g=document.getElementById('vidGen'), bub=document.getElementById('vidBub');
-  if(g&&g.style.display==='block'){ bub.innerHTML=t||''; bub.style.display=t?'block':'none'; return; }
+  if(g&&g.style.display==='block'){ window.__bubSet(t); return; }
   let e=document.getElementById('vidCap'); if(!e){ e=document.createElement('div'); e.id='vidCap'; document.body.appendChild(e); }
   e.innerHTML=t||''; e.style.display=t?'block':'none'; },t);
 // drawn over the board every frame: box = the squares the lone black king is confined to by the white queen (red),
@@ -39,9 +39,28 @@ const ov=(p,o)=>p.evaluate(o=>{ let svg=document.getElementById('vidOv'); if(!sv
 const gen=(p,dir,on)=>p.evaluate(async([dir,on])=>{ let g=document.getElementById('vidGen');
   if(!g){ g=document.createElement('div'); g.id='vidGen'; for(let k=0;k<6;k++){ const i=new Image(); i.src='/marketing/'+dir+'/general/m'+k+'.png'; g.appendChild(i); }
     document.body.appendChild(g); const b=document.createElement('div'); b.id='vidBub'; document.body.appendChild(b);
-    window.__env=await (await fetch('/marketing/'+dir+'/general/env.json')).json(); await Promise.all([...g.children].map(i=>i.decode())); }
+    window.__env=await (await fetch('/marketing/'+dir+'/general/env.json')).json(); await Promise.all([...g.children].map(i=>i.decode()));
+    // speech cloud: the text is laid out in full (so the cloud has its final size at once), then every word pops in
+    // when the General says it (spread over the sentence by letters, ~15 letters a second)
+    window.__bubSet=t=>{ const bub=document.getElementById('vidBub'); window.__bub=null; if(!t){ bub.style.display='none'; return; }
+      bub.innerHTML='<svg class="cloud"></svg><div class="txt"></div>'; const tx=bub.lastChild; tx.innerHTML=t;
+      const words=[]; (function wrap(n){ for(const c of [...n.childNodes]){ if(c.nodeType===3){ const f=document.createDocumentFragment();
+          for(const part of c.textContent.split(/(\s+)/)){ if(!part) continue; if(/^\s+$/.test(part)){ f.appendChild(document.createTextNode(part)); continue; }
+            const sp=document.createElement('span'); sp.className='w'; sp.textContent=part; f.appendChild(sp); words.push(sp); } c.replaceWith(f); } else wrap(c); } })(tx);
+      bub.style.display='block'; const W=tx.offsetWidth, H=tx.offsetHeight, P=16, w=W+2*P, h=H+2*P;
+      // scalloped cloud around the text box plus a short pointed tail to the General on the left
+      const r=13, side=(x0,y0,x1,y1)=>{ const L=Math.hypot(x1-x0,y1-y0), n=Math.max(2,Math.round(L/(2*r))); let d='';
+        for(let i=1;i<=n;i++){ const x=x0+(x1-x0)*i/n, y=y0+(y1-y0)*i/n, R=L/n*.62; d+=` A ${R} ${R} 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}`; } return d; };
+      const ty=Math.min(h*.45,40), d=`M 0 ${ty+10}`+` L -22 ${ty+20} L 0 ${ty}`+side(0,ty,0,0).replace(/^/,'')+side(0,0,w,0)+side(w,0,w,h)+side(w,h,0,h)+side(0,h,0,ty+10)+' Z';
+      const sv=bub.firstChild; sv.setAttribute('width',w); sv.setAttribute('height',h); sv.style.left=(-P)+'px'; sv.style.top=(-P)+'px';
+      sv.innerHTML='<path d="'+d+'" fill="#fffaf0" stroke="#15130f" stroke-width="3" stroke-linejoin="round"/>';
+      let acc=0; const total=words.reduce((a,x)=>a+x.textContent.length+1,0);
+      window.__bub={t0:performance.now(),words:words.map(x=>{ const at=acc/15; acc+=x.textContent.length+1; return {el:x,at}; }),total}; };
+  }
   g.style.display=on?'block':'none'; if(!on){ document.getElementById('vidBub').style.display='none'; window.__genTick=null; return; }
   window.__genTick=()=>{ const t=(performance.now()-window.__t0)/1000, f=Math.round(t*24), k=window.__env[f]||0;
+    const B=window.__bub; if(B){ const s=(performance.now()-B.t0)/1000; for(const w of B.words){ const u=Math.max(0,Math.min(1,(s-w.at)/.16)), e=1-Math.pow(1-u,3);
+      w.el.style.opacity=e; w.el.style.transform='translateY('+((1-e)*10).toFixed(1)+'px) scale('+(.6+.4*e).toFixed(3)+')'; } }
     [...g.children].forEach((im,i)=>im.style.visibility=i===k?'visible':'hidden');
     g.style.transform='rotate('+(k?Math.sin(t*9)*1.6*k/5:0)+'deg) translateY('+(-k*.6)+'px)'; };
   window.__genTick(); },[dir,on]);
@@ -362,7 +381,7 @@ const SCRIPTS={
  const START=+(process.env.START||0);
  const ONLY=+(process.env.ONLY||0); // re-render just the first ONLY frames (e.g. after changing the hook), keep the rest
  const t0=await p.evaluate(()=>{ window.__rec.length=0; window.__t0=performance.now(); return performance.now(); });
- const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(n<START||(ONLY&&n>=ONLY)||(process.env.EVERY&&n%+process.env.EVERY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); if(window.__capTick) window.__capTick(); if(window.__ovTick) window.__ovTick(); if(window.__genTick) window.__genTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
+ const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(process.env.STOPAT&&n>=+process.env.STOPAT){ console.log('frames',n); process.exit(0); } if(n<START||(ONLY&&n>=ONLY)||(process.env.EVERY&&n%+process.env.EVERY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); if(window.__capTick) window.__capTick(); if(window.__ovTick) window.__ovTick(); if(window.__genTick) window.__genTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold,each)=>{ if(from==='undo'){ await p.evaluate(()=>window.__v().undo()); return shoot(hold||0); } log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__mover=window.__v().pieces()[a]; window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold,each&&(u=>each(u,to))); };
  if(SC.start) await fly(p,...SC.start.slice(0,4),1,SC.start[4]);
