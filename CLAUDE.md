@@ -16,6 +16,7 @@ Owner: Michael Klapproth (KI Solutions Michael Klapproth). Domain: checkmatenati
 - `hilfe.html`: player handbook (game modes, nations, account, rated games incl. the 10-moves-per-side rule, Elo, Nations League), English or German like the game (`wms-lang`); linked from the footers, the account menu and the rated-game dialog. Keep it in sync when rules change.
 - `impressum.html`, `datenschutz.html`, `agb.html` (terms + withdrawal, + `legal.css`): legal pages, German binding text plus English. Linked from the mode screen and the info panel. Update the privacy policy before adding accounts, payments, analytics or any third-party service.
 - SEO and app basics: title, description, canonical, Open Graph/Twitter card (`brand/og.jpg`, 1200x630), JSON-LD `VideoGame` in the `<head>` of `index.html`; favicons (`favicon.ico`, `favicon-32.png`, `apple-touch-icon.png`), `manifest.webmanifest` with `icon-192/512.png` and a maskable icon (installable web app, groundwork for a Play Store TWA), `robots.txt`, `sitemap.xml`.
+- `LEADERS.md`: which real person each caricature king shows, their office and the next election that could change it; checked weekly by a scheduled task ("Leader-Check"); swap the head when a leader changes.
 - `BACKLOG.md`: open ideas and small decisions the owner wants to revisit; add to it when he says "ins Backlog", remove items once done.
 - No build step. Vercel serves the files statically.
 
