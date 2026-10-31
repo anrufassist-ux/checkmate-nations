@@ -362,13 +362,13 @@ const SCRIPTS={
  explain_kr:{nations:['gbr','eu'],fen:'8/3k4/8/8/7R/3K4/8/8 w - - 0 1',title:['',''],cam:[
      [0,{f:['d7'],yaw:.55,pitch:.16,dist:2.7,lift:.95}],            // close on von der Leyen, low, heads look into the lens
      [2.4,{f:['d3'],yaw:-.4,pitch:.22,dist:3.1,lift:.85,k:6}],       // slow glide across the board to Burnham
-     [5.2,{f:['e5','f6'],yaw:-.25,pitch:.95,dist:16.5,lift:0,k:5}], // crane up to the whole board, seen a little from the side
-     [7.5,{f:['f6','e6'],yaw:-.3,pitch:.9,dist:15}],                // already heading to h6 before the rook moves
-     [10.2,{f:['e5','e6'],yaw:-.15,pitch:.92,dist:15.5}],           // the kings' walk, the rook stays in the frame
-     [15.0,{f:['d6','e6'],yaw:0,pitch:.9,dist:14.5}],
-     [19.8,{f:['d6','e6'],yaw:.08,pitch:.88,dist:14.5}],
-     [22.6,{f:['c6','c5'],yaw:.2,pitch:.85,dist:12}],               // Rb5+: the wall comes down
-     [27.6,{f:['b6','b7'],yaw:.3,pitch:.78,dist:10}],
+     [5.2,{f:['e6','f5'],yaw:-.3,pitch:1.0,dist:20,lift:0,k:5}],    // crane up to the whole board, seen a little from the side
+     [7.5,{f:['f6','f7'],yaw:-.35,pitch:.98,dist:18}],              // already heading to h6 before the rook moves
+     [10.2,{f:['e7','f6'],yaw:-.3,pitch:1.0,dist:20}],              // the kings' walk: both kings and the rook in the frame
+     [15.0,{f:['d7','e6'],yaw:-.15,pitch:1.0,dist:19}],
+     [19.8,{f:['d7','e6'],yaw:0,pitch:.98,dist:19}],
+     [22.6,{f:['c7','d6'],yaw:.15,pitch:.95,dist:16}],              // Rb5+: the wall comes down
+     [27.6,{f:['b7','b6'],yaw:.3,pitch:.9,dist:12}],
    ],play:async(mv,p,shoot)=>{
    const MV=[[8.2,'h4','h6'],[9.5,'d7','e8'],[10.8,'d3','d4'],[12.0,'e8','d7'],[13.2,'d4','e5'],[14.4,'d7','c7'],[15.6,'e5','d5'],[16.8,'c7','b7'],
      [18.0,'d5','d6'],[19.2,'b7','b6'],[20.6,'h6','h5'],[21.8,'b6','b7'],[23.2,'h5','b5'],[24.4,'b7','a6'],[25.6,'d6','c6'],[26.8,'a6','a7'],
@@ -414,7 +414,7 @@ const SCRIPTS={
  await p.clock.install({time:new Date('2026-10-12T12:00:00')}); await p.clock.pauseAt(new Date('2026-10-12T12:00:01'));
  await p.goto(`http://127.0.0.1:${port}/tools/clip/video.html`);
  await p.clock.runFor(1500);
- const SC=SCRIPTS[process.env.CLIP||'scholar'];
+ const SC=SCRIPTS[process.env.CLIP||'scholar']; if(process.env.TESTFEN) SC.fen=process.env.TESTFEN;
  await p.evaluate(sc=>{ window.__sc=sc; window.__car=sc.car||null; window.__farm=sc.farm||null; },{nations:SC.nations,nocaric:!!process.env.NOCARIC,coords:SC.coords,hookTop:SC.hookTop,fen:SC.fen,car:SC.car,farm:SC.farm,board:process.env.TESTBOARD||SC.board,bg:process.env.TESTBG||SC.bg});
  await p.evaluate(()=>{const v=window.__v(); window.__rec=[]; v.ensureAudio(); v.setMode('video'); const sc=window.__sc; v.setCaric(!sc.nocaric); v.setNations(...(sc.nations||['usa','rus'])); if(sc.board) v.setBoard(sc.board); if(sc.bg) v.setBackground(sc.bg); if(sc.coords==='inner') v.innerCoords(); if(sc.fen) v.game.load(sc.fen); v.setupPieces(); v.camera.position.sub(v.controls.target).multiplyScalar(.86).add(v.controls.target); v.controls.update();});
  await p.evaluate(([l1,l2])=>{ document.querySelector('#vidTitle .l1').innerHTML=l1; document.querySelector('#vidTitle .l2').textContent=l2; },SC.title);
