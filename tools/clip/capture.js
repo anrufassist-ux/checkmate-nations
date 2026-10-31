@@ -26,8 +26,11 @@ const ov=(p,o)=>p.evaluate(o=>{ let svg=document.getElementById('vidOv'); if(!sv
     if(!window.__boxG){ window.__boxG=new v.T.Group(); v.scene.add(window.__boxG); window.__boxM=new v.T.MeshBasicMaterial({color:0xff3b30,transparent:true,opacity:.42,depthWrite:false}); window.__boxM.toneMapped=false; }
     const G=window.__boxG; while(G.children.length) G.remove(G.children[0]);
     if(o.box){ const b=v.game.board(); let qs=null, ks=null;
-      for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; if(pc.type==='q'&&pc.color==='w') qs=[f,7-r]; if(pc.type==='k'&&pc.color==='b') ks=[f,7-r]; }
-      if(qs&&ks&&qs[0]!==ks[0]&&qs[1]!==ks[1]){ const f0=ks[0]<qs[0]?0:qs[0]+1, f1=ks[0]<qs[0]?qs[0]-1:7, r0=ks[1]<qs[1]?0:qs[1]+1, r1=ks[1]<qs[1]?qs[1]-1:7;
+      for(let r=0;r<8;r++) for(let f=0;f<8;f++){ const pc=b[r][f]; if(!pc) continue; if((pc.type==='q'||pc.type==='r')&&pc.color==='w'){ qs=[f,7-r]; window.__boxRook=pc.type==='r'; } if(pc.type==='k'&&pc.color==='b') ks=[f,7-r]; }
+      if(qs&&ks&&window.__boxRook){ // a rook is a wall: everything beyond its rank (or file) on the king's side
+        let f0=0,f1=7,r0=0,r1=7; if(ks[1]!==qs[1]){ if(ks[1]>qs[1]) r0=qs[1]+1; else r1=qs[1]-1; } else if(ks[0]>qs[0]) f0=qs[0]+1; else f1=qs[0]-1;
+        for(let f=f0;f<=f1;f++) for(let r=r0;r<=r1;r++){ const m=new v.T.Mesh(new v.T.PlaneGeometry(.96,.96),window.__boxM); m.rotation.x=-Math.PI/2; m.position.copy(v.sqPos('abcdefgh'[f]+(r+1))); m.position.y+=.025; m.renderOrder=2; G.add(m); } }
+      else if(qs&&ks&&qs[0]!==ks[0]&&qs[1]!==ks[1]){ const f0=ks[0]<qs[0]?0:qs[0]+1, f1=ks[0]<qs[0]?qs[0]-1:7, r0=ks[1]<qs[1]?0:qs[1]+1, r1=ks[1]<qs[1]?qs[1]-1:7;
         for(let f=f0;f<=f1;f++) for(let r=r0;r<=r1;r++){ const m=new v.T.Mesh(new v.T.PlaneGeometry(.96,.96),window.__boxM); m.rotation.x=-Math.PI/2; m.position.copy(v.sqPos('abcdefgh'[f]+(r+1))); m.position.y+=.025; m.renderOrder=2; G.add(m); } } }
     for(const [a,z,c] of o.arrows||[]){ const A=scr(a), Z=scr(z), dx=Z[0]-A[0], dy=Z[1]-A[1], L=Math.hypot(dx,dy), ux=dx/L, uy=dy/L, E=[Z[0]-ux*18,Z[1]-uy*18];
       h+='<line x1="'+A[0]+'" y1="'+A[1]+'" x2="'+E[0]+'" y2="'+E[1]+'" stroke="'+(c||'#3fd16b')+'" stroke-width="12" stroke-linecap="round" opacity=".9"/>';
@@ -70,6 +73,21 @@ const gen=(p,dir,on)=>p.evaluate(async([dir,on])=>{ let g=document.getElementByI
     [...g.children].forEach((im,i)=>im.style.visibility=i===k?'visible':'hidden');
     g.style.transform='rotate('+(k?Math.sin(t*9)*1.6*k/5:0)+'deg) translateY('+(-k*.6)+'px)'; };
   window.__genTick(); },[dir,on]);
+// Camera director (explainer clips): the camera is one continuous spring-driven path through keys [videoSec,{f:[squares],
+// yaw,pitch,dist,lift,k}] (yaw 0 = seen from White, pitch = elevation in radians, dist from the look-at point, lift = its
+// height). Every key is a target the camera glides to with a soft, critically damped spring (k ~9: about 1.5 s), stacked
+// like track() in the motion-video skill, so it never stops dead and never jumps; put a key ~0.6 s BEFORE a move so the
+// camera is already on its way when the piece starts. A slow breathing drift keeps the frame alive between keys.
+const camDir=(p,keys)=>p.evaluate(keys=>{ const v=window.__v(), T3=v.camera.position.constructor;
+  const ks=keys.map(([t,o])=>{ const f=(o.f||['d4','e5']).reduce((a,sq)=>a.add(v.sqPos(sq)),new T3()).multiplyScalar(1/(o.f||[1,2]).length);
+    return [t,{x:f.x,z:f.z,yaw:o.yaw??0,pitch:o.pitch??.8,dist:o.dist??10,lift:o.lift??0,k:o.k??9}]; });
+  const spring=(t,k)=>{ if(t<=0) return 0; const w=Math.sqrt(k); return 1-Math.exp(-w*t)*(1+w*t); };
+  const val=(t,name)=>{ let x=ks[0][1][name]; for(let i=1;i<ks.length;i++) x+=(ks[i][1][name]-ks[i-1][1][name])*spring(t-ks[i][0],ks[i][1].k); return x; };
+  v.controls.minDistance=.2; v.controls.enabled=false;
+  window.__camTick=()=>{ const t=(performance.now()-window.__t0)/1000;
+    const x=val(t,'x'), z=val(t,'z'), lift=val(t,'lift'), d=val(t,'dist')*(1+.012*Math.sin(t*.45)), yaw=val(t,'yaw')+.035*Math.sin(t*.3), pitch=val(t,'pitch');
+    v.controls.target.set(x,lift,z); v.camera.position.set(x+d*Math.cos(pitch)*Math.sin(yaw),lift+d*Math.sin(pitch),z+d*Math.cos(pitch)*Math.cos(yaw)); v.camera.lookAt(v.controls.target); };
+  window.__camTick(); },keys);
 const hideTitle=p=>p.evaluate(()=>{document.getElementById('vidTitle').style.display='none';});
 const VS='<span class="u">USA</span> vs. <span class="r">RUSSIA</span>';
 // camera flight around the board at the start, close past the kings (their heads turn to the camera); it ends in a
@@ -339,6 +357,27 @@ const SCRIPTS={
    await ov(p,{arrows:[['d7','d8']]}); await till(46.4);
    await ov(p,null); await M('d7','d8',13000); }},
 
+ // Explainer #2: king + rook vs king (UK vs EU, the Brexit summit of 20 Nov 2026). Camera = one continuous spring path
+ // (camDir), every key ~0.6 s before the move it prepares. Times are video seconds; retimed to the voice once it exists.
+ explain_kr:{nations:['gbr','eu'],fen:'8/3k4/8/8/7R/3K4/8/8 w - - 0 1',title:['',''],play:async(mv,p,shoot)=>{
+   const MV=[[8.2,'h4','h6'],[9.5,'d7','e8'],[10.8,'d3','d4'],[12.0,'e8','d7'],[13.2,'d4','e5'],[14.4,'d7','c7'],[15.6,'e5','d5'],[16.8,'c7','b7'],
+     [18.0,'d5','d6'],[19.2,'b7','b6'],[20.6,'h6','h5'],[21.8,'b6','b7'],[23.2,'h5','b5'],[24.4,'b7','a6'],[25.6,'d6','c6'],[26.8,'a6','a7'],
+     [28.2,'b5','a5'],[29.4,'a7','b8']];
+   await camDir(p,[
+     [0,{f:['d7'],yaw:.55,pitch:.16,dist:2.7,lift:.95}],            // close on von der Leyen, low, heads look into the lens
+     [2.4,{f:['d3'],yaw:-.4,pitch:.22,dist:3.1,lift:.85,k:6}],       // slow glide across the board to Burnham
+     [5.2,{f:['d5'],yaw:.1,pitch:1.0,dist:11.5,lift:0,k:5}],         // crane up to the whole board
+     [7.5,{f:['f6','e7'],yaw:.25,pitch:.82,dist:8.8}],               // already heading to h6 before the rook moves
+     [10.2,{f:['d5','d7'],yaw:-.05,pitch:.85,dist:9.6}],             // the kings' walk in the middle
+     [15.0,{f:['c6','c7'],yaw:.18,pitch:.8,dist:8.6}],
+     [20.0,{f:['b6','c6'],yaw:.3,pitch:.72,dist:7.4}],               // queen side, the wall comes down
+     [25.0,{f:['b7','b6'],yaw:.38,pitch:.66,dist:6.2}],
+   ]);
+   await gen(p,'explain-kq',true); await cap(p,'King and rook against a lonely king.');
+   let el=1500; const till=async s=>{ const ms=Math.round(s*1000-el); if(ms>0){ el+=ms; await shoot(ms); } };
+   for(const [t,f,to] of MV){ await till(t); if(t===8.2) await ov(p,{box:true}); const h=1200; el+=h; await mv(f,to,h); }
+   await till(30.6); await mv('a5','a3',1200); await mv('b8','c8',1200); await mv('a3','a8',14000); }},
+
  // TikTok puzzle carousels (stills only, see the clip README): nations per carousel, same look as the puzzles
  plates:{nations:['usa','rus'],board:'steel',bg:'command',title:['',''],play:async()=>{}},
  car_rus:{nations:['usa','rus'],board:'classic',bg:'earth',coords:'inner',title:['',''],play:async()=>{}},
@@ -387,7 +426,7 @@ const SCRIPTS={
  const START=+(process.env.START||0);
  const ONLY=+(process.env.ONLY||0); // re-render just the first ONLY frames (e.g. after changing the hook), keep the rest
  const t0=await p.evaluate(()=>{ window.__rec.length=0; window.__t0=performance.now(); return performance.now(); });
- const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(process.env.STOPAT&&n>=+process.env.STOPAT){ console.log('frames',n); process.exit(0); } if(n<START||(ONLY&&n>=ONLY)||(process.env.EVERY&&n%+process.env.EVERY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); if(window.__capTick) window.__capTick(); if(window.__ovTick) window.__ovTick(); if(window.__genTick) window.__genTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
+ const shoot=async(ms,each)=>{ const k=Math.round(ms/dtms); for(let i=0;i<k;i++){ if(each) await each(k>1?i/(k-1):1); await p.clock.runFor(dtms); if(process.env.STOPAT&&n>=+process.env.STOPAT){ console.log('frames',n); process.exit(0); } if(n<START||(ONLY&&n>=ONLY)||(process.env.EVERY&&n%+process.env.EVERY)){ n++; continue; } await p.evaluate(()=>{ if(window.__badgeTick) window.__badgeTick(); if(window.__capTick) window.__capTick(); if(window.__camTick) window.__camTick(); if(window.__ovTick) window.__ovTick(); if(window.__genTick) window.__genTick(); for(const a of document.getAnimations()){ if(a.__st===undefined){ a.__st=performance.now(); a.pause(); } a.currentTime=performance.now()-a.__st; } }); await p.screenshot({path:`${FR}/f${String(n++).padStart(5,'0')}.jpg`,type:'jpeg',quality:88}); } };
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold,each)=>{ if(from==='undo'){ await p.evaluate(()=>window.__v().undo()); return shoot(hold||0); } log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__mover=window.__v().pieces()[a]; window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold,each&&(u=>each(u,to))); };
  if(SC.start) await fly(p,...SC.start.slice(0,4),1,SC.start[4]);
