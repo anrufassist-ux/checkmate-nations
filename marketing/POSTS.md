@@ -260,3 +260,6 @@ Der Zusatz `?utm_source=…` sorgt dafür, dass die Besucherstatistik (Vercel An
 | 2026-10-30 | TikTok | V15 General Gambit explains #1: King + Queen vs King (63 s) | | | | | | | erstes Erklärvideo, sprechender General mit Sprechblasen-Wolke |
 | 2026-10-30 | Instagram | V15 General Gambit explains #1: King + Queen vs King (63 s) | | | | | | | erstes Erklärvideo, sprechender General mit Sprechblasen-Wolke |
 | 2026-10-30 | YouTube Shorts | V15 General Gambit explains #1: King + Queen vs King (63 s) | | | | | | | erstes Erklärvideo, sprechender General mit Sprechblasen-Wolke |
+| 2026-10-31 | TikTok | V13 Welcome, India! (32 s) | | | | | | | |
+| 2026-10-31 | Instagram | V13 Welcome, India! (32 s) | | | | | | | |
+| 2026-10-31 | YouTube Shorts | V13 Welcome, India! (32 s) | | | | | | | |
