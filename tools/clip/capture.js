@@ -359,20 +359,19 @@ const SCRIPTS={
 
  // Explainer #2: king + rook vs king (UK vs EU, the Brexit summit of 20 Nov 2026). Camera = one continuous spring path
  // (camDir), every key ~0.6 s before the move it prepares. Times are video seconds; retimed to the voice once it exists.
- explain_kr:{nations:['gbr','eu'],fen:'8/3k4/8/8/7R/3K4/8/8 w - - 0 1',title:['',''],play:async(mv,p,shoot)=>{
+ explain_kr:{nations:['gbr','eu'],fen:'8/3k4/8/8/7R/3K4/8/8 w - - 0 1',title:['',''],cam:[
+     [0,{f:['d7'],yaw:.55,pitch:.16,dist:2.7,lift:.95}],            // close on von der Leyen, low, heads look into the lens
+     [2.4,{f:['d3'],yaw:-.4,pitch:.22,dist:3.1,lift:.85,k:6}],       // slow glide across the board to Burnham
+     [5.2,{f:['e5','e4'],yaw:.1,pitch:1.0,dist:12.5,lift:0,k:5}],    // crane up to the whole board
+     [7.5,{f:['f5','f6'],yaw:.22,pitch:.9,dist:10.5}],               // already heading to h6 before the rook moves
+     [10.2,{f:['e5','e6'],yaw:.02,pitch:.92,dist:11}],               // the kings' walk, rook still in the frame
+     [15.0,{f:['d6','e6'],yaw:.12,pitch:.88,dist:10.2}],
+     [19.8,{f:['c6','d6'],yaw:.25,pitch:.8,dist:9}],                 // queen side, the wall comes down
+     [25.0,{f:['b6','c6'],yaw:.32,pitch:.72,dist:7.6}],
+   ],play:async(mv,p,shoot)=>{
    const MV=[[8.2,'h4','h6'],[9.5,'d7','e8'],[10.8,'d3','d4'],[12.0,'e8','d7'],[13.2,'d4','e5'],[14.4,'d7','c7'],[15.6,'e5','d5'],[16.8,'c7','b7'],
      [18.0,'d5','d6'],[19.2,'b7','b6'],[20.6,'h6','h5'],[21.8,'b6','b7'],[23.2,'h5','b5'],[24.4,'b7','a6'],[25.6,'d6','c6'],[26.8,'a6','a7'],
      [28.2,'b5','a5'],[29.4,'a7','b8']];
-   await camDir(p,[
-     [0,{f:['d7'],yaw:.55,pitch:.16,dist:2.7,lift:.95}],            // close on von der Leyen, low, heads look into the lens
-     [2.4,{f:['d3'],yaw:-.4,pitch:.22,dist:3.1,lift:.85,k:6}],       // slow glide across the board to Burnham
-     [5.2,{f:['d5'],yaw:.1,pitch:1.0,dist:11.5,lift:0,k:5}],         // crane up to the whole board
-     [7.5,{f:['f6','e7'],yaw:.25,pitch:.82,dist:8.8}],               // already heading to h6 before the rook moves
-     [10.2,{f:['d5','d7'],yaw:-.05,pitch:.85,dist:9.6}],             // the kings' walk in the middle
-     [15.0,{f:['c6','c7'],yaw:.18,pitch:.8,dist:8.6}],
-     [20.0,{f:['b6','c6'],yaw:.3,pitch:.72,dist:7.4}],               // queen side, the wall comes down
-     [25.0,{f:['b7','b6'],yaw:.38,pitch:.66,dist:6.2}],
-   ]);
    await gen(p,'explain-kq',true); await cap(p,'King and rook against a lonely king.');
    let el=1500; const till=async s=>{ const ms=Math.round(s*1000-el); if(ms>0){ el+=ms; await shoot(ms); } };
    for(const [t,f,to] of MV){ await till(t); if(t===8.2) await ov(p,{box:true}); const h=1200; el+=h; await mv(f,to,h); }
@@ -430,6 +429,7 @@ const SCRIPTS={
  // a piece is picked (select sound), then moves
  const mv=async(from,to,hold,each)=>{ if(from==='undo'){ await p.evaluate(()=>window.__v().undo()); return shoot(hold||0); } log.push([n/FPS,from,to]); await p.evaluate(([a,c])=>{ window.__rec.push([performance.now()-120,'sel',.8]); window.__mover=window.__v().pieces()[a]; window.__v().doMove({from:a,to:c}); },[from,to]); await shoot(hold,each&&(u=>each(u,to))); };
  if(SC.start) await fly(p,...SC.start.slice(0,4),1,SC.start[4]);
+ if(SC.cam) await camDir(p,SC.cam);
  if(SC.hook){ // big question over the first seconds, the title appears once it is gone
    await p.evaluate(h=>{ const e=document.getElementById('vidHook'); e.querySelector('span').innerHTML=h; e.style.display='block'; if(window.__sc.hookTop) e.style.top=window.__sc.hookTop; document.getElementById('vidTitle').style.display='none'; },SC.hook);
    await shoot(2600);
